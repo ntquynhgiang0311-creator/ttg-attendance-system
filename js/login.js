@@ -1,24 +1,34 @@
+let deviceId = localStorage.getItem("deviceId");
+if(!deviceId){
+
+    deviceId = crypto.randomUUID();
+
+    localStorage.setItem("deviceId", deviceId);
+
+}
 async function login(){
 
     const sdt = document.getElementById("sdt").value;
 
     const matkhau = document.getElementById("matkhau").value;
 
-    const res = await fetch(API_URL,
-        {
-            method:"POST",
-            body:JSON.stringify({
+    const res = await fetch(API_URL,{
 
-                action:"login",
+    method:"POST",
 
-                sdt:sdt,
+    body:JSON.stringify({
 
-                matkhau:matkhau
+        action:"login",
 
-            })
-        }
-    );
+        sdt:sdt,
 
+        matkhau:matkhau,
+
+        deviceId: deviceId
+
+    })
+
+});
     const user = await res.json();
 
     if(user.success){
@@ -32,7 +42,7 @@ async function login(){
 
     }else{
 
-        alert("Sai tài khoản hoặc mật khẩu");
+        alert(user.message || "Sai tài khoản hoặc mật khẩu");
 
     }
 

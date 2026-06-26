@@ -1,0 +1,162 @@
+let congTrinh = [];
+
+function getDeviceId() {
+
+    let deviceId = localStorage.getItem("deviceId");
+
+    if (!deviceId) {
+        deviceId = crypto.randomUUID();
+        localStorage.setItem("deviceId", deviceId);
+    }
+
+    return deviceId;
+}
+async function loadSites(){
+
+    const res = await fetch(
+       API_URL + "?action=sites"
+    );
+
+    congTrinh = await res.json();
+
+    console.log(congTrinh);
+}
+
+function distance(lat1,lng1,lat2,lng2){
+
+  const p = 0.017453292519943295;
+
+  const a =
+  0.5 -
+  Math.cos((lat2-lat1)*p)/2 +
+  Math.cos(lat1*p) *
+  Math.cos(lat2*p) *
+  (1-Math.cos((lng2-lng1)*p))/2;
+
+  return 12742 * Math.asin(Math.sqrt(a));
+}
+
+function getLocation() {
+
+const user = JSON.parse(localStorage.getItem("user"));
+
+if(!user){
+
+    alert("Bạn chưa đăng nhập");
+
+    window.location.href = "login.html";
+
+    return;
+
+}
+
+const name = user.hoten;
+const manv = user.manv;
+
+const type = document.getElementById("type").value;
+
+ const deviceId = getDeviceId();
+
+ navigator.geolocation.getCurrentPosition(
+
+   function(position){
+
+  const lat = position.coords.latitude;
+  const lng = position.coords.longitude;
+let ganNhat = null;
+let khoangCachNhoNhat = 999999;
+
+for(let ct of congTrinh){
+
+  let d = distance(
+    lat,
+    lng,
+    ct.lat,
+    ct.lng
+  );
+
+  if(d < khoangCachNhoNhat){
+      khoangCachNhoNhat = d;
+      ganNhat = ct;
+  }
+}
+if((khoangCachNhoNhat * 1000) > ganNhat.radius){
+
+   alert(
+      "Bạn không ở trong phạm vi công trình.\n" +
+      "Khoảng cách: " +
+      (khoangCachNhoNhat * 1000).toFixed(0) +
+      "m"
+   );
+if (!ganNhat) {
+    alert("Chưa có công trình nào trong hệ thống.");
+    return;
+}
+   return;
+}
+  document.getElementById("gps").innerHTML =
+  "Tên: " + name +
+  "<br>Mã NV: " + manv +
+  "<br>Loại: " + type +
+  "<br>Vĩ độ: " + lat +
+  "<br>Kinh độ: " + lng +
+  "<br>Device: " + deviceId +
+  "<br>Công trình: " + ganNhat.ten +
+  "<br>Khoảng cách: " + (khoangCachNhoNhat * 1000).toFixed(0) + "m";
+
+  fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+    manv: manv,
+    mact: ganNhat.ma,
+    type: type,
+    latitude: lat,
+    longitude: lng,
+    distance: Math.round(khoangCachNhoNhat * 1000),
+    deviceId: deviceId
+})
+  })
+  .then(() => {
+      alert("Chấm công thành công");
+  });
+
+},
+
+   function(error){
+
+      alert("Không lấy được GPS");
+
+   }
+
+ );
+
+}
+window.onload = async function () {
+    await loadSites();
+};
+window.onload = async function(){
+
+    await loadSites();
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if(!user){
+
+        window.location.href = "login.html";
+
+        return;
+
+    }
+
+    document.getElementById("userInfo").innerHTML =
+        "👤 " + user.hoten +
+        "<br>🆔 " + user.manv;
+
+}
+function logout(){
+
+    localStorage.removeItem("user");
+
+    window.location.href = "login.html";
+
+}

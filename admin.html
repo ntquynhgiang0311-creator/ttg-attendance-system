@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Quản lý công trình</title>
+</head>
+
+<body>
+
+<h2>Hệ thống quản trị</h2>
+<hr>
+
+<h3>📊 Dashboard</h3>
+
+<div id="dashboard">
+
+<p>👷 Tổng nhân viên: <span id="tongNV">0</span></p>
+
+<p>🏗 Tổng công trình: <span id="tongCT">0</span></p>
+
+<p>✅ Đã Check In hôm nay: <span id="checkin">0</span></p>
+
+<p>❌ Chưa Check In: <span id="chuacheckin">0</span></p>
+
+</div>
+
+<hr>
+
+<button id="btnSite">🏗️ Công trình</button>
+
+<button id="btnEmployee">👷 Nhân viên</button>
+
+<button id="btnAttendance">📋 Chấm công</button>
+
+<hr>
+
+<h3>Thêm công trình</h3>
+
+Tên công trình<br>
+<input id="tenct">
+
+<br><br>
+
+Loại địa điểm<br>
+<select id="loaict">
+
+<option>Văn phòng</option>
+
+<option>Công trình</option>
+
+<option>Xưởng</option>
+
+</select>
+Địa chỉ<br>
+<input id="diachi">
+
+<br><br>
+
+Bán kính (m)<br>
+<input id="radius" value="150">
+
+<br><br>
+
+<button onclick="layGPS()">
+📍 Lấy vị trí hiện tại
+</button>
+
+<br><br>
+
+<p id="gps"></p>
+
+<button onclick="luuCongTrinh()">
+💾 Lưu công trình
+</button>
+<hr>
+<hr>
+
+<h2>👷 Thêm nhân viên</h2>
+
+Họ tên<br>
+<input id="hoten">
+
+<br><br>
+
+SĐT<br>
+<input id="sdt">
+
+<br><br>
+
+Mật khẩu<br>
+<input id="matkhau">
+
+<br><br>
+
+Role<br>
+
+<select id="role">
+
+<option>User</option>
+
+<option>Admin</option>
+
+</select>
+
+<br><br>
+
+<button onclick="luuNhanVien()">
+
+💾 Lưu nhân viên
+
+</button>
+
+<h3>Danh sách công trình</h3>
+
+<table border="1" width="100%">
+<thead>
+<tr>
+<th>Mã</th>
+<th>Tên</th>
+<th>Loại</th>
+<th>Địa chỉ</th>
+<th>Bán kính</th>
+<th>Trạng thái</th>
+<th>Thao tác</th>
+</tr>
+</thead>
+
+<tbody id="tableSite">
+
+</tbody>
+
+</table>
+<hr>
+
+<h3>Danh sách nhân viên</h3>
+
+<table border="1" width="100%">
+<thead>
+
+<tr>
+
+<th>Mã</th>
+
+<th>Họ tên</th>
+
+<th>SĐT</th>
+
+<th>Role</th>
+
+<th>Trạng thái</th>
+
+<th>Thao tác</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tableEmployee">
+
+</tbody>
+
+</table>
+<script src="JS/admin.js"></script>
+<script src="js/common.js"></script>
+
+</body>
+</html>

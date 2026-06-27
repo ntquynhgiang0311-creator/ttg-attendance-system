@@ -23,3 +23,67 @@ window.onload = async function(){
     console.log("4");
 
 }
+const siteSection =
+document.getElementById(
+"siteSection"
+);
+
+const employeeSection =
+document.getElementById(
+"employeeSection"
+);
+
+const attendanceSection =
+document.getElementById(
+"attendanceSection"
+);
+
+function hideAll(){
+
+siteSection.classList.remove(
+"active"
+);
+
+employeeSection.classList.remove(
+"active"
+);
+
+attendanceSection.classList.remove(
+"active"
+);
+
+}
+
+btnSite.onclick=()=>{
+
+hideAll();
+
+siteSection.classList.add(
+"active"
+);
+
+};
+
+btnEmployee.onclick=()=>{
+
+hideAll();
+
+employeeSection.classList.add(
+"active"
+);
+
+};
+
+btnAttendance.onclick=()=>{
+
+hideAll();
+
+attendanceSection.classList.add(
+"active"
+);
+
+};
+
+siteSection.classList.add(
+"active"
+);

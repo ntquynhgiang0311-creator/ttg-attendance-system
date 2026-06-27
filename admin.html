@@ -61,166 +61,259 @@ Chưa chấm
 </div>
 <!-- Menu -->
 <div class="menu">
-<button>
+
+<button id="btnSite">
+
 🏗 Công trình
+
 </button>
-<button>
+
+<button id="btnEmployee">
+
 👷 Nhân viên
+
 </button>
-<button>
+
+<button id="btnAttendance">
+
 📋 Chấm công
+
 </button>
+
 </div>
 <!-- Công trình -->
+<div id="siteSection" class="section">
+
 <div class="form-card">
+
 <h3 class="section-title">
 🏗 Thêm công trình
 </h3>
-<label>
-Tên công trình
-</label>
+
+<label>Tên công trình</label>
 <input id="tenct">
-<label>
-Loại địa điểm
-</label>
+
+<label>Loại địa điểm</label>
+
 <select id="loaict">
-<option>
-Văn phòng
-</option>
-<option>
-Công trình
-</option>
-<option>
-Xưởng
-</option>
+
+<option>Văn phòng</option>
+
+<option>Công trình</option>
+
+<option>Xưởng</option>
+
 </select>
-<label>
-Địa chỉ
-</label>
+
+<label>Địa chỉ</label>
+
 <input id="diachi">
-<label>
-Bán kính (m)
-</label>
-<input
-id="radius"
-value="150">
+
+<label>Bán kính (m)</label>
+
+<input id="radius" value="150">
+
 <button
 class="gps-btn"
 onclick="layGPS()">
+
 📍 Lấy vị trí hiện tại
+
 </button>
+
 <p id="gps"></p>
+
 <button
 id="btnLuuCongTrinh"
 onclick="luuCongTrinh()">
+
 💾 Lưu công trình
+
 </button>
+
 </div>
-<!-- Nhân viên -->
-<div class="form-card">
+
+
 <h3 class="section-title">
-👷 Thêm nhân viên
-</h3>
-<label>
-Họ tên
-</label>
-<input id="hoten">
-<label>
-SĐT
-</label>
-<input id="sdt">
-<label>
-Mật khẩu
-</label>
-<input id="matkhau">
-<label>
-Role
-</label>
-<select id="role">
-<option>
-User
-</option>
-<option>
-Admin
-</option>
-</select>
-<button
-id="btnLuuNhanVien"
-onclick="luuNhanVien()">
-💾 Lưu nhân viên
-</button>
-</div>
-<!-- Danh sách công trình -->
-<h3 class="section-title">
+
 🏗 Danh sách công trình
+
 </h3>
+
 <div class="table-wrapper">
+
 <table>
+
 <thead>
+
 <tr>
-<th>
-Mã
-</th>
-<th>
-Tên
-</th>
-<th>
-Loại
-</th>
-<th>
-Địa chỉ
-</th>
-<th>
-Bán kính
-</th>
-<th>
-Trạng thái
-</th>
-<th>
-Thao tác
-</th>
+
+<th>Mã</th>
+
+<th>Tên</th>
+
+<th>Loại</th>
+
+<th>Địa chỉ</th>
+
+<th>Bán kính</th>
+
+<th>Trạng thái</th>
+
+<th>Thao tác</th>
+
 </tr>
+
 </thead>
+
 <tbody id="tableSite">
+
 </tbody>
+
 </table>
+
 </div>
-<!-- Danh sách nhân viên -->
+
+</div>
+
+
+
+<!-- Nhân viên -->
+
+<div id="employeeSection" class="section">
+
+<div class="form-card">
+
 <h3 class="section-title">
-👷 Danh sách nhân viên
+
+👷 Thêm nhân viên
+
 </h3>
+
+<label>Họ tên</label>
+
+<input id="hoten">
+
+<label>SĐT</label>
+
+<input id="sdt">
+
+<label>Mật khẩu</label>
+
+<input id="matkhau">
+
+<label>Role</label>
+
+<select id="role">
+
+<option>User</option>
+
+<option>Admin</option>
+
+</select>
+
+<button
+
+id="btnLuuNhanVien"
+
+onclick="luuNhanVien()">
+
+💾 Lưu nhân viên
+
+</button>
+
+</div>
+
+
+<h3 class="section-title">
+
+👷 Danh sách nhân viên
+
+</h3>
+
 <div class="table-wrapper">
+
 <table>
+
 <thead>
+
 <tr>
-<th>
-Mã
-</th>
-<th>
-Họ tên
-</th>
-<th>
-SĐT
-</th>
-<th>
-Role
-</th>
-<th>
-Trạng thái
-</th>
-<th>
-Thao tác
-</th>
+
+<th>Mã</th>
+
+<th>Họ tên</th>
+
+<th>SĐT</th>
+
+<th>Role</th>
+
+<th>Trạng thái</th>
+
+<th>Thao tác</th>
+
 </tr>
+
 </thead>
+
 <tbody id="tableEmployee">
+
 </tbody>
+
 </table>
+
+</div>
+
+</div>
+
+
+
+<!-- Nhật ký -->
+
+<div id="attendanceSection" class="section">
+
+<h3 class="section-title">
+
+📋 Nhật ký chấm công
+
+</h3>
+
+<div class="table-wrapper">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Ngày giờ</th>
+
+<th>Nhân viên</th>
+
+<th>Địa điểm</th>
+
+<th>Loại</th>
+
+<th>Khoảng cách</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tableAttendance">
+
+</tbody>
+
+</table>
+
+</div>
+
 </div>
 <script src="js/common.js"></script>
 <script src="js/dashboard.js"></script>
 <script src="js/site.js"></script>
 <script src="js/employee.js"></script>
 <script src="js/admin.js"></script>
+<script src="js/attendanceAdmin.js"></script>
+
 </body>
 </html>

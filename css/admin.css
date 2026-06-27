@@ -380,3 +380,14 @@ font-size:13px;
 font-weight:600;
 
 }
+.section{
+
+display:none;
+
+}
+
+.section.active{
+
+display:block;
+
+}

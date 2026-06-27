@@ -17,11 +17,11 @@ display:flex;
 
 justify-content:center;
 
-align-items:center;
+align-items:flex-start;
 
 min-height:100vh;
 
-padding:20px;
+padding:30px;
 
 }
 
@@ -41,7 +41,7 @@ background:white;
 
 padding:35px;
 
-border-radius:20px;
+border-radius:24px;
 
 box-shadow:
 
@@ -77,21 +77,21 @@ margin-bottom:5px;
 
 color:#888;
 
-margin-bottom:25px;
+margin-bottom:30px;
 
 }
 
 #userInfo{
 
-font-size:18px;
+font: size 22px;
 
-font-weight:600;
+font-weight:700;
 
 margin-bottom:25px;
-
+line-height:1.5;
 }
 
-.group{
+.box{
 
 text-align:left;
 
@@ -99,11 +99,13 @@ margin-bottom:20px;
 
 }
 
-.group label{
+.box label{
 
 display:block;
 
-margin-bottom:8px;
+margin-bottom:10px;
+
+font-weight:600;
 
 }
 
@@ -113,11 +115,43 @@ width:100%;
 
 height:50px;
 
-padding:0 15px;
-
 border-radius:12px;
 
+padding:0 15px;
+
 border:1px solid #ddd;
+
+appearance:none;
+
+background:white;
+
+font-size:16px;
+
+font-weight:500;
+
+}
+
+.gps-box{
+
+background:#F6F9F7;
+
+border:1px solid #E3EEE7;
+
+padding:20px;
+
+border-radius:16px;
+
+margin-top:20px;
+
+margin-bottom:25px;
+
+text-align:left;
+
+}
+
+.gps-box h4{
+
+margin-bottom:10px;
 
 }
 
@@ -125,39 +159,44 @@ border:1px solid #ddd;
 
 width:100%;
 
-height:52px;
+height:54px;
 
-background:#117A43;
+background:#188C45;
 
 color:white;
 
 border:none;
 
-border-radius:12px;
+border-radius:14px;
 
 font-size:16px;
 
 font-weight:700;
 
-margin-top:10px;
-
 cursor:pointer;
 
 }
+.check-btn:hover{
 
+background:#13773A;
+
+}
 .logout-btn{
 
 width:100%;
 
-height:48px;
+height:50px;
 
-margin-top:20px;
+background:#F3F4F6;
+color:#444;
+
+font-weight:600;
 
 border:none;
 
-background:#eee;
+border-radius:14px;
 
-border-radius:12px;
+margin-top:15px;
 
 cursor:pointer;
 
@@ -165,12 +204,35 @@ cursor:pointer;
 
 #gps{
 
-margin-top:20px;
+line-height:1.6;
 
 font-size:14px;
 
 color:#666;
 
-line-height:1.6;
+}
+.card{
+
+animation:show .35s ease;
+
+}
+
+@keyframes show{
+
+from{
+
+opacity:0;
+
+transform:translateY(15px);
+
+}
+
+to{
+
+opacity:1;
+
+transform:translateY(0);
+
+}
 
 }

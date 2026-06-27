@@ -147,9 +147,6 @@ if (!ganNhat) {
  );
 
 }
-window.onload = async function () {
-    await loadSites();
-};
 window.onload = async function(){
 
     await loadSites();

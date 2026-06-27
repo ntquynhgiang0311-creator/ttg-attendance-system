@@ -78,13 +78,29 @@ async function loadNhanVien(){
 
             <td>
 
-                <button onclick="suaNhanVien('${nv.manv}')">
-                    Sửa
-                </button>
+<button
+class="edit-btn"
+onclick="editEmployee('${nv.manv}')">
 
-                <button>Khóa</button>
+✏️ Sửa
 
-            </td>
+</button>
+
+<button
+class="lock-btn"
+onclick="toggleEmployee(
+
+'${nv.manv}',
+
+'${nv.status}'
+
+)">
+
+${nv.status=="Active" ? "🔒 Khóa" : "🔓 Mở"}
+
+</button>
+
+</td>
 
         </tr>
         `;
@@ -113,5 +129,28 @@ function suaNhanVien(manv){
 
     document.getElementById("btnLuuNhanVien").innerHTML =
         "💾 Cập nhật nhân viên";
+
+}
+async function toggleEmployee(
+
+manv
+
+){
+
+await fetch(API_URL,{
+
+method:"POST",
+
+body:JSON.stringify({
+
+action:"toggleEmployee",
+
+manv:manv
+
+})
+
+});
+
+loadEmployees();
 
 }

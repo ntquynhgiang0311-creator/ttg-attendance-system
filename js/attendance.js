@@ -173,3 +173,11 @@ function logout(){
     window.location.href = "login.html";
 
 }
+document.getElementById("gps").innerHTML =
+"🟢 Đã xác định";
+
+document.getElementById("siteName").innerHTML =
+ganNhat.ten;
+
+document.getElementById("distance").innerHTML =
+Math.round(khoangCachNhoNhat * 1000) + " m";

@@ -2,173 +2,225 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Quản lý công trình</title>
+<meta name="viewport"
+content="width=device-width, initial-scale=1">
+<title>TTG Admin</title>
+<link rel="stylesheet"
+href="css/admin.css">
 </head>
-
 <body>
-
-<h2>Hệ thống quản trị</h2>
-<hr>
-
-<h3>📊 Dashboard</h3>
-
-<div id="dashboard">
-
-<p>👷 Tổng nhân viên: <span id="tongNV">0</span></p>
-
-<p>🏗 Tổng công trình: <span id="tongCT">0</span></p>
-
-<p>✅ Đã Check In hôm nay: <span id="checkin">0</span></p>
-
-<p>❌ Chưa Check In: <span id="chuacheckin">0</span></p>
-
+<h2>
+🏢 Hệ thống quản trị
+</h2>
+<!-- Dashboard -->
+<div class="dashboard">
+<div class="card">
+<div class="icon">
+👷
 </div>
-
-<hr>
-
-<button id="btnSite">🏗️ Công trình</button>
-
-<button id="btnEmployee">👷 Nhân viên</button>
-
-<button id="btnAttendance">📋 Chấm công</button>
-
-<hr>
-
-<h3>Thêm công trình</h3>
-
-Tên công trình<br>
+<h2 id="tongNV">
+0
+</h2>
+<p>
+Nhân viên
+</p>
+</div>
+<div class="card">
+<div class="icon">
+🏗
+</div>
+<h2 id="tongCT">
+0
+</h2>
+<p>
+Công trình
+</p>
+</div>
+<div class="card">
+<div class="icon">
+✅
+</div>
+<h2 id="checkin">
+0
+</h2>
+<p>
+Đã chấm công
+</p>
+</div>
+<div class="card">
+<div class="icon">
+❌
+</div>
+<h2 id="chuacheckin">
+0
+</h2>
+<p>
+Chưa chấm
+</p>
+</div>
+</div>
+<!-- Menu -->
+<div class="menu">
+<button>
+🏗 Công trình
+</button>
+<button>
+👷 Nhân viên
+</button>
+<button>
+📋 Chấm công
+</button>
+</div>
+<!-- Công trình -->
+<div class="form-card">
+<h3 class="section-title">
+🏗 Thêm công trình
+</h3>
+<label>
+Tên công trình
+</label>
 <input id="tenct">
-
-<br><br>
-
-Loại địa điểm<br>
+<label>
+Loại địa điểm
+</label>
 <select id="loaict">
-
-<option>Văn phòng</option>
-
-<option>Công trình</option>
-
-<option>Xưởng</option>
-
+<option>
+Văn phòng
+</option>
+<option>
+Công trình
+</option>
+<option>
+Xưởng
+</option>
 </select>
-Địa chỉ<br>
+<label>
+Địa chỉ
+</label>
 <input id="diachi">
-
-<br><br>
-
-Bán kính (m)<br>
-<input id="radius" value="150">
-
-<br><br>
-
-<button onclick="layGPS()">
+<label>
+Bán kính (m)
+</label>
+<input
+id="radius"
+value="150">
+<button
+class="gps-btn"
+onclick="layGPS()">
 📍 Lấy vị trí hiện tại
 </button>
-
-<br><br>
-
 <p id="gps"></p>
-
-<button id="btnLuuCongTrinh" onclick="luuCongTrinh()">
+<button
+id="btnLuuCongTrinh"
+onclick="luuCongTrinh()">
 💾 Lưu công trình
 </button>
-<hr>
-<hr>
-
-<h2>👷 Thêm nhân viên</h2>
-
-Họ tên<br>
+</div>
+<!-- Nhân viên -->
+<div class="form-card">
+<h3 class="section-title">
+👷 Thêm nhân viên
+</h3>
+<label>
+Họ tên
+</label>
 <input id="hoten">
-
-<br><br>
-
-SĐT<br>
+<label>
+SĐT
+</label>
 <input id="sdt">
-
-<br><br>
-
-Mật khẩu<br>
+<label>
+Mật khẩu
+</label>
 <input id="matkhau">
-
-<br><br>
-
-Role<br>
-
+<label>
+Role
+</label>
 <select id="role">
-
-<option>User</option>
-
-<option>Admin</option>
-
+<option>
+User
+</option>
+<option>
+Admin
+</option>
 </select>
-
-<br><br>
-
 <button
-    id="btnLuuNhanVien"
-    onclick="luuNhanVien()">
-
+id="btnLuuNhanVien"
+onclick="luuNhanVien()">
 💾 Lưu nhân viên
-
 </button>
-
-<h3>Danh sách công trình</h3>
-
-<table border="1" width="100%">
+</div>
+<!-- Danh sách công trình -->
+<h3 class="section-title">
+🏗 Danh sách công trình
+</h3>
+<div class="table-wrapper">
+<table>
 <thead>
 <tr>
-<th>Mã</th>
-<th>Tên</th>
-<th>Loại</th>
-<th>Địa chỉ</th>
-<th>Bán kính</th>
-<th>Trạng thái</th>
-<th>Thao tác</th>
+<th>
+Mã
+</th>
+<th>
+Tên
+</th>
+<th>
+Loại
+</th>
+<th>
+Địa chỉ
+</th>
+<th>
+Bán kính
+</th>
+<th>
+Trạng thái
+</th>
+<th>
+Thao tác
+</th>
 </tr>
 </thead>
-
 <tbody id="tableSite">
-
 </tbody>
-
 </table>
-<hr>
-
-<h3>Danh sách nhân viên</h3>
-
-<table border="1" width="100%">
+</div>
+<!-- Danh sách nhân viên -->
+<h3 class="section-title">
+👷 Danh sách nhân viên
+</h3>
+<div class="table-wrapper">
+<table>
 <thead>
-
 <tr>
-
-<th>Mã</th>
-
-<th>Họ tên</th>
-
-<th>SĐT</th>
-
-<th>Role</th>
-
-<th>Trạng thái</th>
-
-<th>Thao tác</th>
-
+<th>
+Mã
+</th>
+<th>
+Họ tên
+</th>
+<th>
+SĐT
+</th>
+<th>
+Role
+</th>
+<th>
+Trạng thái
+</th>
+<th>
+Thao tác
+</th>
 </tr>
-
 </thead>
-
 <tbody id="tableEmployee">
-
 </tbody>
-
 </table>
+</div>
 <script src="js/common.js"></script>
-
 <script src="js/dashboard.js"></script>
 <script src="js/site.js"></script>
 <script src="js/employee.js"></script>
-
 <script src="js/admin.js"></script>
-
 </body>
 </html>

@@ -93,10 +93,30 @@ async function loadDanhSachCongTrinh(){
     <td>${ct.status}</td>
 
     <td>
-        <button onclick="suaCongTrinh('${ct.ma}')">Sửa</button>
 
-        <button onclick="khoaCongTrinh('${ct.ma}')">Khóa</button>
-    </td>
+<button
+class="edit-btn"
+onclick="editSite('${ct.ma}')">
+
+✏️ Sửa
+
+</button>
+
+<button
+class="lock-btn"
+onclick="toggleSite(
+
+'${ct.ma}',
+
+'${ct.status}'
+
+)">
+
+${ct.status=="Active" ? "🔒 Khóa" : "🔓 Mở"}
+
+</button>
+
+</td>
 
 </tr>
 `;
@@ -173,5 +193,28 @@ function suaCongTrinh(ma){
 
     document.getElementById("btnLuuCongTrinh").innerHTML =
         "💾 Cập nhật công trình";
+
+}
+async function toggleSite(
+
+ma
+
+){
+
+await fetch(API_URL,{
+
+method:"POST",
+
+body:JSON.stringify({
+
+action:"toggleSite",
+
+ma:ma
+
+})
+
+});
+
+loadSites();
 
 }

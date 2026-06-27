@@ -59,22 +59,39 @@ Cấu trúc dự án
 ttg-attendance-system
 
 ├── index.html
+
 ├── login.html
+
 ├── admin.html
+
 ├── css
+
 │   ├── login.css
+
 │   ├── index.css
+
 │   └── admin.css
+
 ├── js
+
 │   ├── attendance.js
+
 │   ├── login.js
+
 │   ├── admin.js
+
 │   ├── employee.js
+
 │   ├── site.js
+
 │   ├── dashboard.js
+
 │   └── common.js
+
 ├── images
+
 │   └── logo.jpg
+
 └── README.md
 
 Dashboard

@@ -1,3 +1,11 @@
+const user =
+JSON.parse(localStorage.getItem("user"));
+
+if(!user){
+
+window.location.href="login.html";
+
+}
 let congTrinh = [];
 
 function getDeviceId() {
@@ -40,6 +48,14 @@ function getLocation() {
 
 const user = JSON.parse(localStorage.getItem("user"));
 
+if(!user){
+
+    window.location.href = "login.html";
+
+}
+
+document.getElementById("userInfo").innerHTML =
+"👋 Xin chào, " + user.hoten;
 if(!user){
 
     alert("Bạn chưa đăng nhập");

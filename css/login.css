@@ -7,13 +7,18 @@
 
 body{
 
-    background:#f3f5f7;
+    background:linear-gradient(
+    180deg,
+#f8faf9 0%,
+#eef3ef 100%
+);
 
     display:flex;
 
     justify-content:center;
 
-    align-items:center;
+    align-items:flex-start;
+    padding-top:60px;
 
     height:100vh;
 
@@ -41,10 +46,14 @@ body{
 
     border-radius:18px;
 
-    box-shadow:0 10px 30px rgba(0,0,0,.12);
+    box-shadow:
+
+    0 8px 40px rgba(0,0,0,.08);
 
     text-align:center;
+    border:1px solid rgba(0,0,0,.04);
 
+    backdrop-filter:blur(10px);
 }
 
 .logo{
@@ -128,7 +137,7 @@ h2{
 
     font-size:16px;
 
-    font-weight:600;
+    font-weight:700;
 
     cursor:pointer;
 
@@ -140,6 +149,79 @@ h2{
 
 .login-btn:hover{
 
-    background:#0d5d33;
+background:#0f6b3b;
+
+transform:translateY(-2px);
+
+}
+@media (max-width:768px){
+
+body{
+
+    padding:20px;
+
+}
+
+.login-card{
+
+    width:100%;
+
+    max-width:380px;
+
+    padding:35px 28px;
+
+    border-radius:24px;
+
+}
+
+.logo{
+
+    width:110px;
+
+}
+
+h2{
+
+    font-size:30px;
+
+    line-height:1.2;
+
+}
+
+.subtitle{
+
+    font-size:15px;
+
+    margin-bottom:30px;
+
+}
+
+.input-group{
+
+    margin-bottom:24px;
+
+}
+
+.input-group label{
+
+    font-size:15px;
+
+}
+
+.input-group input{
+
+    height:52px;
+
+    font-size:15px;
+
+}
+
+.login-btn{
+
+    height:54px;
+
+    font-size:16px;
+
+}
 
 }

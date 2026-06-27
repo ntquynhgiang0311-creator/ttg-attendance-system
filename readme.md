@@ -123,19 +123,18 @@ Admin có thể xóa DeviceID thủ công để cho phép đăng nhập lại.
 
 Roadmap
 
-V1
+TTG Attendance System v1.0
 
-* Login
-* Device Lock
-* GPS Attendance
-* Dashboard
-* Quản lý công trình
-* Quản lý nhân viên
-* GitHub Pages
-* Responsive UI
-* Lịch sử chấm công
-* Báo cáo tháng
-* Xuất Excel
+✔ GPS Attendance
+✔ Employee Management
+✔ Site Management
+✔ Attendance Logs
+✔ Dashboard
+✔ Monthly Report
+✔ Excel Export
+✔ Mobile Friendly
+✔ Google Sheets Backend
+✔ Google Apps Script API
 
 Phiên bản
 

@@ -79,6 +79,11 @@ Chưa chấm
 📋 Chấm công
 
 </button>
+<button id="btnReport">
+
+📈 Báo cáo
+
+</button>
 
 </div>
 <!-- Công trình -->
@@ -300,6 +305,82 @@ onclick="luuNhanVien()">
 </thead>
 
 <tbody id="tableAttendance">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+<div id="reportSection" class="section">
+
+<h3 class="section-title">
+
+📈 Báo cáo tháng
+
+</h3>
+
+<div class="filter-row">
+
+<select id="reportMonth">
+
+<option value="1">Tháng 1</option>
+<option value="2">Tháng 2</option>
+<option value="3">Tháng 3</option>
+<option value="4">Tháng 4</option>
+<option value="5">Tháng 5</option>
+<option value="6">Tháng 6</option>
+<option value="7">Tháng 7</option>
+<option value="8">Tháng 8</option>
+<option value="9">Tháng 9</option>
+<option value="10">Tháng 10</option>
+<option value="11">Tháng 11</option>
+<option value="12">Tháng 12</option>
+
+</select>
+
+<select id="reportYear">
+
+<option>2026</option>
+
+</select>
+
+<button onclick="loadReport()">
+
+📊 Xem báo cáo
+
+</button>
+
+<button>
+
+📥 Xuất Excel
+
+</button>
+
+</div>
+
+<div class="table-wrapper">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Mã NV</th>
+
+<th>Họ tên</th>
+
+<th>Ngày công</th>
+
+<th>Tổng giờ</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tableReport">
 
 </tbody>
 

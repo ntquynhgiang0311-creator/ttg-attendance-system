@@ -37,7 +37,10 @@ const attendanceSection =
 document.getElementById(
 "attendanceSection"
 );
-
+const reportSection =
+document.getElementById(
+"reportSection"
+);
 function hideAll(){
 
 siteSection.classList.remove(
@@ -49,6 +52,10 @@ employeeSection.classList.remove(
 );
 
 attendanceSection.classList.remove(
+"active"
+);
+
+reportSection.classList.remove(
 "active"
 );
 
@@ -79,6 +86,15 @@ btnAttendance.onclick=()=>{
 hideAll();
 
 attendanceSection.classList.add(
+"active"
+);
+
+};
+btnReport.onclick = ()=>{
+
+hideAll();
+
+reportSection.classList.add(
 "active"
 );
 

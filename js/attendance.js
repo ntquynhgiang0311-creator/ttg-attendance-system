@@ -63,7 +63,14 @@ if(!user){
     window.location.href = "login.html";
 
     return;
+document.getElementById("gps").innerHTML =
+"🟢 Đã xác định";
 
+document.getElementById("siteName").innerHTML =
+ganNhat.ten;
+
+document.getElementById("distance").innerHTML =
+Math.round(khoangCachNhoNhat * 1000) + " m";
 }
 
 const name = user.hoten;
@@ -109,16 +116,27 @@ if (!ganNhat) {
     return;
 }
    return;
+   document.getElementById("gps").innerHTML =
+"🟢 Đã xác định";
+
+document.getElementById("siteName").innerHTML =
+ganNhat.loai + " · " + ganNhat.ten;
+
+document.getElementById("distance").innerHTML =
+Math.round(
+khoangCachNhoNhat * 1000
+) + " m";
 }
   document.getElementById("gps").innerHTML =
-  "Tên: " + name +
-  "<br>Mã NV: " + manv +
-  "<br>Loại: " + type +
-  "<br>Vĩ độ: " + lat +
-  "<br>Kinh độ: " + lng +
-  "<br>Device: " + deviceId +
-  "<br>Công trình: " + ganNhat.ten +
-  "<br>Khoảng cách: " + (khoangCachNhoNhat * 1000).toFixed(0) + "m";
+"🟢 Đã xác định";
+
+document.getElementById("siteName").innerHTML =
+ganNhat.loai + " · " + ganNhat.ten;
+
+document.getElementById("distance").innerHTML =
+Math.round(
+khoangCachNhoNhat * 1000
+) + " m";
 
   fetch(API_URL, {
       method: "POST",
@@ -156,8 +174,6 @@ window.onload = async function(){
 
     await loadSites();
 
-    await loadHistory();
-
     const user = JSON.parse(
 
         localStorage.getItem(
@@ -186,8 +202,9 @@ window.onload = async function(){
 
     "👤 " +
 
-    user.hoten;
+    user.hoten +
 
+    " . " + user.manv;
 }
 function logout(){
 
@@ -196,14 +213,7 @@ function logout(){
     window.location.href = "login.html";
 
 }
-document.getElementById("gps").innerHTML =
-"🟢 Đã xác định";
 
-document.getElementById("siteName").innerHTML =
-ganNhat.ten;
-
-document.getElementById("distance").innerHTML =
-Math.round(khoangCachNhoNhat * 1000) + " m";
 async function loadHistory(){
 
     const user = JSON.parse(
@@ -262,10 +272,13 @@ async function loadHistory(){
 
     });
 
-    document.getElementById(
+    const historyDiv =
+document.getElementById("history");
 
-        "history"
+if(historyDiv){
 
-    ).innerHTML = html;
+    historyDiv.innerHTML = html;
+
+}
 
 }

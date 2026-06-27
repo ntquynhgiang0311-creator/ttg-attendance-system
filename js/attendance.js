@@ -132,8 +132,13 @@ if (!ganNhat) {
     deviceId: deviceId
 })
   })
+  
   .then(() => {
-      alert("Chấm công thành công");
+alert(
+
+"Chấm công thành công"
+
+);
   });
 
 },
@@ -151,19 +156,37 @@ window.onload = async function(){
 
     await loadSites();
 
-    const user = JSON.parse(localStorage.getItem("user"));
+    await loadHistory();
+
+    const user = JSON.parse(
+
+        localStorage.getItem(
+
+            "user"
+
+        )
+
+    );
 
     if(!user){
 
-        window.location.href = "login.html";
+        window.location.href=
+
+        "login.html";
 
         return;
 
     }
 
-    document.getElementById("userInfo").innerHTML =
-        "👤 " + user.hoten +
-        "<br>🆔 " + user.manv;
+    document.getElementById(
+
+        "userInfo"
+
+    ).innerHTML =
+
+    "👤 " +
+
+    user.hoten;
 
 }
 function logout(){
@@ -181,3 +204,68 @@ ganNhat.ten;
 
 document.getElementById("distance").innerHTML =
 Math.round(khoangCachNhoNhat * 1000) + " m";
+async function loadHistory(){
+
+    const user = JSON.parse(
+
+        localStorage.getItem(
+
+            "user"
+
+        )
+
+    );
+
+    const res = await fetch(
+
+        API_URL +
+
+        "?action=history&manv=" +
+
+        user.manv
+
+    );
+
+    const ds = await res.json();
+
+    let html = "";
+
+    ds.forEach(x=>{
+
+        html += `
+
+        <div class="history-item">
+
+            <div class="history-type">
+
+                ${x.type=="Check In"
+
+                ?
+
+                "🟢 Check In"
+
+                :
+
+                "🔴 Check Out"}
+
+            </div>
+
+            <div class="history-time">
+
+                ${x.time}
+
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+    document.getElementById(
+
+        "history"
+
+    ).innerHTML = html;
+
+}

@@ -349,3 +349,34 @@ tbody tr:hover{
 background:#f8faf8;
 
 }
+.active{
+
+background:#E8F8EF;
+
+color:#0D8A4B;
+
+padding:6px 12px;
+
+border-radius:20px;
+
+font-size:13px;
+
+font-weight:600;
+
+}
+
+.inactive{
+
+background:#FDECEC;
+
+color:#D9534F;
+
+padding:6px 12px;
+
+border-radius:20px;
+
+font-size:13px;
+
+font-weight:600;
+
+}

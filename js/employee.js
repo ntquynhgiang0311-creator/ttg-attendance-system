@@ -1,156 +1,153 @@
 let editingEmployee = null;
 let nhanVien = [];
-
-async function luuNhanVien(){
-
-    const hoten = document.getElementById("hoten").value;
-
-    const sdt = document.getElementById("sdt").value;
-
-    const matkhau = document.getElementById("matkhau").value;
-
-    const role = document.getElementById("role").value;
-
-    const action = editingEmployee ? "updateEmployee" : "addEmployee";
-
-    const res = await fetch(API_URL,{
-
-        method:"POST",
-
-        body:JSON.stringify({
-
-            action: action,
-
-            manv: editingEmployee,
-
-            hoten: hoten,
-
-            sdt: sdt,
-
-            matkhau: matkhau,
-
-            role: role
-
-        })
-
-    });
-
-    const kq = await res.text();
-
-    alert(kq);
-    editingEmployee = null;
-
-document.getElementById("btnLuuNhanVien").innerHTML =
-"💾 Lưu nhân viên";
-loadNhanVien();
-
-document.getElementById("hoten").value="";
-document.getElementById("sdt").value="";
-document.getElementById("matkhau").value="";
-document.getElementById("role").value="User";
-}
 async function loadNhanVien(){
-
     const res = await fetch(
         API_URL + "?action=employeeList"
     );
-
-    const ds = await res.json();
-
-    nhanVien = ds;
-
+    nhanVien = await res.json();
     let html = "";
-
-    ds.forEach(nv=>{
-
+    nhanVien.forEach(nv => {
         html += `
         <tr>
-
             <td>${nv.manv}</td>
-
             <td>${nv.hoten}</td>
-
             <td>${nv.sdt}</td>
-
             <td>${nv.role}</td>
-
-            <td>${nv.status}</td>
-
             <td>
 
-<button
-class="edit-btn"
-onclick="editEmployee('${nv.manv}')">
+<span class="${
+nv.status=="Active"
 
-✏️ Sửa
+?
 
-</button>
+"active"
 
-<button
-class="lock-btn"
-onclick="toggleEmployee(
+:
 
-'${nv.manv}',
+"inactive"
 
-'${nv.status}'
+}">
 
-)">
+${nv.status}
 
-${nv.status=="Active" ? "🔒 Khóa" : "🔓 Mở"}
-
-</button>
+</span>
 
 </td>
-
+            <td>
+                <button
+                class="edit-btn"
+                onclick="editEmployee('${nv.manv}')">
+                    ✏️ Sửa
+                </button>
+                <button
+                class="lock-btn"
+                onclick="toggleEmployee('${nv.manv}')">
+                    ${nv.status=="Active"
+                    ?"🔒 Khóa"
+                    :"🔓 Mở"}
+                </button>
+            </td>
         </tr>
         `;
-
     });
-
-    document.getElementById("tableEmployee").innerHTML = html;
-
+    document.getElementById(
+        "tableEmployee"
+    ).innerHTML = html;
 }
-function suaNhanVien(manv){
-
-    const nv = nhanVien.find(x => x.manv == manv);
-
-    if(!nv){
-        alert("Không tìm thấy nhân viên");
-        return;
-    }
-
+async function luuNhanVien(){
+    const hoten =
+    document.getElementById(
+        "hoten"
+    ).value;
+    const sdt =
+    document.getElementById(
+        "sdt"
+    ).value;
+    const matkhau =
+    document.getElementById(
+        "matkhau"
+    ).value;
+    const role =
+    document.getElementById(
+        "role"
+    ).value;
+    const action =
+    editingEmployee
+    ?
+    "updateEmployee"
+    :
+    "addEmployee";
+    const res = await fetch(
+        API_URL,
+        {
+            method:"POST",
+            body:JSON.stringify({
+                action:action,
+                manv:editingEmployee,
+                hoten:hoten,
+                sdt:sdt,
+                matkhau:matkhau,
+                role:role
+            })
+        }
+    );
+    const kq = await res.text();
+    alert(kq);
+    editingEmployee = null;
+    document.getElementById(
+        "btnLuuNhanVien"
+    ).innerHTML =
+    "💾 Lưu nhân viên";
+    document.getElementById(
+        "hoten"
+    ).value = "";
+    document.getElementById(
+        "sdt"
+    ).value = "";
+    document.getElementById(
+        "matkhau"
+    ).value = "";
+    document.getElementById(
+        "role"
+    ).value = "User";
+    loadNhanVien();
+}
+function editEmployee(manv){
+    const nv = nhanVien.find(
+        x => x.manv == manv
+    );
+    if(!nv) return;
     editingEmployee = manv;
-
-    document.getElementById("hoten").value = nv.hoten;
-
-    document.getElementById("sdt").value = nv.sdt;
-
-    document.getElementById("role").value = nv.role;
-
-    document.getElementById("btnLuuNhanVien").innerHTML =
-        "💾 Cập nhật nhân viên";
-
+    document.getElementById(
+        "hoten"
+    ).value = nv.hoten;
+    document.getElementById(
+        "sdt"
+    ).value = nv.sdt;
+    document.getElementById(
+        "role"
+    ).value = nv.role;
+    document.getElementById(
+        "btnLuuNhanVien"
+    ).innerHTML =
+    "💾 Cập nhật nhân viên";
 }
 async function toggleEmployee(
-
-manv
-
+    manv
 ){
-
-await fetch(API_URL,{
-
-method:"POST",
-
-body:JSON.stringify({
-
-action:"toggleEmployee",
-
-manv:manv
-
-})
-
-});
-
-loadEmployees();
-
+    await fetch(
+        API_URL,
+        {
+            method:"POST",
+            body:JSON.stringify({
+                action:
+                "toggleEmployee",
+                manv:manv
+            })
+        }
+    );
+    loadNhanVien();
+}
+window.onload = function(){
+    loadNhanVien();
 }

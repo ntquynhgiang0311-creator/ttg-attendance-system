@@ -277,3 +277,58 @@ font-weight:700;
 color:#117A43;
 
 }
+.history-card{
+
+background:#fff;
+
+padding:20px;
+
+border-radius:16px;
+
+box-shadow:
+
+0 4px 15px rgba(0,0,0,.05);
+
+margin-top:20px;
+
+text-align:left;
+
+}
+
+.history-card h4{
+
+margin-bottom:15px;
+
+font-size:18px;
+
+}
+
+.history-item{
+
+padding:10px 0;
+
+border-bottom:1px solid #eee;
+
+}
+
+.history-item:last-child{
+
+border-bottom:none;
+
+}
+
+.history-type{
+
+font-weight:600;
+
+}
+
+.history-time{
+
+font-size:13px;
+
+color:#777;
+
+margin-top:4px;
+
+}

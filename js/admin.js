@@ -6,7 +6,10 @@ if (!user) {
     alert("Bạn không có quyền truy cập.");
     window.location.href = "index.html";
 }
-window.onload = async function(){
+document.addEventListener(
+    "DOMContentLoaded",
+    async () =>{
+
 
     console.log("1");
 
@@ -23,6 +26,7 @@ window.onload = async function(){
     console.log("4");
 
 }
+);
 const siteSection =
 document.getElementById(
 "siteSection"

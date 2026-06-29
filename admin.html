@@ -370,14 +370,76 @@ onclick="luuNhanVien()">
 
 <select id="reportYear">
 
-<option>2026</option>
+</select>
+<select id="reportPB">
 
-<option>2027</option>
+<option value="all">
 
-<option>2028</option>
+Tất cả PB
+
+</option>
+
+<option>
+
+KTNS
+
+</option>
+
+<option>
+
+Thiết Kế
+
+</option>
+
+<option>
+
+Kế Hoạch
+
+</option>
+
+<option>
+
+Xây lắp
+
+</option>
+
+<option>
+
+Xưởng sản xuất
+
+</option>
+
+<option>
+
+Mộc
+
+</option>
+
+<option>
+
+PU
+
+</option>
+
+<option>
+
+MEP
+
+</option>
+
+<option>
+
+Ban chỉ huy công trình
+
+</option>
+
+<option>
+
+Văn phòng
+
+</option>
 
 </select>
-
 <button onclick="loadReport()">
 
 📊 Xem báo cáo
@@ -446,6 +508,81 @@ onclick="luuNhanVien()">
 
 </div>
 
+<div class="form-card">
+
+<h3 class="section-title">
+
+📄 Bảng công nhân viên
+
+</h3>
+
+<div class="filter-row">
+
+<select id="reportEmployee">
+
+</select>
+
+<select id="detailMonth">
+
+</select>
+
+<select id="detailYear">
+
+</select>
+
+<button onclick="loadReportDetail()">
+
+
+📊 Xem bảng công
+
+</button>
+
+<button onclick="exportDetailReport()">
+
+📥 Xuất Excel
+
+</button>
+
+</div>
+
+<div class="table-wrapper">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Ngày</th>
+
+<th>Công trình</th>
+
+<th>Check In</th>
+
+<th>Check Out</th>
+
+<th>Tổng giờ</th>
+
+<th>Công</th>
+
+<th>OT</th>
+
+<th>Trễ</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tableReportDetail">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
 </div>
 <script src="js/common.js"></script>
 <script src="js/dashboard.js"></script>
@@ -454,6 +591,7 @@ onclick="luuNhanVien()">
 <script src="js/admin.js"></script>
 <script src="js/attendanceAdmin.js"></script>
 <script src="js/report.js"></script>
+<script src="js/reportDetail.js"></script>
 
 </body>
 </html>

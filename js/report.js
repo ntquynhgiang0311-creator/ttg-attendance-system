@@ -9,18 +9,25 @@ async function loadReport(){
     document.getElementById(
         "reportYear"
     ).value;
+    const pb =
+document.getElementById(
+"reportPB"
+).value;
 
-    const res = await fetch(
+const res = await fetch(
 
-        API_URL +
+API_URL +
 
-        "?action=report" +
+"?action=report" +
 
-        "&month=" + month +
+"&month=" + month +
 
-        "&year=" + year
+"&year=" + year +
 
-    );
+"&pb=" + pb
+
+);
+
 
     const ds = await res.json();
 
@@ -89,120 +96,220 @@ document.getElementById(
 totalHours.toFixed(1);
 
 }
-window.addEventListener("load",()=>{
 
-const now = new Date();
+async function exportReport(){
 
+const month =
 document.getElementById(
 "reportMonth"
-).value =
+).value;
 
-now.getMonth()+1;
-
+const year =
 document.getElementById(
 "reportYear"
-).value =
+).value;
 
-now.getFullYear();
+const res =
+await fetch(
 
-loadReport();
+API_URL+
 
-});
-window.addEventListener("load",()=>{
+`?action=report&month=${month}&year=${year}`
 
-const now = new Date();
-
-document.getElementById(
-
-"reportMonth"
-
-).value =
-
-now.getMonth()+1;
-
-document.getElementById(
-
-"reportYear"
-
-).value =
-
-now.getFullYear();
-
-loadReport();
-
-});
-function exportReport(){
-
-    let csv = "Mã NV;Họ tên;Ngày công;Tổng giờ\n";
-
-
-    const rows = document.querySelectorAll(
-
-        "#tableReport tr"
-
-    );
-
-    rows.forEach(row=>{
-
-        const cols = row.querySelectorAll(
-
-            "td"
-
-        );
-
-        if(cols.length){
-
-            csv +=
-
-cols[0].innerText + ";" +
-
-cols[1].innerText + ";" +
-
-cols[2].innerText + ";" +
-
-cols[3].innerText +
-
-"\n";
-
-        }
-
-    });
-
-    const blob = new Blob(
-["\uFEFF" + csv],
-{
-type:"text/csv;charset=utf-8;"
-}
 );
 
-    const link = document.createElement(
+const ds =
+await res.json();
 
-        "a"
+let csv = "";
 
-    );
+for(const nv of ds){
 
-    link.href = URL.createObjectURL(
+if(Number(nv.days)==0){
 
-        blob
-
-    );
-
-    const month = document.getElementById(
-
-        "reportMonth"
-
-    ).value;
-
-    const year = document.getElementById(
-
-        "reportYear"
-
-    ).value;
-
-    link.download =
-
-        `BaoCao_${month}_${year}.csv`;
-
-    link.click();
+continue;
 
 }
+
+csv +=
+
+`${nv.manv};${nv.hoten}\n`;
+
+csv +=
+
+"Ngày;Công trình;Check In;Check Out;Tổng giờ;Công;OT;Trễ\n";
+
+const detail =
+await fetch(
+
+API_URL+
+
+`?action=reportDetail`
+
++
+
+`&manv=${nv.manv}`
+
++
+
+`&month=${month}`
+
++
+
+`&year=${year}`
+
+);
+
+const rows =
+await detail.json();
+
+let tongCong = 0;
+let tongOT = 0;
+let tongTre = 0;
+
+rows.forEach(r=>{
+
+csv +=
+
+`${r.date};`
+
++
+
+`${r.site};`
+
++
+
+`${r.checkin};`
+
++
+
+`${r.checkout};`
+
++
+
+`${r.hours};`
+
++
+
+`${r.daywork};`
+
++
+
+`${r.ot};`
+
++
+
+`${r.late}\n`;
+
+tongCong +=
+Number(r.daywork);
+
+tongOT +=
+Number(r.ot);
+
+tongTre +=
+Number(r.late);
+
+});
+
+csv += "\n";
+
+csv +=
+
+`Tổng công;${tongCong}\n`;
+
+csv +=
+
+`Tổng OT;${tongOT.toFixed(2)}\n`;
+
+csv +=
+
+`Tổng trễ;${tongTre}\n`;
+
+csv += "\n\n";
+
+}
+
+const blob =
+
+new Blob(
+
+["\uFEFF"+csv],
+
+{
+
+type:
+
+"text/csv;charset=utf-8;"
+
+}
+
+);
+
+const link =
+
+document.createElement(
+
+"a"
+
+);
+
+link.href =
+
+URL.createObjectURL(
+
+blob
+
+);
+
+link.download =
+
+`BangCong_${month}_${year}.csv`;
+
+link.click();
+
+}
+document.addEventListener(
+
+"DOMContentLoaded",
+
+()=>{
+
+const y =
+new Date().getFullYear();
+
+let html = "";
+
+for(let i=y-1;i<=y+2;i++){
+
+html += `
+
+<option value="${i}">
+
+${i}
+
+</option>
+
+`;
+
+}
+
+document.getElementById(
+"reportYear"
+).innerHTML = html;
+
+document.getElementById(
+"reportMonth"
+).value =
+
+new Date().getMonth()+1;
+
+document.getElementById(
+"reportYear"
+).value = y;
+
+loadReport();
+
+}
+
+);

@@ -187,6 +187,14 @@ async function toggleEmployee(
     );
     loadNhanVien();
 }
-window.onload = function(){
-    loadNhanVien();
+document.addEventListener(
+
+"DOMContentLoaded",
+
+()=>{
+
+loadNhanVien();
+
 }
+
+);

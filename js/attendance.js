@@ -170,7 +170,10 @@ alert(
  );
 
 }
-window.onload = async function(){
+document.addEventListener(
+    "DOMContentLoaded",
+    async ()=>{
+
 
     await loadSites();
 
@@ -206,6 +209,7 @@ window.onload = async function(){
 
     " . " + user.manv;
 }
+);
 function logout(){
 
     localStorage.removeItem("user");

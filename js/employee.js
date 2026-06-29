@@ -12,20 +12,18 @@ async function loadNhanVien(){
             <td>${nv.manv}</td>
             <td>${nv.hoten}</td>
             <td>${nv.sdt}</td>
-            <td>${nv.role}</td>
-            <td>
+          <td>${nv.role}</td>
+
+<td>${nv.pb || ""}</td>
+
+<td>
 
 <span class="${
 nv.status=="Active"
-
 ?
-
 "active"
-
 :
-
 "inactive"
-
 }">
 
 ${nv.status}
@@ -77,18 +75,47 @@ async function luuNhanVien(){
     "updateEmployee"
     :
     "addEmployee";
+    console.log({
+
+action,
+
+hoten,
+
+sdt,
+
+matkhau,
+
+role,
+
+pb: document.getElementById("pb").value
+
+});
     const res = await fetch(
         API_URL,
         {
             method:"POST",
-            body:JSON.stringify({
-                action:action,
-                manv:editingEmployee,
-                hoten:hoten,
-                sdt:sdt,
-                matkhau:matkhau,
-                role:role
-            })
+            body: JSON.stringify({
+
+action: action,
+
+manv: editingEmployee,
+
+hoten: hoten,
+
+sdt: sdt,
+
+matkhau: matkhau,
+
+role: role,
+
+pb:
+document.getElementById(
+"pb"
+).value
+
+})
+
+
         }
     );
     const kq = await res.text();
@@ -113,24 +140,36 @@ async function luuNhanVien(){
     loadNhanVien();
 }
 function editEmployee(manv){
+
     const nv = nhanVien.find(
         x => x.manv == manv
     );
+
     if(!nv) return;
+
     editingEmployee = manv;
+
     document.getElementById(
         "hoten"
     ).value = nv.hoten;
+
     document.getElementById(
         "sdt"
     ).value = nv.sdt;
+
     document.getElementById(
         "role"
     ).value = nv.role;
+
+    document.getElementById(
+        "pb"
+    ).value = nv.pb;
+
     document.getElementById(
         "btnLuuNhanVien"
     ).innerHTML =
     "💾 Cập nhật nhân viên";
+
 }
 async function toggleEmployee(
     manv

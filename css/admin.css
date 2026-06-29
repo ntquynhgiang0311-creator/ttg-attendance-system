@@ -391,3 +391,52 @@ display:none;
 display:block;
 
 }
+.report-summary{
+
+display:flex;
+
+gap:15px;
+
+margin-bottom:20px;
+
+flex-wrap:wrap;
+
+}
+
+.summary-card{
+
+flex:1;
+
+min-width:140px;
+
+background:#fff;
+
+padding:15px;
+
+border-radius:12px;
+
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+
+text-align:center;
+
+}
+
+.summary-card h2{
+
+margin:0;
+
+font-size:28px;
+
+color:#2563eb;
+
+}
+
+.summary-card p{
+
+margin-top:8px;
+
+font-size:14px;
+
+color:#666;
+
+}

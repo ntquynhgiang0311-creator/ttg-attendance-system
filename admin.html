@@ -217,6 +217,34 @@ onclick="luuCongTrinh()">
 
 </select>
 
+<label>
+Phòng ban
+</label>
+
+<select id="pb">
+
+<option>KTNS</option>
+
+<option>Thiết Kế</option>
+
+<option>Kế Hoạch</option>
+
+<option>Xây lắp</option>
+
+<option>Xưởng sản xuất</option>
+
+<option>Mộc</option>
+
+<option>PU</option>
+
+<option>MEP</option>
+
+<option>Ban chỉ huy công trình</option>
+
+<option>Văn Phòng</option>
+
+</select>
+
 <button
 
 id="btnLuuNhanVien"
@@ -251,7 +279,7 @@ onclick="luuNhanVien()">
 <th>SĐT</th>
 
 <th>Role</th>
-
+<th>PB</th>
 <th>Trạng thái</th>
 
 <th>Thao tác</th>
@@ -344,6 +372,10 @@ onclick="luuNhanVien()">
 
 <option>2026</option>
 
+<option>2027</option>
+
+<option>2028</option>
+
 </select>
 
 <button onclick="loadReport()">
@@ -352,14 +384,40 @@ onclick="luuNhanVien()">
 
 </button>
 
-<button>
+<button onclick="exportReport()">
 
 📥 Xuất Excel
 
 </button>
 
 </div>
+<div class="report-summary">
 
+<div class="summary-card">
+
+<h2 id="reportNV">0</h2>
+
+<p>Nhân viên có công</p>
+
+</div>
+
+<div class="summary-card">
+
+<h2 id="reportDays">0</h2>
+
+<p>Tổng ngày công</p>
+
+</div>
+
+<div class="summary-card">
+
+<h2 id="reportHours">0</h2>
+
+<p>Tổng giờ</p>
+
+</div>
+
+</div>
 <div class="table-wrapper">
 
 <table>
@@ -395,6 +453,7 @@ onclick="luuNhanVien()">
 <script src="js/employee.js"></script>
 <script src="js/admin.js"></script>
 <script src="js/attendanceAdmin.js"></script>
+<script src="js/report.js"></script>
 
 </body>
 </html>

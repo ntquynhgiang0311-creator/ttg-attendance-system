@@ -86,6 +86,8 @@ const type = document.getElementById("type").value;
 
   const lat = position.coords.latitude;
   const lng = position.coords.longitude;
+  const accuracy =
+position.coords.accuracy || 0;
 let ganNhat = null;
 let khoangCachNhoNhat = 999999;
 
@@ -103,7 +105,26 @@ for(let ct of congTrinh){
       ganNhat = ct;
   }
 }
-if((khoangCachNhoNhat * 1000) > ganNhat.radius){
+if(!ganNhat){
+
+alert(
+
+"Chưa có công trình nào trong hệ thống."
+
+);
+
+return;
+
+}
+
+if(
+(khoangCachNhoNhat * 1000)
+
+>
+
+(Number(ganNhat.radius) + 30)
+
+){
 
    alert(
       "Bạn không ở trong phạm vi công trình.\n" +

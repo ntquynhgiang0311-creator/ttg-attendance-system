@@ -86,8 +86,6 @@ const type = document.getElementById("type").value;
 
   const lat = position.coords.latitude;
   const lng = position.coords.longitude;
-  const accuracy =
-position.coords.accuracy || 0;
 let ganNhat = null;
 let khoangCachNhoNhat = 999999;
 
@@ -107,9 +105,29 @@ for(let ct of congTrinh){
 }
 if(!ganNhat){
 
+alert("Chưa có công trình nào trong hệ thống.");
+
+return;
+
+}
+
+if((khoangCachNhoNhat * 1000) > ganNhat.radius){
+
 alert(
 
-"Chưa có công trình nào trong hệ thống."
+"Bạn không ở trong phạm vi công trình.\n"
+
++
+
+"Khoảng cách: "
+
++
+
+(khoangCachNhoNhat*1000).toFixed(0)
+
++
+
+"m"
 
 );
 
@@ -117,68 +135,68 @@ return;
 
 }
 
-if(
-(khoangCachNhoNhat * 1000)
-
->
-
-(Number(ganNhat.radius) + 30)
-
-){
-
-   alert(
-      "Bạn không ở trong phạm vi công trình.\n" +
-      "Khoảng cách: " +
-      (khoangCachNhoNhat * 1000).toFixed(0) +
-      "m"
-   );
-if (!ganNhat) {
-    alert("Chưa có công trình nào trong hệ thống.");
-    return;
-}
-   return;
-   document.getElementById("gps").innerHTML =
+document.getElementById("gps").innerHTML =
 "🟢 Đã xác định";
 
 document.getElementById("siteName").innerHTML =
-ganNhat.loai + " · " + ganNhat.ten;
+
+ganNhat.loai
+
++
+
+" · "
+
++
+
+ganNhat.ten;
 
 document.getElementById("distance").innerHTML =
+
 Math.round(
-khoangCachNhoNhat * 1000
-) + " m";
-}
-  document.getElementById("gps").innerHTML =
-"🟢 Đã xác định";
 
-document.getElementById("siteName").innerHTML =
-ganNhat.loai + " · " + ganNhat.ten;
+khoangCachNhoNhat*1000
 
-document.getElementById("distance").innerHTML =
-Math.round(
-khoangCachNhoNhat * 1000
-) + " m";
+)
 
-  fetch(API_URL, {
-      method: "POST",
-      body: JSON.stringify({
-    manv: manv,
-    mact: ganNhat.ma,
-    type: type,
-    latitude: lat,
-    longitude: lng,
-    distance: Math.round(khoangCachNhoNhat * 1000),
-    deviceId: deviceId
++
+
+" m";
+
+fetch(API_URL,{
+
+method:"POST",
+
+body:JSON.stringify({
+
+action: "checkIn",
+
+manv:manv,
+
+mact:ganNhat.ma,
+
+type:type,
+
+latitude:lat,
+
+longitude:lng,
+
+distance:Math.round(
+
+khoangCachNhoNhat*1000
+
+),
+
+deviceId:deviceId
+
 })
-  })
-  
-  .then(() => {
-alert(
 
-"Chấm công thành công"
+})
+.then(()=>{
 
-);
-  });
+alert("Chấm công thành công");
+
+});
+
 
 },
 

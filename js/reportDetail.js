@@ -1,210 +1,379 @@
-async function loadReportDetail(){
+// ========================================
+// REPORT DETAIL STATE
+// ========================================
 
-const manv =
-document.getElementById(
-"reportEmployee"
-).value;
+let reportDetailInitialized = false;
 
-const month =
-document.getElementById(
-"detailMonth"
-).value;
 
-const year =
-document.getElementById(
-"detailYear"
-).value;
+// ========================================
+// INIT REPORT DETAIL
+// ========================================
 
-const res = await fetch(
+async function initReportDetail() {
 
-API_URL +
+    if (reportDetailInitialized) {
 
-`?action=reportDetail&manv=${manv}&month=${month}&year=${year}`
+        return;
 
-);
+    }
 
-const data =
-await res.json();
 
-let html = "";
+    initDetailMonthYear();
 
-data.forEach(x=>{
 
-html += `
+    await loadReportEmployees();
 
-<tr>
 
-<td>${x.date}</td>
+    reportDetailInitialized = true;
 
-<td>${x.site}</td>
 
-<td>${x.checkin}</td>
+    const employeeSelect =
+        document.getElementById(
+            "reportEmployee"
+        );
 
-<td>${x.checkout}</td>
 
-<td>${x.hours}</td>
+    if (
+        employeeSelect &&
+        employeeSelect.value
+    ) {
 
-<td>${x.daywork}</td>
+        await loadReportDetail();
 
-<td>${x.ot}</td>
-
-<td>${x.late}</td>
-
-</tr>
-
-`;
-
-});
-
-document.getElementById(
-
-"tableReportDetail"
-
-).innerHTML = html;
-
-}
-async function loadReportEmployees(){
-
-const res =
-await fetch(
-
-API_URL+
-
-"?action=employeeList"
-
-);
-
-const data =
-await res.json();
-
-let html = "";
-
-data.forEach(x=>{
-
-html += `
-
-<option value="${x.manv}">
-
-${x.manv} - ${x.hoten}
-
-</option>
-
-`;
-
-});
-
-document.getElementById(
-
-"reportEmployee"
-
-).innerHTML = html;
-
-}
-function loadMonthYear(){
-
-let month = "";
-
-for(let i=1;i<=12;i++){
-
-month += `
-
-<option value="${i}">
-
-${i}
-
-</option>
-
-`;
+    }
 
 }
 
-document.getElementById(
 
-"detailMonth"
+// ========================================
+// LOAD NHÂN VIÊN CHO SELECT
+// ========================================
 
-).innerHTML = month;
+async function loadReportEmployees() {
 
-const y =
-new Date()
+    try {
 
-.getFullYear();
+        const data = await apiGet(
+            "employeeList"
+        );
 
-let year = "";
 
-for(let i=y-1;i<=y+1;i++){
+        const select =
+            document.getElementById(
+                "reportEmployee"
+            );
 
-year += `
 
-<option value="${i}">
+        if (!select) {
 
-${i}
+            return;
 
-</option>
+        }
 
-`;
 
-}
+        if (
+            !Array.isArray(data) ||
+            data.length === 0
+        ) {
 
-document.getElementById(
+            select.innerHTML = `
 
-"detailYear"
+                <option value="">
 
-).innerHTML = year;
+                    Không có nhân viên
 
-document.getElementById(
+                </option>
 
-"detailMonth"
+            `;
 
-).value =
 
-new Date()
+            return;
 
-.getMonth()+1;
+        }
 
-document.getElementById(
 
-"detailYear"
+        select.innerHTML =
+            data.map(function(x) {
 
-).value =
+                return `
 
-new Date()
+                    <option value="${escapeHtml(x.manv)}">
 
-.getFullYear();
+                        ${escapeHtml(x.manv)}
+                        -
+                        ${escapeHtml(x.hoten)}
 
-}
-document.addEventListener(
+                    </option>
 
-"DOMContentLoaded",
+                `;
 
-()=>{
+            }).join("");
 
-loadMonthYear();
+    }
+    catch (error) {
 
-loadReportEmployees();
+        console.error(
+            "loadReportEmployees:",
+            error
+        );
 
-}
 
-);
-document.addEventListener(
+        alert(
+            "Không tải được danh sách nhân viên báo cáo."
+        );
 
-"DOMContentLoaded",
-
-()=>{
-
-document.getElementById(
-"reportMonth"
-).value =
-
-new Date()
-.getMonth()+1;
-
-document.getElementById(
-"reportYear"
-).value =
-
-new Date()
-.getFullYear();
+    }
 
 }
 
-);
+
+// ========================================
+// INIT THÁNG / NĂM CHI TIẾT
+// ========================================
+
+function initDetailMonthYear() {
+
+    const monthElement =
+        document.getElementById(
+            "detailMonth"
+        );
+
+
+    const yearElement =
+        document.getElementById(
+            "detailYear"
+        );
+
+
+    if (monthElement) {
+
+        let monthHtml = "";
+
+        for (let i = 1; i <= 12; i++) {
+
+            monthHtml += `
+
+                <option value="${i}">
+                    ${i}
+                </option>
+
+            `;
+
+        }
+
+
+        monthElement.innerHTML =
+            monthHtml;
+
+
+        monthElement.value =
+            new Date().getMonth() + 1;
+
+    }
+
+
+    if (yearElement) {
+
+        const currentYear =
+            new Date().getFullYear();
+
+
+        let yearHtml = "";
+
+        for (
+            let i = currentYear - 1;
+            i <= currentYear + 1;
+            i++
+        ) {
+
+            yearHtml += `
+
+                <option value="${i}">
+                    ${i}
+                </option>
+
+            `;
+
+        }
+
+
+        yearElement.innerHTML =
+            yearHtml;
+
+
+        yearElement.value =
+            currentYear;
+
+    }
+
+}
+
+
+// ========================================
+// LOAD CHI TIẾT BÁO CÁO
+// ========================================
+
+async function loadReportDetail() {
+
+    const manv =
+        document
+            .getElementById("reportEmployee")
+            .value;
+
+
+    const month =
+        document
+            .getElementById("detailMonth")
+            .value;
+
+
+    const year =
+        document
+            .getElementById("detailYear")
+            .value;
+
+
+    if (!manv) {
+
+        renderReportDetail([]);
+
+        return;
+
+    }
+
+
+    try {
+
+        const data = await apiGet(
+
+            "reportDetail",
+
+            {
+
+                manv:
+                    manv,
+
+                month:
+                    month,
+
+                year:
+                    year
+
+            }
+
+        );
+
+
+        renderReportDetail(data);
+
+    }
+    catch (error) {
+
+        console.error(
+            "loadReportDetail:",
+            error
+        );
+
+
+        renderReportDetail([]);
+
+
+        alert(
+            "Không tải được chi tiết báo cáo."
+        );
+
+    }
+
+}
+
+
+// ========================================
+// RENDER CHI TIẾT
+// ========================================
+
+function renderReportDetail(data) {
+
+    const table =
+        document.getElementById(
+            "tableReportDetail"
+        );
+
+
+    if (!table) {
+
+        return;
+
+    }
+
+
+    if (
+        !Array.isArray(data) ||
+        data.length === 0
+    ) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td colspan="8">
+
+                    Không có dữ liệu chi tiết
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    table.innerHTML =
+        data.map(function(x) {
+
+            return `
+
+                <tr>
+
+                    <td>
+                        ${escapeHtml(x.date)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(x.site)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(x.checkin)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(x.checkout)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(x.hours)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(x.daywork)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(x.ot)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(x.late)}
+                    </td>
+
+                </tr>
+
+            `;
+
+        }).join("");
+
+}

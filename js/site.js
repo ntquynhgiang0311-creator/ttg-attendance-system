@@ -3,228 +3,709 @@ let lat = 0;
 let lng = 0;
 let editingSite = null;
 /* ===========================
-   GPS
+   Lấy GPS công trình
 =========================== */
-function layGPS(){
-    navigator.geolocation.getCurrentPosition(
-        function(position){
-            lat = position.coords.latitude;
-            lng = position.coords.longitude;
-            document.getElementById("gps").innerHTML =
-            "📍 Latitude: " + lat +
-            "<br>Longitude: " + lng;
-        },
-        function(){
-            alert("Không lấy được GPS");
-        }
-    );
+
+function layGPS() {
+
+    if (!navigator.geolocation) {
+
+        alert(
+            "Thiết bị không hỗ trợ GPS."
+        );
+
+        return;
+
+    }
+
+
+    const gpsElement =
+        document.getElementById("gps");
+
+
+    if (gpsElement) {
+
+        gpsElement.innerHTML =
+            "⏳ Đang lấy vị trí...";
+
+    }
+
+
+    navigator.geolocation
+        .getCurrentPosition(
+
+            function(position) {
+
+                lat =
+                    position.coords.latitude;
+
+                lng =
+                    position.coords.longitude;
+
+
+                if (gpsElement) {
+
+                    gpsElement.innerHTML =
+
+                        "📍 Latitude: " +
+
+                        lat.toFixed(6) +
+
+                        "<br>Longitude: " +
+
+                        lng.toFixed(6);
+
+                }
+
+            },
+
+
+            function(error) {
+
+                console.error(
+                    "layGPS:",
+                    error
+                );
+
+
+                lat = 0;
+
+                lng = 0;
+
+
+                if (gpsElement) {
+
+                    gpsElement.innerHTML =
+                        "";
+
+                }
+
+
+                let message =
+                    "Không lấy được GPS.";
+
+
+                switch (error.code) {
+
+                    case error.PERMISSION_DENIED:
+
+                        message =
+                            "Bạn chưa cấp quyền truy cập vị trí.";
+
+                        break;
+
+
+                    case error.POSITION_UNAVAILABLE:
+
+                        message =
+                            "Không xác định được vị trí hiện tại.";
+
+                        break;
+
+
+                    case error.TIMEOUT:
+
+                        message =
+                            "GPS phản hồi quá lâu. Vui lòng thử lại.";
+
+                        break;
+
+                }
+
+
+                alert(message);
+
+            },
+
+
+            {
+
+                enableHighAccuracy: true,
+
+                timeout: 15000,
+
+                maximumAge: 0
+
+            }
+
+        );
+
 }
 /* ===========================
    Danh sách công trình
 =========================== */
-async function loadDanhSachCongTrinh(){
-    const res = await fetch(
-        API_URL +
-        "?action=sites"
-    );
-    congTrinh = await res.json();
-    let html = "";
-    congTrinh.forEach(ct=>{
-        html += `
-        <tr>
-            <td>
-                ${ct.ma}
-            </td>
-            <td>
-                ${ct.ten}
-            </td>
-            <td>
-                ${ct.loai}
-            </td>
-            <td>
-                ${ct.diachi}
-            </td>
-            <td>
-                ${ct.radius} m
-            </td>
-            <td>
-                <span class="${
-                    ct.status=="Active"
-                    ?
-                    "active"
-                    :
-                    "inactive"
-                }">
-                    ${ct.status}
-                </span>
-            </td>
-            <td>
-                <button
-                class="edit-btn"
-                onclick="editSite(
-                '${ct.ma}'
-                )">
-                    ✏️ Sửa
-                </button>
-                <button
-                class="lock-btn"
-                onclick="toggleSite(
-                '${ct.ma}'
-                )">
-                    ${ct.status=="Active"
-                    ?
-                    "🔒 Khóa"
-                    :
-                    "🔓 Mở"}
-                </button>
-            </td>
-        </tr>
-        `;
-    });
-    document.getElementById(
-        "tableSite"
-    ).innerHTML = html;
+async function loadDanhSachCongTrinh() {
+
+    try {
+
+        congTrinh = await apiGet(
+            "siteList"
+        );
+
+        let html = "";
+
+        congTrinh.forEach(ct => {
+
+            html += `
+
+            <tr>
+
+                <td>
+                    ${escapeHtml(ct.ma)}
+                </td>
+
+                <td>
+                    ${escapeHtml(ct.ten)}
+                </td>
+
+                <td>
+                    ${escapeHtml(ct.loai)}
+                </td>
+
+                <td>
+                    ${escapeHtml(ct.diachi)}
+                </td>
+
+                <td>
+                    ${Number(ct.radius)} m
+                </td>
+
+                <td>
+
+                    <span class="${
+                        ct.status === "Active"
+                            ? "active"
+                            : "inactive"
+                    }">
+
+                        ${escapeHtml(ct.status)}
+
+                    </span>
+
+                </td>
+
+                <td>
+
+                    <button
+                        class="edit-btn"
+                        onclick="editSite('${ct.ma}')"
+                    >
+                        ✏️ Sửa
+                    </button>
+
+                    <button
+                        class="lock-btn"
+                        onclick="toggleSite('${ct.ma}')"
+                    >
+
+                        ${
+                            ct.status === "Active"
+                                ? "🔒 Khóa"
+                                : "🔓 Mở"
+                        }
+
+                    </button>
+
+                </td>
+
+            </tr>
+
+            `;
+
+        });
+
+
+        document
+            .getElementById("tableSite")
+            .innerHTML = html;
+
+    }
+    catch (error) {
+
+        console.error(
+            "loadDanhSachCongTrinh:",
+            error
+        );
+
+        alert(
+            "Không tải được danh sách công trình."
+        );
+
+    }
+
 }
 /* ===========================
    Lưu công trình
 =========================== */
-async function luuCongTrinh(){
-    const ten =
-    document.getElementById(
-        "tenct"
-    ).value;
-    const loai =
-    document.getElementById(
-        "loaict"
-    ).value;
-    const diachi =
-    document.getElementById(
-        "diachi"
-    ).value;
-    const radius =
-    document.getElementById(
-        "radius"
-    ).value;
-    const action =
-    editingSite
-    ?
-    "updateSite"
-    :
-    "addSite";
-    const res = await fetch(
-        API_URL,
-        {
-            method:"POST",
-            body:JSON.stringify({
-                action:action,
-                ma:editingSite,
-                ten:ten,
-                loai:loai,
-                diachi:diachi,
-                lat:lat,
-                lng:lng,
-                radius:radius
-            })
-        }
+async function luuCongTrinh() {
+
+    const ten = document
+        .getElementById("tenct")
+        .value
+        .trim();
+
+    const loai = document
+        .getElementById("loaict")
+        .value
+        .trim();
+
+    const diachi = document
+        .getElementById("diachi")
+        .value
+        .trim();
+
+    const radius = Number(
+        document
+            .getElementById("radius")
+            .value
+    );
+
+
+    // =========================
+    // VALIDATE NHANH FRONTEND
+    // =========================
+
+    if (!ten) {
+
+        alert(
+            "Vui lòng nhập tên công trình."
         );
-    const kq =
-    await res.text();
-    alert(kq);
-    resetForm();
-    loadDanhSachCongTrinh();
+
+        return;
+
+    }
+
+
+    if (!loai) {
+
+        alert(
+            "Vui lòng chọn loại công trình."
+        );
+
+        return;
+
+    }
+
+
+    if (!diachi) {
+
+        alert(
+            "Vui lòng nhập địa chỉ công trình."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        lat === 0 &&
+        lng === 0
+    ) {
+
+        alert(
+            "Vui lòng lấy vị trí GPS công trình."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !Number.isFinite(radius) ||
+        radius <= 0
+    ) {
+
+        alert(
+            "Bán kính công trình không hợp lệ."
+        );
+
+        return;
+
+    }
+
+
+    const action = editingSite
+        ? "updateSite"
+        : "addSite";
+
+
+    const button = document
+        .getElementById(
+            "btnLuuCongTrinh"
+        );
+
+
+    if (button) {
+
+        button.disabled = true;
+
+        button.innerHTML =
+            "Đang lưu...";
+
+    }
+
+
+    try {
+
+        const result = await apiPostText(
+
+            action,
+
+            {
+
+                ma: editingSite,
+
+                ten: ten,
+
+                loai: loai,
+
+                diachi: diachi,
+
+                lat: lat,
+
+                lng: lng,
+
+                radius: radius
+
+            }
+
+        );
+
+
+        if (result !== "OK") {
+
+            alert(
+                result ||
+                "Không lưu được công trình."
+            );
+
+            return;
+
+        }
+
+
+        alert(
+
+            editingSite
+
+                ? "Cập nhật công trình thành công"
+
+                : "Thêm công trình thành công"
+
+        );
+
+
+        resetForm();
+
+
+        await loadDanhSachCongTrinh();
+
+
+        await loadDashboard();
+
+    }
+    catch (error) {
+
+        console.error(
+            "luuCongTrinh:",
+            error
+        );
+
+
+        alert(
+            "Không thể kết nối hệ thống."
+        );
+
+    }
+    finally {
+
+        if (button) {
+
+            button.disabled = false;
+
+
+            button.innerHTML =
+
+                editingSite
+
+                    ? "💾 Cập nhật công trình"
+
+                    : "💾 Lưu công trình";
+
+        }
+
+    }
+
 }
 /* ===========================
    Sửa công trình
 =========================== */
-function editSite(ma){
+
+function editSite(ma) {
+
     const ct = congTrinh.find(
-        x => x.ma == ma
+        item => item.ma === ma
     );
-    if(!ct){
+
+
+    if (!ct) {
+
         alert(
-            "Không tìm thấy công trình"
+            "Không tìm thấy công trình."
         );
+
         return;
+
     }
-    editingSite = ma;
-    document.getElementById(
-        "tenct"
-    ).value = ct.ten;
-    document.getElementById(
-        "loaict"
-    ).value = ct.loai;
-    document.getElementById(
-        "diachi"
-    ).value = ct.diachi;
-    document.getElementById(
-        "radius"
-    ).value = ct.radius;
-    lat = ct.lat;
-    lng = ct.lng;
-    document.getElementById(
-        "gps"
-    ).innerHTML =
-    "📍 Latitude: "
-    +
-    lat
-    +
-    "<br>Longitude: "
-    +
-    lng;
-    document.getElementById(
-        "btnLuuCongTrinh"
-    ).innerHTML =
-    "💾 Cập nhật công trình";
+
+
+    editingSite = ct.ma;
+
+
+    document
+        .getElementById("tenct")
+        .value = ct.ten || "";
+
+
+    document
+        .getElementById("loaict")
+        .value = ct.loai || "";
+
+
+    document
+        .getElementById("diachi")
+        .value = ct.diachi || "";
+
+
+    document
+        .getElementById("radius")
+        .value = Number(ct.radius) || 150;
+
+
+    lat = Number(ct.lat);
+
+    lng = Number(ct.lng);
+
+
+    const gpsElement =
+        document.getElementById("gps");
+
+
+    if (
+        gpsElement &&
+        Number.isFinite(lat) &&
+        Number.isFinite(lng)
+    ) {
+
+        gpsElement.innerHTML =
+
+            "📍 Latitude: " +
+
+            lat.toFixed(6) +
+
+            "<br>Longitude: " +
+
+            lng.toFixed(6);
+
+    }
+
+
+    const button =
+        document.getElementById(
+            "btnLuuCongTrinh"
+        );
+
+
+    if (button) {
+
+        button.innerHTML =
+            "💾 Cập nhật công trình";
+
+    }
+
 }
 /* ===========================
-   Khóa/Mở
+   Khóa / Mở công trình
 =========================== */
-async function toggleSite(ma){
-    await fetch(
-        API_URL,
-        {
-            method:"POST",
-            body:JSON.stringify({
-                action:"toggleSite",
-                ma:ma
-            })
-        }
+
+async function toggleSite(ma) {
+
+    const ct = congTrinh.find(
+        item => item.ma === ma
     );
-    loadDanhSachCongTrinh();
+
+
+    if (!ct) {
+
+        alert(
+            "Không tìm thấy công trình."
+        );
+
+        return;
+
+    }
+
+
+    const isActive =
+        ct.status === "Active";
+
+
+    const actionText =
+        isActive
+            ? "khóa"
+            : "mở";
+
+
+    const confirmed = confirm(
+
+        "Bạn có chắc muốn " +
+
+        actionText +
+
+        " công trình \"" +
+
+        ct.ten +
+
+        "\"?"
+
+    );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const result = await apiPostText(
+
+            "toggleSite",
+
+            {
+                ma: ma
+            }
+
+        );
+
+
+        if (result !== "OK") {
+
+            alert(
+
+                result ||
+
+                "Không cập nhật được trạng thái công trình."
+
+            );
+
+            return;
+
+        }
+
+
+        await loadDanhSachCongTrinh();
+
+
+        await loadDashboard();
+
+    }
+    catch (error) {
+
+        console.error(
+            "toggleSite:",
+            error
+        );
+
+
+        alert(
+            "Không thể kết nối hệ thống."
+        );
+
+    }
+
 }
 /* ===========================
-   Reset Form
+   Reset form công trình
 =========================== */
-function resetForm(){
+
+function resetForm() {
+
     editingSite = null;
+
     lat = 0;
+
     lng = 0;
-    document.getElementById(
-        "tenct"
-    ).value = "";
-    document.getElementById(
-        "diachi"
-    ).value = "";
-    document.getElementById(
-        "radius"
-    ).value = "150";
-    document.getElementById(
-        "loaict"
-    ).value = "Văn phòng";
-    document.getElementById(
-        "gps"
-    ).innerHTML = "";
-    document.getElementById(
-        "btnLuuCongTrinh"
-    ).innerHTML =
-    "💾 Lưu công trình";
+
+
+    const tenElement =
+        document.getElementById("tenct");
+
+    const loaiElement =
+        document.getElementById("loaict");
+
+    const diaChiElement =
+        document.getElementById("diachi");
+
+    const radiusElement =
+        document.getElementById("radius");
+
+    const gpsElement =
+        document.getElementById("gps");
+
+    const button =
+        document.getElementById(
+            "btnLuuCongTrinh"
+        );
+
+
+    if (tenElement) {
+
+        tenElement.value = "";
+
+    }
+
+
+    if (loaiElement) {
+
+        loaiElement.value =
+            "Văn Phòng";
+
+    }
+
+
+    if (diaChiElement) {
+
+        diaChiElement.value = "";
+
+    }
+
+
+    if (radiusElement) {
+
+        radiusElement.value = "150";
+
+    }
+
+
+    if (gpsElement) {
+
+        gpsElement.innerHTML = "";
+
+    }
+
+
+    if (button) {
+
+        button.disabled = false;
+
+        button.innerHTML =
+            "💾 Lưu công trình";
+
+    }
+
 }
-/* ===========================
-   Load
-=========================== */
-window.addEventListener(
-"load",
-function(){
-    loadDanhSachCongTrinh();
-}
-);

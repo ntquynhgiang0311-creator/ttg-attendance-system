@@ -1,67 +1,181 @@
-async function loadAttendance(){
+// ========================================
+// ATTENDANCE ADMIN STATE
+// ========================================
 
-    const res = await fetch(
+let attendanceLoaded = false;
 
-        API_URL +
 
-        "?action=attendance"
+// ========================================
+// LOAD CHẤM CÔNG ADMIN
+// ========================================
 
-    );
+async function loadAttendance() {
 
-    const ds = await res.json();
+    try {
 
-    ds.reverse();
+        const ds = await apiGet(
+            "attendance"
+        );
 
-    let html = "";
 
-    ds.forEach(x=>{
+        ds.reverse();
 
-        html += `
 
-        <tr>
+        renderAttendance(ds);
 
-            <td>
 
-                ${x.time}
+        attendanceLoaded = true;
 
-            </td>
+    }
+    catch (error) {
 
-            <td>
+        console.error(
+            "loadAttendance:",
+            error
+        );
 
-                ${x.hoten}
 
-            </td>
+        renderAttendance([]);
 
-            <td>
 
-                ${x.congtrinh}
+        alert(
+            "Không tải được dữ liệu chấm công."
+        );
 
-            </td>
 
-            <td>
+        throw error;
 
-                ${x.type}
-
-            </td>
-
-            <td>
-
-                ${x.distance} m
-
-            </td>
-
-        </tr>
-
-        `;
-
-    });
-
-    document.getElementById(
-
-        "tableAttendance"
-
-    ).innerHTML = html;
+    }
 
 }
 
-loadAttendance();
+
+// ========================================
+// RENDER BẢNG CHẤM CÔNG
+// ========================================
+
+function renderAttendance(ds) {
+
+    const table =
+        document.getElementById(
+            "tableAttendance"
+        );
+
+
+    if (!table) {
+
+        return;
+
+    }
+
+
+    if (
+        !Array.isArray(ds) ||
+        ds.length === 0
+    ) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td colspan="5">
+
+                    Chưa có dữ liệu chấm công
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    table.innerHTML = ds
+        .map(function(x) {
+
+            return `
+
+                <tr>
+
+                    <td>
+                        ${escapeHtml(formatAttendanceTime(x.time))}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(x.hoten)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(x.congtrinh)}
+                    </td>
+
+                    <td>
+                        ${renderAttendanceType(x.type)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(x.distance)} m
+                    </td>
+
+                </tr>
+
+            `;
+
+        })
+        .join("");
+
+}
+
+
+// ========================================
+// FORMAT LOẠI CHẤM CÔNG
+// ========================================
+
+function renderAttendanceType(type) {
+
+    if (type === "Check In") {
+
+        return "🟢 Check In";
+
+    }
+
+
+    if (type === "Check Out") {
+
+        return "🔴 Check Out";
+
+    }
+
+
+    return escapeHtml(type || "");
+
+}
+
+
+// ========================================
+// FORMAT THỜI GIAN
+// ========================================
+
+function formatAttendanceTime(value) {
+
+    const date = new Date(value);
+
+
+    if (
+        isNaN(date.getTime())
+    ) {
+
+        return value || "";
+
+    }
+
+
+    return date.toLocaleString(
+        "vi-VN"
+    );
+
+}

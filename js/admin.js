@@ -1,109 +1,265 @@
-const user = JSON.parse(localStorage.getItem("user"));
+// ========================================
+// ADMIN PAGE STATE
+// ========================================
 
-if (!user) {
-    window.location.href = "login.html";
-} else if (user.role !== "admin") {
-    alert("Bạn không có quyền truy cập.");
-    window.location.href = "index.html";
-}
+let adminAttendanceLoaded = false;
+let adminReportLoaded = false;
+
+// ========================================
+// INIT
+// ========================================
+
 document.addEventListener(
     "DOMContentLoaded",
-    async () =>{
+    initAdmin
+);
 
 
-    console.log("1");
+// ========================================
+// KHỞI TẠO ADMIN
+// ========================================
 
-    await loadDashboard();
+async function initAdmin() {
 
-    console.log("2");
+    const user = getCurrentUser();
 
-    await loadDanhSachCongTrinh();
 
-    console.log("3");
+    if (!user) {
 
-    await loadNhanVien();
+        window.location.href =
+            "login.html";
 
-    console.log("4");
+        return;
+
+    }
+
+
+    if (user.role !== "admin") {
+
+        alert(
+            "Bạn không có quyền truy cập."
+        );
+
+        window.location.href =
+            "index.html";
+
+        return;
+
+    }
+
+
+    setupAdminNavigation();
+
+
+    showAdminSection(
+        "siteSection"
+    );
+
+
+    try {
+
+        await Promise.all([
+
+            loadDashboard(),
+
+            loadDanhSachCongTrinh(),
+
+            loadNhanVien()
+
+        ]);
+
+    }
+    catch (error) {
+
+        console.error(
+            "initAdmin:",
+            error
+        );
+
+
+        alert(
+            "Không tải được đầy đủ dữ liệu quản trị."
+        );
+
+    }
 
 }
-);
-const siteSection =
-document.getElementById(
-"siteSection"
-);
 
-const employeeSection =
-document.getElementById(
-"employeeSection"
-);
 
-const attendanceSection =
-document.getElementById(
-"attendanceSection"
-);
-const reportSection =
-document.getElementById(
-"reportSection"
-);
-function hideAll(){
+// ========================================
+// MENU ADMIN
+// ========================================
 
-siteSection.classList.remove(
-"active"
-);
+function setupAdminNavigation() {
 
-employeeSection.classList.remove(
-"active"
-);
+    const navigation = [
 
-attendanceSection.classList.remove(
-"active"
-);
+        {
+            buttonId: "btnSite",
+            sectionId: "siteSection"
+        },
 
-reportSection.classList.remove(
-"active"
-);
+        {
+            buttonId: "btnEmployee",
+            sectionId: "employeeSection"
+        },
+
+        {
+            buttonId: "btnAttendance",
+            sectionId: "attendanceSection",
+            onOpen: async function() {
+
+                if (
+                    !adminAttendanceLoaded &&
+                    typeof loadAttendance === "function"
+                ) {
+
+                    await loadAttendance();
+
+                    adminAttendanceLoaded = true;
+
+                }
+
+            }
+        },
+
+        {
+    buttonId: "btnReport",
+    sectionId: "reportSection",
+    onOpen: async function() {
+
+        if (!adminReportLoaded) {
+
+            if (
+                typeof initReport === "function"
+            ) {
+
+                await initReport();
+
+            }
+
+
+            if (
+                typeof initReportDetail === "function"
+            ) {
+
+                await initReportDetail();
+
+            }
+
+
+            adminReportLoaded = true;
+
+        }
+
+    }
+}
+
+    ];
+
+
+    navigation.forEach(function(item) {
+
+        const button =
+            document.getElementById(
+                item.buttonId
+            );
+
+
+        if (!button) {
+
+            console.warn(
+                "Không tìm thấy nút:",
+                item.buttonId
+            );
+
+            return;
+
+        }
+
+
+        button.addEventListener(
+
+            "click",
+
+            async function() {
+
+                showAdminSection(
+                    item.sectionId
+                );
+
+
+                if (
+                    typeof item.onOpen === "function"
+                ) {
+
+                    try {
+
+                        await item.onOpen();
+
+                    }
+                    catch (error) {
+
+                        console.error(
+                            "Open section error:",
+                            error
+                        );
+
+                    }
+
+                }
+
+            }
+
+        );
+
+    });
 
 }
 
-btnSite.onclick=()=>{
 
-hideAll();
+// ========================================
+// HIỂN THỊ SECTION
+// ========================================
 
-siteSection.classList.add(
-"active"
-);
+function showAdminSection(
+    sectionId
+) {
 
-};
+    const sectionIds = [
 
-btnEmployee.onclick=()=>{
+        "siteSection",
 
-hideAll();
+        "employeeSection",
 
-employeeSection.classList.add(
-"active"
-);
+        "attendanceSection",
 
-};
+        "reportSection"
 
-btnAttendance.onclick=()=>{
+    ];
 
-hideAll();
 
-attendanceSection.classList.add(
-"active"
-);
+    sectionIds.forEach(function(id) {
 
-};
-btnReport.onclick = ()=>{
+        const section =
+            document.getElementById(id);
 
-hideAll();
 
-reportSection.classList.add(
-"active"
-);
+        if (!section) {
 
-};
+            return;
 
-siteSection.classList.add(
-"active"
-);
+        }
+
+
+        section.classList.toggle(
+
+            "active",
+
+            id === sectionId
+
+        );
+
+    });
+
+}

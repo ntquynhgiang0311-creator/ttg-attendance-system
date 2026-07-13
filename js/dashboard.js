@@ -1,17 +1,89 @@
-async function loadDashboard(){
+// ========================================
+// DASHBOARD
+// ========================================
 
-    const res = await fetch(
-        API_URL + "?action=dashboard"
-    );
+async function loadDashboard() {
 
-    const data = await res.json();
+    try {
 
-    document.getElementById("tongNV").innerHTML = data.tongNV;
+        const data = await apiGet(
+            "dashboard"
+        );
 
-    document.getElementById("tongCT").innerHTML = data.tongCT;
 
-    document.getElementById("checkin").innerHTML = data.checkin;
+        setText(
+            "tongNV",
+            data.tongNV
+        );
 
-    document.getElementById("chuacheckin").innerHTML = data.chuacheckin;
+
+        setText(
+            "tongCT",
+            data.tongCT
+        );
+
+
+        setText(
+            "checkin",
+            data.checkin
+        );
+
+
+        setText(
+            "chuacheckin",
+            data.chuacheckin
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "loadDashboard:",
+            error
+        );
+
+
+        setText("tongNV", "-");
+
+        setText("tongCT", "-");
+
+        setText("checkin", "-");
+
+        setText("chuacheckin", "-");
+
+
+        throw error;
+
+    }
+
+}
+
+
+// ========================================
+// SET TEXT AN TOÀN
+// ========================================
+
+function setText(
+    elementId,
+    value
+) {
+
+    const element =
+        document.getElementById(
+            elementId
+        );
+
+
+    if (!element) {
+
+        return;
+
+    }
+
+
+    element.innerHTML =
+        escapeHtml(
+            value ?? 0
+        );
 
 }

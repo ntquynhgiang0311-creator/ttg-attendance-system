@@ -93,8 +93,26 @@ function renderNhanVien() {
     table.innerHTML = nhanVien
         .map(function(nv) {
 
-            const isActive =
-                nv.status === "Active";
+           const isActive =
+    String(nv.status || "").toLowerCase() === "active";
+
+const toggleButton = isActive
+    ? `
+        <button
+            class="btn btn-sm btn-danger"
+            onclick="toggleEmployee('${nv.manv}')"
+        >
+            🔒 Khóa
+        </button>
+      `
+    : `
+        <button
+            class="btn btn-sm btn-primary"
+            onclick="toggleEmployee('${nv.manv}')"
+        >
+            ✅ Mở
+        </button>
+      `;
 
 
             return `
@@ -135,33 +153,27 @@ function renderNhanVien() {
 
                     </td>
 
-                    <td>
+                   <td>
+    <div class="action-buttons">
 
-                        <button
-                            class="edit-btn"
-                            onclick="editEmployee('${nv.manv}')"
-                        >
+        <button
+            class="btn btn-sm btn-warning"
+            onclick="editEmployee('${nv.manv}')"
+        >
+            ✏️ Sửa
+        </button>
 
-                            ✏️ Sửa
+        <button
+            class="btn btn-sm btn-info"
+            onclick="openHREmployeeProfile('${nv.manv}')"
+        >
+            👤 Hồ sơ
+        </button>
 
-                        </button>
+        ${toggleButton}
 
-
-                        <button
-                            class="lock-btn"
-                            onclick="toggleEmployee('${nv.manv}')"
-                        >
-
-                            ${
-                                isActive
-                                    ? "🔒 Khóa"
-                                    : "🔓 Mở"
-                            }
-
-                        </button>
-
-                    </td>
-
+    </div>
+</td>
                 </tr>
 
             `;
@@ -780,5 +792,58 @@ function setEmployeeSaveButtonState(
             ? "💾 Cập nhật nhân viên"
 
             : "💾 Lưu nhân viên";
+
+}
+// ========================================
+// LOAD PHÒNG BAN CHO FORM NHÂN VIÊN
+// ========================================
+
+async function loadEmployeeDepartments() {
+
+    try {
+
+        const departments = await apiGet(
+            "departments"
+        );
+
+
+        const select =
+            document.getElementById("pb");
+
+
+        if (!select) {
+
+            return;
+
+        }
+
+
+        select.innerHTML =
+            departments.map(function(pb) {
+
+                return `
+
+                    <option value="${escapeHtml(pb.ten)}">
+                        ${escapeHtml(pb.ten)}
+                    </option>
+
+                `;
+
+            }).join("");
+
+    }
+    catch (error) {
+
+        console.error(
+            "loadEmployeeDepartments:",
+            error
+        );
+
+
+        alert(
+            "Không tải được danh sách phòng ban."
+        );
+
+    }
 
 }

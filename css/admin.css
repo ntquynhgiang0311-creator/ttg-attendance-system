@@ -505,3 +505,668 @@ background:#0F5CB8;
 transform:translateY(-2px);
 
 }
+/* ================================
+   HR PROFILE PANEL
+================================ */
+
+.hr-profile-panel {
+    display: none;
+    margin-top: 24px;
+    padding: 22px;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.hr-profile-panel h3 {
+    margin-bottom: 18px;
+    font-size: 20px;
+}
+
+.hr-profile-panel label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.hr-profile-panel input,
+.hr-profile-panel select,
+.hr-profile-panel textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.hr-profile-panel textarea {
+    resize: vertical;
+}
+
+.hr-profile-actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+/* ================================
+   BUTTONS
+================================ */
+
+.btn {
+    border: none;
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-primary {
+    background: #16a34a;
+    color: white;
+}
+
+.btn-secondary {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+.btn-info {
+    background: #2563eb;
+    color: white;
+}
+
+.btn-warning {
+    background: #f59e0b;
+    color: white;
+}
+
+.btn-danger {
+    background: #dc2626;
+    color: white;
+}
+
+/* Nút nhỏ trong bảng */
+.btn-sm {
+    padding: 6px 10px;
+    font-size: 13px;
+    border-radius: 8px;
+}
+.action-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.action-buttons button {
+    white-space: nowrap;
+}
+.status-pending {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #fef3c7;
+    color: #92400e;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.status-active {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #166534;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.status-inactive {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #fee2e2;
+    color: #991b1b;
+    font-weight: 600;
+    font-size: 13px;
+}
+.leave-report-row {
+    background: #fffbeb;
+}
+
+.leave-report-row td {
+    color: #92400e;
+    font-weight: 600;
+}
+.leave-only-row {
+    background: #fffbeb;
+}
+
+.leave-only-row td {
+    color: #92400e;
+    font-weight: 600;
+}
+/* ================================
+   PAYROLL DRAFT
+================================ */
+
+.payroll-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.payroll-summary-card {
+    padding: 14px;
+    border-radius: 14px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+}
+
+.payroll-summary-card p {
+    margin: 0;
+    color: #166534;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.payroll-summary-card h3 {
+    margin: 6px 0 0;
+    color: #14532d;
+}
+
+.payroll-table-scroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+#payrollDraftTable table {
+    min-width: 1500px;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#payrollDraftTable th,
+#payrollDraftTable td {
+    padding: 9px 8px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 13px;
+    white-space: nowrap;
+    text-align: left;
+}
+
+#payrollDraftTable th {
+    background: #15803d;
+    color: white;
+}
+
+.payroll-warning-row {
+    background: #fff7ed;
+}
+
+.payroll-warning-row td {
+    color: #9a3412;
+}
+
+@media (max-width: 900px) {
+    .payroll-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 560px) {
+    .payroll-summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+#payrollDraftTable {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.payroll-table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+#payrollDraftTable table {
+    min-width: 1650px;
+}
+/* ================================
+   PAYROLL SECTION CLEAN UI
+================================ */
+
+#payrollSection {
+    padding: 22px;
+    background: #ecfdf5;
+    border-radius: 18px;
+}
+
+#payrollSection .section-title {
+    margin-bottom: 18px;
+    font-size: 24px;
+    color: #111827;
+}
+
+#payrollSection .form-card {
+    width: 100%;
+    max-width: none !important;
+    box-sizing: border-box;
+    padding: 22px;
+    margin-bottom: 22px;
+    background: #ffffff;
+    border: 1px solid #d1fae5;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+#payrollSection .form-card h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: #166534;
+}
+
+#payrollSection .form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+    gap: 14px;
+    align-items: end;
+}
+
+#payrollSection label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #166534;
+}
+
+#payrollSection input,
+#payrollSection select,
+#payrollSection textarea {
+    width: 100%;
+    min-height: 42px;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    background: #ffffff;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+#payrollSection textarea {
+    min-height: 76px;
+    resize: vertical;
+}
+
+#payrollSection input[readonly] {
+    background: #f9fafb;
+    color: #374151;
+}
+
+/* Buttons riêng cho tab lương */
+#payrollSection .hr-profile-actions,
+#payrollSection .payroll-actions {
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+#payrollSection .hr-profile-actions .btn,
+#payrollSection .payroll-actions .btn {
+    width: auto !important;
+    min-width: 150px;
+    min-height: 42px;
+    padding: 0 16px;
+    border-radius: 10px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Info text */
+#payrollConfigInfo {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: #f0fdf4;
+    border-left: 4px solid #22c55e;
+    border-radius: 8px;
+    color: #166534 !important;
+    font-size: 13px;
+}
+
+/* Summary bảng lương */
+.payroll-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(160px, 1fr));
+    gap: 12px;
+}
+
+.payroll-summary-card {
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+}
+
+.payroll-summary-card p {
+    margin: 0;
+    color: #166534;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.payroll-summary-card h3 {
+    margin: 8px 0 0;
+    color: #14532d;
+    font-size: 18px;
+}
+
+/* Bảng lương */
+#payrollDraftTable {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.payroll-table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+#payrollDraftTable table {
+    min-width: 1650px;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#payrollDraftTable th,
+#payrollDraftTable td {
+    padding: 10px 9px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 13px;
+    white-space: nowrap;
+    text-align: left;
+}
+
+#payrollDraftTable th {
+    background: #15803d;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+#payrollDraftTable tr:hover {
+    background: #f9fafb;
+}
+
+.payroll-warning-row {
+    background: #fff7ed;
+}
+
+.payroll-warning-row td {
+    color: #9a3412;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 1000px) {
+    #payrollSection .form-grid {
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+    }
+
+    .payroll-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    #payrollSection {
+        padding: 14px;
+    }
+
+    #payrollSection .form-card {
+        padding: 16px;
+    }
+
+    #payrollSection .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #payrollSection .hr-profile-actions .btn,
+    #payrollSection .payroll-actions .btn {
+        width: 100% !important;
+    }
+
+    .payroll-summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+/* ================================
+   FIX PAYROLL LAYOUT FINAL
+================================ */
+
+#payrollSection {
+    padding: 24px;
+    background: #ecfdf5;
+    border-radius: 18px;
+}
+
+/* Card lương */
+#payrollSection .form-card {
+    width: 100%;
+    max-width: none !important;
+    box-sizing: border-box;
+    padding: 22px;
+    margin-bottom: 22px;
+    background: #ffffff;
+    border: 1px solid #bbf7d0;
+    border-radius: 16px;
+}
+
+/* Không cho form-grid payroll nhảy tùm lum */
+#payrollSection .form-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    align-items: end;
+}
+
+/* Riêng phần bảng lương nháp: 3 ô + nút */
+#payrollSection .form-card:nth-of-type(2) .form-grid {
+    grid-template-columns: 1fr 1fr 1fr 180px;
+}
+
+/* Label */
+#payrollSection label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #166534;
+}
+
+/* Input / select / textarea đồng bộ */
+#payrollSection input,
+#payrollSection select,
+#payrollSection textarea {
+    width: 100% !important;
+    min-height: 42px;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    background: #ffffff;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+#payrollSection textarea {
+    min-height: 70px;
+    resize: vertical;
+}
+
+/* Nút trong tab lương */
+#payrollSection .btn {
+    height: 42px;
+    min-width: 140px;
+    padding: 0 16px;
+    border-radius: 10px;
+    white-space: nowrap;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Hàng nút cấu hình */
+#payrollSection .hr-profile-actions,
+#payrollSection .payroll-actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* Nút tính lương nháp không bị lệch */
+#payrollSection .form-grid > div[style*="align-items:flex-end"] {
+    display: flex !important;
+    align-items: end !important;
+}
+
+#payrollSection .form-grid > div[style*="align-items:flex-end"] .btn {
+    width: 100% !important;
+}
+
+/* Summary card */
+.payroll-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.payroll-summary-card {
+    min-height: 72px;
+    padding: 14px;
+    border-radius: 12px;
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    box-sizing: border-box;
+}
+
+.payroll-summary-card p {
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #166534;
+}
+
+.payroll-summary-card h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #14532d;
+}
+
+/* Export nằm gọn phải */
+#payrollSection .form-card:nth-of-type(2) .hr-profile-actions {
+    justify-content: flex-end;
+}
+
+/* Note cảnh báo */
+#payrollSection .form-card:nth-of-type(2) > p {
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+/* Bảng lương kéo ngang */
+#payrollDraftTable {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 16px;
+}
+
+.payroll-table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+#payrollDraftTable table {
+    min-width: 1650px;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#payrollDraftTable th,
+#payrollDraftTable td {
+    padding: 10px 9px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 13px;
+    white-space: nowrap;
+    text-align: left;
+}
+
+#payrollDraftTable th {
+    background: #15803d;
+    color: white;
+}
+
+/* Mobile / màn nhỏ */
+@media (max-width: 1000px) {
+    #payrollSection .form-grid,
+    #payrollSection .form-card:nth-of-type(2) .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .payroll-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    #payrollSection {
+        padding: 14px;
+    }
+
+    #payrollSection .form-card {
+        padding: 16px;
+    }
+
+    #payrollSection .form-grid,
+    #payrollSection .form-card:nth-of-type(2) .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .payroll-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #payrollSection .btn {
+        width: 100% !important;
+    }
+
+    #payrollSection .hr-profile-actions {
+        flex-direction: column;
+    }
+}

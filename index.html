@@ -121,15 +121,133 @@ onclick="logout()">
 🚪 Đăng xuất
 
 </button>
+<div class="leave-card">
+
+  <h3>📝 Xin nghỉ phép</h3>
+
+  <label>Loại nghỉ</label>
+  <select id="leaveLoaiNghi">
+    <option value="">-- Chọn loại nghỉ --</option>
+    <option>Nghỉ phép năm</option>
+    <option>Nghỉ bệnh</option>
+    <option>Nghỉ việc riêng</option>
+    <option>Nghỉ không lương</option>
+  </select>
+
+  <label>Từ ngày</label>
+  <input id="leaveTuNgay" type="date">
+
+  <label>Đến ngày</label>
+  <input id="leaveDenNgay" type="date">
+
+  <label>Lý do</label>
+  <textarea
+    id="leaveLyDo"
+    rows="3"
+    placeholder="Nhập lý do nghỉ..."
+  ></textarea>
+
+  <button
+    id="btnSubmitLeave"
+    onclick="submitLeaveRequest()"
+  >
+    Gửi đơn nghỉ
+  </button>
+
+  <h3 style="margin-top:20px;">
+    📋 Lịch sử đơn nghỉ
+  </h3>
+
+  <div id="employeeLeaveList"></div>
+<div class="advance-card">
+
+  <h3>💵 Đề nghị tạm ứng</h3>
+
+  <label>Ngày tạm ứng</label>
+  <input id="advanceNgayTamUng" type="date">
+
+  <label>Số tiền</label>
+  <input
+    id="advanceSoTien"
+    type="number"
+    min="1000"
+    placeholder="VD: 1000000"
+  >
+
+  <label>Lý do</label>
+  <textarea
+    id="advanceLyDo"
+    rows="3"
+    placeholder="Nhập lý do tạm ứng..."
+  ></textarea>
+
+  <button
+    id="btnSubmitAdvance"
+    onclick="submitAdvanceRequest()"
+  >
+    Gửi đề nghị tạm ứng
+  </button>
+
+  <h3 style="margin-top:20px;">
+    📋 Lịch sử tạm ứng
+  </h3>
+
+  <div id="employeeAdvanceList"></div>
+</div>
+</div>
+<div class="adjustment-card">
+
+  <h3>🕒 Chấm công bù</h3>
+
+  <label>Ngày chấm công</label>
+  <input id="adjustmentNgayChamCong" type="date" readonly>
+
+  <label>Địa điểm</label>
+  <select id="adjustmentMaCT">
+    <option value="">-- Chọn địa điểm --</option>
+  </select>
+
+  <label>Giờ vào cần bù</label>
+  <input id="adjustmentGioVao" type="time">
+
+  <label>Giờ ra cần bù</label>
+  <input id="adjustmentGioRa" type="time">
+
+  <label>Lý do</label>
+  <textarea
+    id="adjustmentLyDo"
+    rows="3"
+    placeholder="VD: Quên bấm Check In, điện thoại hết pin..."
+  ></textarea>
+
+  <button
+    id="btnSubmitAdjustment"
+    onclick="submitAttendanceAdjustment()"
+  >
+    Gửi đơn chấm công bù
+  </button>
+
+  <h3 style="margin-top:20px;">
+    📋 Lịch sử chấm công bù
+  </h3>
+
+  <div id="employeeAdjustmentList"></div>
 
 </div>
-
 </div>
 
+
+</div>
 
 <script src="js/common.js"></script>
-
 <script src="js/attendance.js"></script>
+<script src="js/leaveEmployee.js"></script>
+<script src="js/advanceEmployee.js"></script>
+<script src="js/attendanceAdjustmentEmployee.js"></script>
+
+
+</body>
+</html>
 
 <script>
 if(

@@ -3,7 +3,8 @@
 // ========================================
 
 let reportInitialized = false;
-let isExportingReport = false;
+
+let currentReportRows = [];
 
 
 // ========================================
@@ -18,14 +19,11 @@ async function initReport() {
 
     }
 
-
     initReportMonthYear();
 
+    await loadReportDepartments();
 
     reportInitialized = true;
-
-
-    await loadReport();
 
 }
 
@@ -36,70 +34,59 @@ async function initReport() {
 
 function initReportMonthYear() {
 
-    const monthElement =
+    const monthSelect =
         document.getElementById("reportMonth");
 
-
-    const yearElement =
+    const yearSelect =
         document.getElementById("reportYear");
 
+    if (monthSelect) {
 
-    if (monthElement) {
+        const currentMonth =
+            new Date().getMonth() + 1;
 
-        let monthHtml = "";
+        monthSelect.innerHTML = "";
 
         for (let i = 1; i <= 12; i++) {
 
-            monthHtml += `
+            monthSelect.innerHTML += `
 
-                <option value="${i}">
-                    ${i}
+                <option value="${i}" ${i === currentMonth ? "selected" : ""}>
+
+                    Tháng ${i}
+
                 </option>
 
             `;
 
         }
 
-        monthElement.innerHTML =
-            monthHtml;
-
-
-        monthElement.value =
-            new Date().getMonth() + 1;
-
     }
 
-
-    if (yearElement) {
+    if (yearSelect) {
 
         const currentYear =
             new Date().getFullYear();
 
-
-        let yearHtml = "";
+        yearSelect.innerHTML = "";
 
         for (
-            let i = currentYear - 1;
-            i <= currentYear + 2;
-            i++
+            let year = currentYear - 1;
+            year <= currentYear + 1;
+            year++
         ) {
 
-            yearHtml += `
+            yearSelect.innerHTML += `
 
-                <option value="${i}">
-                    ${i}
+                <option value="${year}" ${year === currentYear ? "selected" : ""}>
+
+                    ${year}
+
                 </option>
 
             `;
 
         }
-
-        yearElement.innerHTML =
-            yearHtml;
-
-
-        yearElement.value =
-            currentYear;
 
     }
 
@@ -107,7 +94,64 @@ function initReportMonthYear() {
 
 
 // ========================================
-// LẤY BỘ LỌC BÁO CÁO
+// LOAD PHÒNG BAN CHO BÁO CÁO
+// ========================================
+
+async function loadReportDepartments() {
+
+    const select =
+        document.getElementById("reportPB");
+
+    if (!select) {
+
+        return;
+
+    }
+
+    try {
+
+        const departments =
+            await apiGet("departments");
+
+        select.innerHTML = `
+
+            <option value="all">
+
+                Tất cả PB
+
+            </option>
+
+        `;
+
+        departments.forEach(function(pb) {
+
+            select.innerHTML += `
+
+                <option value="${escapeHtml(pb.ten)}">
+
+                    ${escapeHtml(pb.ten)}
+
+                </option>
+
+            `;
+
+        });
+
+    }
+    catch (error) {
+
+        console.warn(
+            "Không tải được phòng ban báo cáo:",
+            error
+        );
+
+    }
+
+}
+
+
+// ========================================
+// LẤY FILTER
 // ========================================
 
 function getReportFilters() {
@@ -115,19 +159,13 @@ function getReportFilters() {
     return {
 
         month:
-            document
-                .getElementById("reportMonth")
-                .value,
+            document.getElementById("reportMonth")?.value || "",
 
         year:
-            document
-                .getElementById("reportYear")
-                .value,
+            document.getElementById("reportYear")?.value || "",
 
         pb:
-            document
-                .getElementById("reportPB")
-                .value
+            document.getElementById("reportPB")?.value || "all"
 
     };
 
@@ -135,38 +173,58 @@ function getReportFilters() {
 
 
 // ========================================
-// LOAD BÁO CÁO TỔNG
+// LOAD BÁO CÁO THÁNG
 // ========================================
 
 async function loadReport() {
 
-    try {
+    const filters =
+        getReportFilters();
 
-        const filters =
-            getReportFilters();
+    if (
+        !filters.month ||
+        !filters.year
+    ) {
 
-
-        const ds = await apiGet(
-
-            "report",
-
-            {
-
-                month:
-                    filters.month,
-
-                year:
-                    filters.year,
-
-                pb:
-                    filters.pb
-
-            }
-
+        alert(
+            "Vui lòng chọn tháng/năm."
         );
 
+        return;
 
-        renderReport(ds);
+    }
+
+    try {
+
+        const attendanceReport =
+            await apiGet(
+                "report",
+                {
+                    month: filters.month,
+                    year: filters.year,
+                    pb: filters.pb
+                }
+            );
+
+        const approvedLeaves =
+            await apiGet(
+                "leaveRequests",
+                {
+                    status: "Đã duyệt",
+                    keyword: ""
+                }
+            );
+
+        currentReportRows =
+            mergeMonthlyReportWithLeaves(
+                attendanceReport,
+                approvedLeaves,
+                filters
+            );
+
+        renderReport(
+            currentReportRows
+        );
 
     }
     catch (error) {
@@ -176,12 +234,8 @@ async function loadReport() {
             error
         );
 
-
-        renderReport([]);
-
-
         alert(
-            "Không tải được báo cáo chấm công."
+            "Không tải được báo cáo tháng."
         );
 
     }
@@ -190,482 +244,642 @@ async function loadReport() {
 
 
 // ========================================
-// RENDER BÁO CÁO TỔNG
+// GỘP BÁO CÁO CÔNG + NGHỈ PHÉP
 // ========================================
 
-function renderReport(ds) {
-
-    const table =
-        document.getElementById(
-            "tableReport"
-        );
-
-
-    let totalNV = 0;
-
-    let totalDays = 0;
-
-    let totalHours = 0;
-
-
-    const rows = Array.isArray(ds)
-        ? ds.filter(function(x) {
-
-            return Number(x.days) > 0;
-
-        })
-        : [];
-
-
-    if (table) {
-
-        if (rows.length === 0) {
-
-            table.innerHTML = `
-
-                <tr>
-
-                    <td colspan="4">
-
-                        Không có dữ liệu báo cáo
-
-                    </td>
-
-                </tr>
-
-            `;
-
-        }
-        else {
-
-            table.innerHTML =
-                rows.map(function(x) {
-
-                    totalNV++;
-
-                    totalDays +=
-                        Number(x.days);
-
-                    totalHours +=
-                        Number(x.hours);
-
-
-                    return `
-
-                        <tr>
-
-                            <td>
-                                ${escapeHtml(x.manv)}
-                            </td>
-
-                            <td>
-                                ${escapeHtml(x.hoten)}
-                            </td>
-
-                            <td>
-                                ${escapeHtml(x.days)}
-                            </td>
-
-                            <td>
-                                ${escapeHtml(x.hours)} h
-                            </td>
-
-                        </tr>
-
-                    `;
-
-                }).join("");
-
-        }
-
-    }
-
-
-    setReportText(
-        "reportNV",
-        totalNV
-    );
-
-
-    setReportText(
-        "reportDays",
-        totalDays
-    );
-
-
-    setReportText(
-        "reportHours",
-        totalHours.toFixed(1)
-    );
-
-}
-
-
-// ========================================
-// SET TEXT
-// ========================================
-
-function setReportText(
-    id,
-    value
+function mergeMonthlyReportWithLeaves(
+    attendanceReport,
+    approvedLeaves,
+    filters
 ) {
 
-    const element =
-        document.getElementById(id);
+    const month =
+        Number(filters.month);
+
+    const year =
+        Number(filters.year);
+
+    const selectedPB =
+        String(filters.pb || "all");
+
+    const map = {};
 
 
-    if (!element) {
+    if (
+        Array.isArray(attendanceReport)
+    ) {
 
-        return;
+        attendanceReport.forEach(function(row) {
+
+            const normalized =
+                normalizeReportRow(row);
+
+            if (!normalized.manv) {
+
+                return;
+
+            }
+
+            map[normalized.manv] =
+                normalized;
+
+        });
 
     }
 
 
-    element.innerHTML =
-        escapeHtml(value);
+    const leaveMap =
+        countApprovedLeaveDaysByEmployee(
+            approvedLeaves,
+            month,
+            year,
+            selectedPB
+        );
+
+
+    Object.keys(leaveMap).forEach(function(manv) {
+
+        const leaveInfo =
+            leaveMap[manv];
+
+        if (!map[manv]) {
+
+            map[manv] = {
+
+                manv: manv,
+
+                hoten:
+                    leaveInfo.hoten || "",
+
+                pb:
+                    leaveInfo.pb || "",
+
+                ngayCong: 0,
+
+                nghiPhep: 0,
+
+                tongGio: 0,
+
+                onlyLeave: true
+
+            };
+
+        }
+
+        map[manv].nghiPhep =
+            leaveInfo.soNgay;
+
+        if (!map[manv].hoten) {
+
+            map[manv].hoten =
+                leaveInfo.hoten || "";
+
+        }
+
+        if (!map[manv].pb) {
+
+            map[manv].pb =
+                leaveInfo.pb || "";
+
+        }
+
+    });
+
+
+    const result =
+        Object.values(map);
+
+
+    result.sort(function(a, b) {
+
+        return String(a.manv)
+            .localeCompare(
+                String(b.manv)
+            );
+
+    });
+
+
+    return result;
 
 }
 
 
 // ========================================
-// EXPORT CSV
+// CHUẨN HÓA ROW BÁO CÁO CŨ
 // ========================================
 
-async function exportReport() {
+function normalizeReportRow(row) {
 
-    if (isExportingReport) {
+    row = row || {};
 
-        return;
+    return {
+
+        manv:
+            row.manv ||
+            row.maNV ||
+            row.MaNV ||
+            "",
+
+        hoten:
+            row.hoten ||
+            row.hoTen ||
+            row.HoTen ||
+            row.ten ||
+            "",
+
+        pb:
+            row.pb ||
+            row.PB ||
+            row.phongBan ||
+            "",
+
+        ngayCong:
+            Number(
+                row.ngayCong ??
+                row.days ??
+                row.cong ??
+                row.totalDays ??
+                0
+            ),
+
+        nghiPhep:
+            Number(
+                row.nghiPhep ||
+                row.leaveDays ||
+                0
+            ),
+
+        tongGio:
+            Number(
+                row.tongGio ??
+                row.hours ??
+                row.totalHours ??
+                row.tonggio ??
+                0
+            ),
+
+        onlyLeave: false
+
+    };
+
+}
+
+
+// ========================================
+// ĐẾM NGÀY NGHỈ ĐÃ DUYỆT THEO NHÂN VIÊN
+// ========================================
+
+function countApprovedLeaveDaysByEmployee(
+    leaves,
+    month,
+    year,
+    selectedPB
+) {
+
+    const map = {};
+
+    if (!Array.isArray(leaves)) {
+
+        return map;
 
     }
 
+    leaves.forEach(function(item) {
 
-    const filters =
-        getReportFilters();
-
-
-    isExportingReport = true;
-
-
-    setExportReportButtonState(true);
-
-
-    try {
-
-        const ds = await apiGet(
-
-            "report",
-
-            {
-
-                month:
-                    filters.month,
-
-                year:
-                    filters.year,
-
-                pb:
-                    filters.pb
-
-            }
-
-        );
-
-
-        const lines = [];
-
-
-        for (const nv of ds) {
-
-            if (
-                Number(nv.days) === 0
-            ) {
-
-                continue;
-
-            }
-
-
-            lines.push(
-                csvLine([
-                    nv.manv,
-                    nv.hoten
-                ])
-            );
-
-
-            lines.push(
-                csvLine([
-                    "Ngày",
-                    "Công trình",
-                    "Check In",
-                    "Check Out",
-                    "Tổng giờ",
-                    "Công",
-                    "OT",
-                    "Trễ"
-                ])
-            );
-
-
-            const rows = await apiGet(
-
-                "reportDetail",
-
-                {
-
-                    manv:
-                        nv.manv,
-
-                    month:
-                        filters.month,
-
-                    year:
-                        filters.year
-
-                }
-
-            );
-
-
-            let tongCong = 0;
-
-            let tongOT = 0;
-
-            let tongTre = 0;
-
-
-            rows.forEach(function(r) {
-
-                lines.push(
-                    csvLine([
-                        r.date,
-                        r.site,
-                        r.checkin,
-                        r.checkout,
-                        r.hours,
-                        r.daywork,
-                        r.ot,
-                        r.late
-                    ])
-                );
-
-
-                tongCong +=
-                    Number(r.daywork);
-
-                tongOT +=
-                    Number(r.ot);
-
-                tongTre +=
-                    Number(r.late);
-
-            });
-
-
-            lines.push("");
-
-            lines.push(
-                csvLine([
-                    "Tổng công",
-                    tongCong
-                ])
-            );
-
-
-            lines.push(
-                csvLine([
-                    "Tổng OT",
-                    tongOT.toFixed(2)
-                ])
-            );
-
-
-            lines.push(
-                csvLine([
-                    "Tổng trễ",
-                    tongTre
-                ])
-            );
-
-
-            lines.push("");
-
-            lines.push("");
-
-        }
-
-
-        if (lines.length === 0) {
-
-            alert(
-                "Không có dữ liệu để xuất báo cáo."
-            );
+        if (
+            String(item.trangThai || "") !== "Đã duyệt"
+        ) {
 
             return;
 
         }
 
+        if (
+            selectedPB !== "all" &&
+            normalizeCompareText(item.pb) !== normalizeCompareText(selectedPB)
+        ) {
 
-        downloadCsv(
+            return;
 
-            lines.join("\n"),
+        }
 
-            `BangCong_${filters.month}_${filters.year}.csv`
+        const startDate =
+            parseReportDate(item.tuNgay);
 
-        );
+        const endDate =
+            parseReportDate(item.denNgay);
 
-    }
-    catch (error) {
+        if (
+            !startDate ||
+            !endDate
+        ) {
 
-        console.error(
-            "exportReport:",
-            error
-        );
+            return;
 
+        }
 
-        alert(
-            "Không xuất được báo cáo."
-        );
+        const days =
+            countDaysInMonthRange(
+                startDate,
+                endDate,
+                month,
+                year
+            );
 
-    }
-    finally {
+        if (days <= 0) {
 
-        isExportingReport = false;
+            return;
 
+        }
 
-        setExportReportButtonState(false);
+        const manv =
+            item.manv ||
+            item.maNV ||
+            item.MaNV ||
+            "";
 
-    }
+        if (!manv) {
+
+            return;
+
+        }
+
+        if (!map[manv]) {
+
+            map[manv] = {
+
+                manv: manv,
+
+                hoten:
+                    item.hoten ||
+                    item.hoTen ||
+                    item.HoTen ||
+                    "",
+
+                pb:
+                    item.pb ||
+                    item.PB ||
+                    "",
+
+                soNgay: 0
+
+            };
+
+        }
+
+        map[manv].soNgay += days;
+
+    });
+
+    return map;
 
 }
 
 
 // ========================================
-// CSV HELPER
+// ĐẾM SỐ NGÀY TRONG THÁNG
 // ========================================
 
-function csvLine(values) {
+function countDaysInMonthRange(
+    startDate,
+    endDate,
+    month,
+    year
+) {
 
-    return values
-        .map(escapeCsv)
-        .join(";");
+    let count = 0;
+
+    const current = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate()
+    );
+
+    const end = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth(),
+        endDate.getDate()
+    );
+
+    while (
+        current.getTime() <= end.getTime()
+    ) {
+
+        if (
+            current.getMonth() + 1 === month &&
+            current.getFullYear() === year
+        ) {
+
+            count++;
+
+        }
+
+        current.setDate(
+            current.getDate() + 1
+        );
+
+    }
+
+    return count;
 
 }
 
 
-function escapeCsv(value) {
+// ========================================
+// RENDER REPORT
+// ========================================
 
-    const text =
-        String(value ?? "");
+function renderReport(rows) {
+
+    const tbody =
+        document.getElementById("tableReport");
+
+    if (!tbody) {
+
+        return;
+
+    }
+
+    if (
+        !rows ||
+        rows.length === 0
+    ) {
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td colspan="5">
+
+                    Không có dữ liệu báo cáo
+
+                </td>
+
+            </tr>
+
+        `;
+
+        updateReportSummary([]);
+
+        return;
+
+    }
+
+    tbody.innerHTML =
+        rows.map(function(row) {
+
+            return `
+
+                <tr class="${row.onlyLeave ? "leave-only-row" : ""}">
+
+                    <td>${escapeHtml(row.manv)}</td>
+
+                    <td>${escapeHtml(row.hoten)}</td>
+
+                    <td>${formatReportNumber(row.ngayCong)}</td>
+
+                    <td>
+                        ${
+                            row.nghiPhep > 0
+                                ? `<span class="status-pending">${formatReportNumber(row.nghiPhep)}</span>`
+                                : ""
+                        }
+                    </td>
+
+                    <td>${formatReportNumber(row.tongGio)}</td>
+
+                </tr>
+
+            `;
+
+        }).join("");
+
+    updateReportSummary(rows);
+
+}
 
 
-    return (
+// ========================================
+// UPDATE SUMMARY
+// ========================================
 
-        '"' +
+function updateReportSummary(rows) {
 
-        text.replace(
-            /"/g,
-            '""'
-        )
+    rows = Array.isArray(rows)
+        ? rows
+        : [];
 
-        +
+    const tongNV =
+        rows.length;
 
-        '"'
+    const tongCong =
+        rows.reduce(function(sum, row) {
 
+            return sum + Number(row.ngayCong || 0);
+
+        }, 0);
+
+    const tongGio =
+        rows.reduce(function(sum, row) {
+
+            return sum + Number(row.tongGio || 0);
+
+        }, 0);
+
+    setText(
+        "reportNV",
+        tongNV
+    );
+
+    setText(
+        "reportDays",
+        formatReportNumber(tongCong)
+    );
+
+    setText(
+        "reportHours",
+        formatReportNumber(tongGio)
     );
 
 }
 
 
-function downloadCsv(
-    content,
-    filename
-) {
+// ========================================
+// EXPORT REPORT
+// ========================================
 
-    const blob =
-        new Blob(
+function exportReport() {
 
-            [
-                "\uFEFF" + content
-            ],
+    if (
+        !currentReportRows ||
+        currentReportRows.length === 0
+    ) {
 
-            {
-                type:
-                    "text/csv;charset=utf-8;"
-            }
-
+        alert(
+            "Không có dữ liệu để xuất."
         );
 
+        return;
+
+    }
+
+    const headers = [
+
+        "Mã NV",
+
+        "Họ tên",
+
+        "Ngày công",
+
+        "Nghỉ phép",
+
+        "Tổng giờ"
+
+    ];
+
+    const lines = [
+        headers.join(",")
+    ];
+
+    currentReportRows.forEach(function(row) {
+
+        const values = [
+
+            row.manv,
+
+            row.hoten,
+
+            formatReportNumber(row.ngayCong),
+
+            formatReportNumber(row.nghiPhep),
+
+            formatReportNumber(row.tongGio)
+
+        ];
+
+        lines.push(
+            values.map(csvEscape)
+                .join(",")
+        );
+
+    });
+
+    const blob = new Blob(
+        [
+            "\uFEFF" + lines.join("\n")
+        ],
+        {
+            type: "text/csv;charset=utf-8;"
+        }
+    );
+
+    const url =
+        URL.createObjectURL(blob);
 
     const link =
         document.createElement("a");
 
-
-    link.href =
-        URL.createObjectURL(blob);
-
+    link.href = url;
 
     link.download =
-        filename;
-
+        "bao-cao-thang.csv";
 
     link.click();
 
-
-    URL.revokeObjectURL(
-        link.href
-    );
+    URL.revokeObjectURL(url);
 
 }
 
 
 // ========================================
-// NÚT EXPORT
+// HELPER
 // ========================================
 
-function setExportReportButtonState(
-    loading
-) {
+function parseReportDate(value) {
 
-    const button =
-        document.querySelector(
-            "[onclick='exportReport()']"
-        );
+    if (!value) {
 
-
-    if (!button) {
-
-        return;
+        return null;
 
     }
-
-
-    button.disabled = loading;
-
-
-    if (loading) {
-
-        button.dataset.originalText =
-            button.innerHTML;
-
-
-        button.innerHTML =
-            "Đang xuất...";
-
-
-        return;
-
-    }
-
 
     if (
-        button.dataset.originalText
+        typeof value === "string" &&
+        /^\d{4}-\d{2}-\d{2}/.test(value)
     ) {
 
-        button.innerHTML =
-            button.dataset.originalText;
+        const date =
+            new Date(
+                value.substring(0, 10) + "T00:00:00"
+            );
+
+        if (
+            isNaN(date.getTime())
+        ) {
+
+            return null;
+
+        }
+
+        return date;
 
     }
+
+    const date =
+        new Date(value);
+
+    if (
+        isNaN(date.getTime())
+    ) {
+
+        return null;
+
+    }
+
+    return new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate()
+    );
+
+}
+
+
+function normalizeCompareText(value) {
+
+    return String(value || "")
+        .trim()
+        .toLowerCase();
+
+}
+
+
+function formatReportNumber(value) {
+
+    const numberValue =
+        Number(value || 0);
+
+    if (
+        Number.isInteger(numberValue)
+    ) {
+
+        return String(numberValue);
+
+    }
+
+    return numberValue.toFixed(2);
+
+}
+
+
+function csvEscape(value) {
+
+    const text =
+        String(value || "");
+
+    return '"' +
+        text.replace(/"/g, '""') +
+        '"';
 
 }

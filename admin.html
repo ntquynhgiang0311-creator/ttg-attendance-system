@@ -1,617 +1,1120 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1">
-<title>TTG Admin</title>
-<link rel="stylesheet"
-href="css/admin.css">
-<link rel="manifest" href="manifest.json">
+  <meta charset="UTF-8">
 
-<link rel="apple-touch-icon" href="images/logo.jpg">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
 
-<meta name="mobile-web-app-capable"
-content="yes">
+  <title>TTG Admin</title>
 
-<meta name="apple-mobile-web-app-capable"
-content="yes">
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="images/logo.jpg">
 
-<meta name="apple-mobile-web-app-title" content="TTG">
-
-<meta name="theme-color" content="#2E7D32">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="TTG">
+  <meta name="theme-color" content="#2E7D32">
 </head>
+
 <body>
-<h2>
-🏢 Hệ thống quản trị
-</h2>
-<!-- Dashboard -->
-<div class="dashboard">
-<div class="card">
-<div class="icon">
-👷
-</div>
-<h2 id="tongNV">
-0
-</h2>
-<p>
-Nhân viên
-</p>
-</div>
-<div class="card">
-<div class="icon">
-🏗
-</div>
-<h2 id="tongCT">
-0
-</h2>
-<p>
-Công trình
-</p>
-</div>
-<div class="card">
-<div class="icon">
-✅
-</div>
-<h2 id="checkin">
-0
-</h2>
-<p>
-Đã chấm công
-</p>
-</div>
-<div class="card">
-<div class="icon">
-❌
-</div>
-<h2 id="chuacheckin">
-0
-</h2>
-<p>
-Chưa chấm
-</p>
-</div>
-</div>
-<!-- Menu -->
-<div class="menu">
 
-<button id="btnSite">
+  <h2>🏢 Hệ thống quản trị</h2>
 
-🏗 Công trình
+  <!-- Dashboard -->
+  <div class="dashboard">
 
+    <div class="card">
+      <div class="icon">👷</div>
+      <h2 id="tongNV">0</h2>
+      <p>Nhân viên</p>
+    </div>
+
+    <div class="card">
+      <div class="icon">🏗</div>
+      <h2 id="tongCT">0</h2>
+      <p>Công trình</p>
+    </div>
+
+    <div class="card">
+      <div class="icon">✅</div>
+      <h2 id="checkin">0</h2>
+      <p>Đã chấm công</p>
+    </div>
+
+    <div class="card">
+      <div class="icon">❌</div>
+      <h2 id="chuacheckin">0</h2>
+      <p>Chưa chấm</p>
+    </div>
+
+  </div>
+
+  <!-- Menu -->
+  <div class="menu">
+
+    <button id="btnSite">
+      🏗 Công trình
+    </button>
+
+    <button id="btnEmployee">
+      👷 Nhân viên
+    </button>
+
+    <button id="btnAttendance">
+      📋 Chấm công
+    </button>
+
+    <button id="btnAttendanceAdjustment">
+  🕒 Công bù
 </button>
 
-<button id="btnEmployee">
+    <button id="btnReport">
+      📈 Báo cáo
+    </button>
 
-👷 Nhân viên
+    <button id="btnContract">
+      📄 Hợp đồng
+    </button>
 
-</button>
+    <button id="btnLeave">
+     📝 Nghỉ phép
+    </button>
 
-<button id="btnAttendance">
+    <button id="btnAdvance">
+      💵 Tạm ứng
+      </button>
 
-📋 Chấm công
+    <button id="btnPayroll">
+  💰 Lương
+    </button>
 
-</button>
-<button id="btnReport">
 
-📈 Báo cáo
+  </div>
 
-</button>
+  <!-- Công trình -->
+  <div id="siteSection" class="section">
+
+    <div class="form-card">
+
+      <h3 class="section-title">
+        🏗 Thêm công trình
+      </h3>
+
+      <label>Tên công trình</label>
+      <input id="tenct">
+
+      <label>Loại địa điểm</label>
+      <select id="loaict">
+        <option>Văn Phòng</option>
+        <option>Công trình</option>
+        <option>Xưởng</option>
+      </select>
+
+      <label>Địa chỉ</label>
+      <input id="diachi">
+
+      <label>Bán kính (m)</label>
+      <input id="radius" value="150">
+
+      <button
+        class="gps-btn"
+        onclick="layGPS()"
+      >
+        📍 Lấy vị trí hiện tại
+      </button>
+
+      <p id="gps"></p>
+
+      <button
+        id="btnLuuCongTrinh"
+        onclick="luuCongTrinh()"
+      >
+        💾 Lưu công trình
+      </button>
+
+    </div>
+
+    <h3 class="section-title">
+      🏗 Danh sách công trình
+    </h3>
+
+    <div class="table-wrapper">
+
+      <table>
+        <thead>
+          <tr>
+            <th>Mã</th>
+            <th>Tên</th>
+            <th>Loại</th>
+            <th>Địa chỉ</th>
+            <th>Bán kính</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+
+        <tbody id="tableSite"></tbody>
+      </table>
+
+    </div>
+
+  </div>
+
+  <!-- Nhân viên -->
+  <div id="employeeSection" class="section">
+
+    <div class="form-card">
+
+      <h3 class="section-title">
+        👷 Thêm nhân viên
+      </h3>
+
+      <label>Họ tên</label>
+      <input id="hoten">
+
+      <label>SĐT</label>
+      <input id="sdt">
+
+      <label>Mật khẩu</label>
+      <input id="matkhau">
+
+      <label>Role</label>
+      <select id="role">
+        <option>User</option>
+        <option>Admin</option>
+      </select>
+
+      <label>Phòng ban</label>
+      <select id="pb">
+        <option>Đang tải phòng ban...</option>
+      </select>
+
+      <button
+        id="btnLuuNhanVien"
+        onclick="luuNhanVien()"
+      >
+        💾 Lưu nhân viên
+      </button>
+
+    </div>
+
+    <h3 class="section-title">
+      👷 Danh sách nhân viên
+    </h3>
+
+    <div class="table-wrapper">
+
+      <table>
+        <thead>
+          <tr>
+            <th>Mã</th>
+            <th>Họ tên</th>
+            <th>SĐT</th>
+            <th>Role</th>
+            <th>PB</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+
+        <tbody id="tableEmployee"></tbody>
+      </table>
+
+    </div>
+
+    <!-- Hồ sơ nhân viên -->
+    <div
+      id="hrProfilePanel"
+      class="hr-profile-panel"
+    >
+
+      <h3>👤 Hồ sơ nhân viên</h3>
+
+      <input type="hidden" id="hrManv">
+
+      <div class="form-grid">
+
+        <div>
+          <label>Nhân viên</label>
+          <input id="hrEmployeeName" readonly>
+        </div>
+
+        <div>
+          <label>Ngày sinh</label>
+          <input id="hrNgaySinh" type="date">
+        </div>
+
+        <div>
+          <label>Giới tính</label>
+          <select id="hrGioiTinh">
+            <option value="">-- Chọn --</option>
+            <option>Nam</option>
+            <option>Nữ</option>
+            <option>Khác</option>
+          </select>
+        </div>
+
+        <div>
+          <label>CCCD/CMND</label>
+          <input id="hrCCCD">
+        </div>
+
+        <div>
+          <label>Ngày cấp CCCD</label>
+          <input id="hrNgayCapCCCD" type="date">
+        </div>
+
+        <div>
+          <label>Nơi cấp CCCD</label>
+          <input id="hrNoiCapCCCD">
+        </div>
+
+        <div>
+          <label>Địa chỉ</label>
+          <input id="hrDiaChi">
+        </div>
+
+        <div>
+          <label>Email</label>
+          <input id="hrEmail" type="email">
+        </div>
+
+        <div>
+          <label>Chức vụ</label>
+          <select id="hrMaChucVu">
+            <option value="">-- Chọn chức vụ --</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Ngày vào làm</label>
+          <input id="hrNgayVaoLam" type="date">
+        </div>
+
+        <div>
+          <label>Tài khoản ngân hàng</label>
+          <input id="hrTaiKhoanNganHang">
+        </div>
+
+        <div>
+          <label>Tên ngân hàng</label>
+          <input id="hrTenNganHang">
+        </div>
+
+        <div>
+          <label>Trạng thái nhân sự</label>
+          <select id="hrTrangThaiNhanSu">
+            <option>Đang làm</option>
+            <option>Thử việc</option>
+            <option>Tạm nghỉ</option>
+            <option>Nghỉ việc</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Avatar URL</label>
+          <input id="hrAvatarURL">
+        </div>
+
+      </div>
+
+      <div style="margin-top:12px;">
+        <label>Ghi chú</label>
+        <textarea
+          id="hrGhiChu"
+          rows="3"
+          style="width:100%;"
+        ></textarea>
+      </div>
+
+      <div class="hr-profile-actions">
+
+        <button
+          type="button"
+          id="btnSaveHRProfile"
+          class="btn btn-primary"
+          onclick="saveHREmployeeProfile()"
+        >
+          💾 Lưu hồ sơ
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="closeHREmployeeProfile()"
+        >
+          Đóng
+        </button>
+
+      </div>
+
+      <hr style="margin:24px 0;">
+
+      <!-- Hợp đồng trong hồ sơ -->
+      <div class="contract-section">
+
+        <h3>📄 Hợp đồng lao động</h3>
+
+        <div style="margin-bottom:12px;">
+          <label>Hợp đồng của nhân viên</label>
+          <input id="contractEmployeeName" readonly>
+        </div>
+
+        <input type="hidden" id="contractMaHD">
+
+        <div class="form-grid">
+
+          <div>
+            <label>Loại hợp đồng</label>
+            <select id="contractLoaiHD">
+              <option value="">-- Chọn loại hợp đồng --</option>
+              <option>Hợp đồng thử việc</option>
+              <option>Hợp đồng xác định thời hạn</option>
+              <option>Hợp đồng không xác định thời hạn</option>
+              <option>Hợp đồng thời vụ</option>
+              <option>Hợp đồng khoán việc</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Ngày ký</label>
+            <input id="contractNgayKy" type="date">
+          </div>
+
+          <div>
+            <label>Ngày hiệu lực</label>
+            <input id="contractNgayHieuLuc" type="date">
+          </div>
+
+          <div>
+            <label>Ngày hết hạn</label>
+            <input id="contractNgayHetHan" type="date">
+          </div>
+
+          <div>
+            <label>Lương cơ bản</label>
+            <input id="contractLuongCoBan" type="number" min="0">
+          </div>
+
+          <div>
+            <label>Phụ cấp</label>
+            <input id="contractPhuCap" type="number" min="0">
+          </div>
+          <div>
+  <label>Hình thức lương</label>
+  <select id="contractHinhThucLuong">
+    <option value="LuongThang">Lương tháng</option>
+    <option value="LuongCong">Lương công</option>
+  </select>
+</div>
+
+<div>
+  <label>Có đóng BH</label>
+  <select id="contractCoDongBH">
+    <option>Không</option>
+    <option>Có</option>
+  </select>
+</div>
+
+<div>
+  <label>Lương đóng BH</label>
+  <input
+    id="contractLuongDongBH"
+    type="number"
+    min="0"
+    placeholder="VD: 5700000"
+  >
+</div>
+
+<div>
+  <label>Thưởng mặc định</label>
+  <input
+    id="contractThuongMacDinh"
+    type="number"
+    min="0"
+    value="0"
+  >
+</div>
+
+<div>
+  <label>Khấu trừ mặc định</label>
+  <input
+    id="contractKhauTruMacDinh"
+    type="number"
+    min="0"
+    value="0"
+  >
+</div>
+
+          <div>
+            <label>Trạng thái</label>
+            <select id="contractTrangThai">
+              <option>Hiệu lực</option>
+              <option>Hết hạn</option>
+              <option>Đã thanh lý</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Link file hợp đồng</label>
+            <input
+              id="contractFileURL"
+              placeholder="Google Drive/PDF URL"
+            >
+          </div>
+
+        </div>
+
+        <div style="margin-top:12px;">
+          <label>Ghi chú hợp đồng</label>
+          <textarea
+            id="contractGhiChu"
+            rows="2"
+            style="width:100%;"
+          ></textarea>
+        </div>
+
+        <div class="hr-profile-actions">
+
+          <button
+            type="button"
+            id="btnSaveContract"
+            class="btn btn-primary"
+            onclick="saveEmployeeContract()"
+          >
+            💾 Lưu hợp đồng
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-secondary"
+            onclick="resetContractForm()"
+          >
+            Làm mới
+          </button>
+
+        </div>
+
+        <div
+          id="contractList"
+          style="margin-top:18px;"
+        ></div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Nhật ký -->
+  <div id="attendanceSection" class="section">
+
+    <h3 class="section-title">
+      📋 Nhật ký chấm công
+    </h3>
+
+    <div class="table-wrapper">
+
+      <table>
+        <thead>
+          <tr>
+            <th>Ngày giờ</th>
+            <th>Nhân viên</th>
+            <th>Địa điểm</th>
+            <th>Loại</th>
+            <th>Khoảng cách</th>
+          </tr>
+        </thead>
+
+        <tbody id="tableAttendance"></tbody>
+      </table>
+
+    </div>
+
+  </div>
+<div id="attendanceAdjustmentSection" class="section">
+
+  <h3 class="section-title">
+    🕒 Duyệt chấm công bù
+  </h3>
+
+  <div class="form-card">
+
+    <div class="form-grid">
+
+      <div>
+        <label>Trạng thái</label>
+        <select id="adjustmentFilterStatus">
+          <option value="">Tất cả</option>
+          <option>Chờ duyệt</option>
+          <option>Đã duyệt</option>
+          <option>Từ chối</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Tìm kiếm</label>
+        <input
+          id="adjustmentSearchKeyword"
+          placeholder="Mã đơn, mã NV, tên, địa điểm..."
+        >
+      </div>
+
+      <div style="display:flex; align-items:flex-end;">
+        <button
+          type="button"
+          class="btn btn-primary"
+          onclick="loadAttendanceAdjustments()"
+        >
+          Tìm kiếm
+        </button>
+      </div>
+
+    </div>
+
+    <div
+      id="attendanceAdjustmentAdminList"
+      style="margin-top:15px;"
+    ></div>
+
+  </div>
 
 </div>
-<!-- Công trình -->
-<div id="siteSection" class="section">
-
-<div class="form-card">
-
-<h3 class="section-title">
-🏗 Thêm công trình
-</h3>
-
-<label>Tên công trình</label>
-<input id="tenct">
-
-<label>Loại địa điểm</label>
-
-<select id="loaict">
-
-<option>Văn Phòng</option>
-
-<option>Công trình</option>
-
-<option>Xưởng</option>
-
-</select>
-
-<label>Địa chỉ</label>
-
-<input id="diachi">
-
-<label>Bán kính (m)</label>
-
-<input id="radius" value="150">
-
-<button
-class="gps-btn"
-onclick="layGPS()">
-
-📍 Lấy vị trí hiện tại
-
-</button>
-
-<p id="gps"></p>
-
-<button
-id="btnLuuCongTrinh"
-onclick="luuCongTrinh()">
-
-💾 Lưu công trình
-
-</button>
-
-</div>
-
-
-<h3 class="section-title">
-
-🏗 Danh sách công trình
-
-</h3>
-
-<div class="table-wrapper">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Mã</th>
-
-<th>Tên</th>
-
-<th>Loại</th>
-
-<th>Địa chỉ</th>
-
-<th>Bán kính</th>
-
-<th>Trạng thái</th>
-
-<th>Thao tác</th>
-
-</tr>
-
-</thead>
-
-<tbody id="tableSite">
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-
-
-<!-- Nhân viên -->
-
-<div id="employeeSection" class="section">
-
-<div class="form-card">
-
-<h3 class="section-title">
-
-👷 Thêm nhân viên
-
-</h3>
-
-<label>Họ tên</label>
-
-<input id="hoten">
-
-<label>SĐT</label>
-
-<input id="sdt">
-
-<label>Mật khẩu</label>
-
-<input id="matkhau">
-
-<label>Role</label>
-
-<select id="role">
-
-<option>User</option>
-
-<option>Admin</option>
-
-</select>
-
-<label>
-Phòng ban
-</label>
-
-<select id="pb">
-
-<option>KTNS</option>
-
-<option>Thiết Kế</option>
-
-<option>Kế Hoạch</option>
-
-<option>Xây lắp</option>
-
-<option>Xưởng sản xuất</option>
-
-<option>Mộc</option>
-
-<option>PU</option>
-
-<option>MEP</option>
-
-<option>Ban chỉ huy công trình</option>
-
-<option>Văn Phòng</option>
-
-</select>
-
-<button
-
-id="btnLuuNhanVien"
-
-onclick="luuNhanVien()">
-
-💾 Lưu nhân viên
-
-</button>
-
-</div>
-
-
-<h3 class="section-title">
-
-👷 Danh sách nhân viên
-
-</h3>
-
-<div class="table-wrapper">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Mã</th>
-
+  <!-- Báo cáo -->
+  <div id="reportSection" class="section">
+
+    <h3 class="section-title">
+      📈 Báo cáo tháng
+    </h3>
+
+    <div class="filter-row">
+
+      <select id="reportMonth">
+        <option value="1">Tháng 1</option>
+        <option value="2">Tháng 2</option>
+        <option value="3">Tháng 3</option>
+        <option value="4">Tháng 4</option>
+        <option value="5">Tháng 5</option>
+        <option value="6">Tháng 6</option>
+        <option value="7">Tháng 7</option>
+        <option value="8">Tháng 8</option>
+        <option value="9">Tháng 9</option>
+        <option value="10">Tháng 10</option>
+        <option value="11">Tháng 11</option>
+        <option value="12">Tháng 12</option>
+      </select>
+
+      <select id="reportYear"></select>
+
+      <select id="reportPB">
+        <option value="all">Tất cả PB</option>
+        <option>KTNS</option>
+        <option>Thiết Kế</option>
+        <option>Kế Hoạch</option>
+        <option>Xưởng Sản Xuất</option>
+        <option>Mộc</option>
+        <option>PU</option>
+        <option>MEP</option>
+        <option>Ban Chỉ Huy Công Trình</option>
+        <option>Văn Phòng</option>
+      </select>
+
+      <button
+        class="btn-report"
+        onclick="loadReport()"
+      >
+        📊 Xem báo cáo
+      </button>
+
+      <button
+        class="btn-export"
+        onclick="exportReport()"
+      >
+        📥 Xuất Excel
+      </button>
+
+    </div>
+
+    <div class="report-summary">
+
+      <div class="summary-card">
+        <h2 id="reportNV">0</h2>
+        <p>Nhân viên có công</p>
+      </div>
+
+      <div class="summary-card">
+        <h2 id="reportDays">0</h2>
+        <p>Tổng ngày công</p>
+      </div>
+
+      <div class="summary-card">
+        <h2 id="reportHours">0</h2>
+        <p>Tổng giờ</p>
+      </div>
+
+    </div>
+
+    <div class="table-wrapper">
+
+      <table>
+        <thead>
+          <tr>
+           <th>Mã NV</th>
 <th>Họ tên</th>
-
-<th>SĐT</th>
-
-<th>Role</th>
-<th>PB</th>
-<th>Trạng thái</th>
-
-<th>Thao tác</th>
-
-</tr>
-
-</thead>
-
-<tbody id="tableEmployee">
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-
-
-
-<!-- Nhật ký -->
-
-<div id="attendanceSection" class="section">
-
-<h3 class="section-title">
-
-📋 Nhật ký chấm công
-
-</h3>
-
-<div class="table-wrapper">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Ngày giờ</th>
-
-<th>Nhân viên</th>
-
-<th>Địa điểm</th>
-
-<th>Loại</th>
-
-<th>Khoảng cách</th>
-
-</tr>
-
-</thead>
-
-<tbody id="tableAttendance">
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
-<div id="reportSection" class="section">
-
-<h3 class="section-title">
-
-📈 Báo cáo tháng
-
-</h3>
-
-<div class="filter-row">
-
-<select id="reportMonth">
-
-<option value="1">Tháng 1</option>
-<option value="2">Tháng 2</option>
-<option value="3">Tháng 3</option>
-<option value="4">Tháng 4</option>
-<option value="5">Tháng 5</option>
-<option value="6">Tháng 6</option>
-<option value="7">Tháng 7</option>
-<option value="8">Tháng 8</option>
-<option value="9">Tháng 9</option>
-<option value="10">Tháng 10</option>
-<option value="11">Tháng 11</option>
-<option value="12">Tháng 12</option>
-
-</select>
-
-<select id="reportYear">
-
-</select>
-<select id="reportPB">
-
-<option value="all">
-
-Tất cả PB
-
-</option>
-
-<option>
-
-KTNS
-
-</option>
-
-<option>
-
-Thiết Kế
-
-</option>
-
-<option>
-
-Kế Hoạch
-
-</option>
-
-<option>
-
-Xây lắp
-
-</option>
-
-<option>
-
-Xưởng sản xuất
-
-</option>
-
-<option>
-
-Mộc
-
-</option>
-
-<option>
-
-PU
-
-</option>
-
-<option>
-
-MEP
-
-</option>
-
-<option>
-
-Ban chỉ huy công trình
-
-</option>
-
-<option>
-
-Văn Phòng
-
-</option>
-
-</select>
-<button
-class="btn-report"
-onclick="loadReport()">
-
-📊 Xem báo cáo
-
-</button>
-
-<button
-class="btn-export"
-onclick="exportReport()">
-
-📥 Xuất Excel
-
-</button>
-
-</div>
-<div class="report-summary">
-
-<div class="summary-card">
-
-<h2 id="reportNV">0</h2>
-
-<p>Nhân viên có công</p>
-
-</div>
-
-<div class="summary-card">
-
-<h2 id="reportDays">0</h2>
-
-<p>Tổng ngày công</p>
-
-</div>
-
-<div class="summary-card">
-
-<h2 id="reportHours">0</h2>
-
-<p>Tổng giờ</p>
-
-</div>
-
-</div>
-<div class="table-wrapper">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Mã NV</th>
-
-<th>Họ tên</th>
-
 <th>Ngày công</th>
-
+<th>Nghỉ phép</th>
 <th>Tổng giờ</th>
+          </tr>
+        </thead>
 
-</tr>
+        <tbody id="tableReport"></tbody>
+      </table>
 
-</thead>
+    </div>
 
-<tbody id="tableReport">
+    <div class="form-card">
 
-</tbody>
+      <h3 class="section-title">
+        📄 Bảng công nhân viên
+      </h3>
 
-</table>
+      <div class="filter-row">
+
+        <select id="reportEmployee"></select>
+
+        <select id="detailMonth"></select>
+
+        <select id="detailYear"></select>
+
+        <button
+          class="btn-report"
+          onclick="loadReportDetail()"
+        >
+          📊 Xem bảng công
+        </button>
+
+        <button
+          class="btn-export"
+          onclick="exportEmployeeReport()"
+        >
+          📥 Xuất Excel
+        </button>
+
+      </div>
+
+      <div class="table-wrapper">
+
+        <table>
+          <thead>
+            <tr>
+              <th>Ngày</th>
+              <th>Công trình</th>
+              <th>Check In</th>
+              <th>Check Out</th>
+              <th>Tổng giờ</th>
+              <th>Công</th>
+              <th>OT</th>
+              <th>Trễ</th>
+            </tr>
+          </thead>
+
+          <tbody id="tableReportDetail"></tbody>
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Quản lý hợp đồng tổng -->
+  <div id="contractSection" class="section">
+
+    <h3 class="section-title">
+      📄 Quản lý hợp đồng lao động
+    </h3>
+
+    <div class="form-card">
+
+      <h3>⚠️ Hợp đồng sắp hết hạn</h3>
+
+      <div class="form-grid">
+
+        <div>
+          <label>Cảnh báo trước số ngày</label>
+          <input
+            id="contractAlertDays"
+            type="number"
+            value="30"
+            min="1"
+          >
+        </div>
+
+        <div style="display:flex; align-items:flex-end;">
+          <button
+            type="button"
+            class="btn btn-info"
+            onclick="loadContractAlerts()"
+          >
+            Tải cảnh báo
+          </button>
+        </div>
+
+      </div>
+
+      <div
+        id="contractAlertList"
+        style="margin-top:15px;"
+      ></div>
+
+    </div>
+
+    <div
+      class="form-card"
+      style="margin-top:20px;"
+    >
+
+      <h3>Danh sách hợp đồng</h3>
+
+      <div class="form-grid">
+
+        <div>
+          <label>Trạng thái</label>
+          <select id="contractFilterStatus">
+            <option value="">Tất cả</option>
+            <option>Hiệu lực</option>
+            <option>Hết hạn</option>
+            <option>Đã thanh lý</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Tìm kiếm</label>
+          <input
+            id="contractSearchKeyword"
+            placeholder="Mã HĐ, mã NV, tên nhân viên..."
+          >
+        </div>
+
+        <div style="display:flex; align-items:flex-end;">
+          <button
+            type="button"
+            class="btn btn-primary"
+            onclick="loadContractList()"
+          >
+            Tìm kiếm
+          </button>
+        </div>
+
+      </div>
+
+      <div
+        id="contractAdminList"
+        style="margin-top:15px;"
+      ></div>
+
+    </div>
+
+  </div>
+<!-- Quản lý nghỉ phép -->
+<div id="leaveSection" class="section">
+
+  <h3 class="section-title">
+    📝 Quản lý nghỉ phép / đơn từ
+  </h3>
+
+  <div class="form-card">
+
+    <h3>Danh sách đơn nghỉ</h3>
+
+    <div class="form-grid">
+
+      <div>
+        <label>Trạng thái</label>
+        <select id="leaveFilterStatus">
+          <option value="">Tất cả</option>
+          <option>Chờ duyệt</option>
+          <option>Đã duyệt</option>
+          <option>Từ chối</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Tìm kiếm</label>
+        <input
+          id="leaveSearchKeyword"
+          placeholder="Mã đơn, mã NV, tên nhân viên..."
+        >
+      </div>
+
+      <div style="display:flex; align-items:flex-end;">
+        <button
+          type="button"
+          class="btn btn-primary"
+          onclick="loadLeaveRequests()"
+        >
+          Tìm kiếm
+        </button>
+      </div>
+
+    </div>
+
+    <div
+      id="leaveAdminList"
+      style="margin-top:15px;"
+    ></div>
+
+  </div>
+
+</div>
+<!-- Quản lý tạm ứng -->
+<div id="advanceSection" class="section">
+
+  <h3 class="section-title">
+    💵 Quản lý tạm ứng
+  </h3>
+
+  <div class="form-card">
+
+    <h3>Danh sách đề nghị tạm ứng</h3>
+
+    <div class="form-grid">
+
+      <div>
+        <label>Trạng thái</label>
+        <select id="advanceFilterStatus">
+          <option value="">Tất cả</option>
+          <option>Chờ duyệt</option>
+          <option>Đã duyệt</option>
+          <option>Từ chối</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Tháng</label>
+        <select id="advanceFilterMonth"></select>
+      </div>
+
+      <div>
+        <label>Năm</label>
+        <select id="advanceFilterYear"></select>
+      </div>
+
+      <div>
+        <label>Tìm kiếm</label>
+        <input
+          id="advanceSearchKeyword"
+          placeholder="Mã TU, mã NV, tên nhân viên..."
+        >
+      </div>
+
+      <div style="display:flex; align-items:flex-end;">
+        <button
+          type="button"
+          class="btn btn-primary"
+          onclick="loadAdvanceRequests()"
+        >
+          Tìm kiếm
+        </button>
+      </div>
+
+    </div>
+
+    <div
+      id="advanceAdminList"
+      style="margin-top:15px;"
+    ></div>
+
+  </div>
 
 </div>
 
-<div class="form-card">
+<!-- Quản lý lương -->
+<div id="payrollSection" class="section">
 
-<h3 class="section-title">
+  <h3 class="section-title">
+    💰 Quản lý lương
+  </h3>
 
-📄 Bảng công nhân viên
+  <div class="form-card">
 
-</h3>
+    <h3>⚙️ Cấu hình công chuẩn tháng</h3>
 
-<div class="filter-row">
+    <div class="form-grid">
 
-<select id="reportEmployee">
+      <div>
+        <label>Tháng</label>
+        <select id="payrollConfigMonth"></select>
+      </div>
 
-</select>
+      <div>
+        <label>Năm</label>
+        <select id="payrollConfigYear"></select>
+      </div>
 
-<select id="detailMonth">
+      <div>
+        <label>Công chuẩn</label>
+        <input
+          id="payrollStandardDays"
+          type="number"
+          min="1"
+          max="31"
+        >
+      </div>
 
-</select>
+      <div>
+        <label>Nguồn tính</label>
+        <input
+          id="payrollConfigSource"
+          readonly
+        >
+      </div>
 
-<select id="detailYear">
+    </div>
 
-</select>
+    <div style="margin-top:12px;">
+      <label>Ghi chú</label>
+      <textarea
+        id="payrollConfigNote"
+        rows="2"
+        style="width:100%;"
+      ></textarea>
+    </div>
 
-<button
-class="btn-report"
-onclick="loadReportDetail()">
+    <div class="payroll-actions">
 
-📊 Xem bảng công
+      <button
+        type="button"
+        class="btn btn-info"
+        onclick="loadPayrollConfig()"
+      >
+        Tải công chuẩn
+      </button>
 
-</button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        onclick="savePayrollConfigFromAdmin()"
+      >
+        💾 Lưu công chuẩn
+      </button>
 
-<button
-class="btn-export"
-onclick="exportEmployeeReport()">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        onclick="resetPayrollConfigFromAdmin()"
+      >
+        Tự động tính lại
+      </button>
 
-📥 Xuất Excel
+    </div>
 
-</button>
+    <div class="form-card" style="margin-top:20px;">
+
+  <h3>📋 Bảng lương nháp</h3>
+
+  <div class="form-grid">
+
+    <div>
+      <label>Tháng</label>
+      <select id="payrollDraftMonth"></select>
+    </div>
+
+    <div>
+      <label>Năm</label>
+      <select id="payrollDraftYear"></select>
+    </div>
+
+    <div>
+      <label>Phòng ban</label>
+      <select id="payrollDraftPB">
+        <option value="all">Tất cả phòng ban</option>
+      </select>
+    </div>
+
+    <div style="display:flex; align-items:flex-end;">
+      <button
+        type="button"
+        class="btn btn-primary"
+        onclick="loadPayrollDraft()"
+      >
+        Tính lương nháp
+      </button>
+    </div>
+
+  </div>
+
+  <div class="payroll-summary-grid" style="margin-top:16px;">
+
+    <div class="payroll-summary-card">
+      <p>Nhân viên</p>
+      <h3 id="payrollTotalEmployees">0</h3>
+    </div>
+
+    <div class="payroll-summary-card">
+      <p>Tổng thu nhập</p>
+      <h3 id="payrollTotalIncome">0</h3>
+    </div>
+
+    <div class="payroll-summary-card">
+      <p>Tạm ứng</p>
+      <h3 id="payrollTotalAdvance">0</h3>
+    </div>
+
+    <div class="payroll-summary-card">
+      <p>Thực lãnh</p>
+      <h3 id="payrollTotalNet">0</h3>
+    </div>
+
+  </div>
+
+  <div class="hr-profile-actions">
+
+    <button
+      type="button"
+      class="btn btn-info"
+      onclick="exportPayrollDraft()"
+    >
+      📥 Xuất Excel
+    </button>
+
+  </div>
+
+  <div
+    id="payrollDraftTable"
+    style="margin-top:16px;"
+  ></div>
 
 </div>
+<p style="color:#9a3412; font-size:13px; margin-top:8px;">
+  Dòng màu cam: nhân viên chưa có hợp đồng hiệu lực hoặc chưa có lương cơ bản.
+</p>
+    <p
+      id="payrollConfigInfo"
+      style="margin-top:12px; color:#6b7280;"
+    ></p>
 
-<div class="table-wrapper">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Ngày</th>
-
-<th>Công trình</th>
-
-<th>Check In</th>
-
-<th>Check Out</th>
-
-<th>Tổng giờ</th>
-
-<th>Công</th>
-
-<th>OT</th>
-
-<th>Trễ</th>
-
-</tr>
-
-</thead>
-
-<tbody id="tableReportDetail">
-
-</tbody>
-
-</table>
+  </div>
 
 </div>
-
-</div>
-
-</div>
-<script src="js/common.js"></script>
-<script src="js/dashboard.js"></script>
-<script src="js/site.js"></script>
-<script src="js/employee.js"></script>
-<script src="js/admin.js"></script>
-<script src="js/attendanceAdmin.js"></script>
-<script src="js/report.js"></script>
-<script src="js/reportDetail.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/employee.js"></script>
+  <script src="js/hrEmployee.js"></script>
+  <script src="js/contractAdmin.js"></script>
+  <script src="js/leaveAdmin.js"></script>
+  <script src="js/advanceAdmin.js"></script>
+  <script src="js/payrollAdmin.js"></script>
+  <script src="js/attendanceAdmin.js"></script>
+  <script src="js/report.js"></script>
+  <script src="js/reportDetail.js"></script>
+  <script src="js/attendanceAdjustmentAdmin.js"></script>
+  <script src="js/admin.js"></script>
 
 </body>
 </html>

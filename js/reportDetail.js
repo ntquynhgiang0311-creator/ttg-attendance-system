@@ -4,9 +4,11 @@
 
 let reportDetailInitialized = false;
 
+let currentReportDetailRows = [];
+
 
 // ========================================
-// INIT REPORT DETAIL
+// INIT
 // ========================================
 
 async function initReportDetail() {
@@ -17,192 +19,74 @@ async function initReportDetail() {
 
     }
 
-
-    initDetailMonthYear();
-
+    initReportDetailMonthYear();
 
     await loadReportEmployees();
 
-
     reportDetailInitialized = true;
 
-
-    const employeeSelect =
-        document.getElementById(
-            "reportEmployee"
-        );
-
-
-    if (
-        employeeSelect &&
-        employeeSelect.value
-    ) {
-
-        await loadReportDetail();
-
-    }
-
 }
 
 
 // ========================================
-// LOAD NHÂN VIÊN CHO SELECT
+// INIT THÁNG / NĂM
 // ========================================
 
-async function loadReportEmployees() {
+function initReportDetailMonthYear() {
 
-    try {
+    const monthSelect =
+        document.getElementById("detailMonth");
 
-        const data = await apiGet(
-            "employeeList"
-        );
+    const yearSelect =
+        document.getElementById("detailYear");
 
+    if (monthSelect) {
 
-        const select =
-            document.getElementById(
-                "reportEmployee"
-            );
+        const currentMonth =
+            new Date().getMonth() + 1;
 
-
-        if (!select) {
-
-            return;
-
-        }
-
-
-        if (
-            !Array.isArray(data) ||
-            data.length === 0
-        ) {
-
-            select.innerHTML = `
-
-                <option value="">
-
-                    Không có nhân viên
-
-                </option>
-
-            `;
-
-
-            return;
-
-        }
-
-
-        select.innerHTML =
-            data.map(function(x) {
-
-                return `
-
-                    <option value="${escapeHtml(x.manv)}">
-
-                        ${escapeHtml(x.manv)}
-                        -
-                        ${escapeHtml(x.hoten)}
-
-                    </option>
-
-                `;
-
-            }).join("");
-
-    }
-    catch (error) {
-
-        console.error(
-            "loadReportEmployees:",
-            error
-        );
-
-
-        alert(
-            "Không tải được danh sách nhân viên báo cáo."
-        );
-
-    }
-
-}
-
-
-// ========================================
-// INIT THÁNG / NĂM CHI TIẾT
-// ========================================
-
-function initDetailMonthYear() {
-
-    const monthElement =
-        document.getElementById(
-            "detailMonth"
-        );
-
-
-    const yearElement =
-        document.getElementById(
-            "detailYear"
-        );
-
-
-    if (monthElement) {
-
-        let monthHtml = "";
+        monthSelect.innerHTML = "";
 
         for (let i = 1; i <= 12; i++) {
 
-            monthHtml += `
+            monthSelect.innerHTML += `
 
-                <option value="${i}">
-                    ${i}
+                <option value="${i}" ${i === currentMonth ? "selected" : ""}>
+
+                    Tháng ${i}
+
                 </option>
 
             `;
 
         }
 
-
-        monthElement.innerHTML =
-            monthHtml;
-
-
-        monthElement.value =
-            new Date().getMonth() + 1;
-
     }
 
-
-    if (yearElement) {
+    if (yearSelect) {
 
         const currentYear =
             new Date().getFullYear();
 
-
-        let yearHtml = "";
+        yearSelect.innerHTML = "";
 
         for (
-            let i = currentYear - 1;
-            i <= currentYear + 1;
-            i++
+            let year = currentYear - 1;
+            year <= currentYear + 1;
+            year++
         ) {
 
-            yearHtml += `
+            yearSelect.innerHTML += `
 
-                <option value="${i}">
-                    ${i}
+                <option value="${year}" ${year === currentYear ? "selected" : ""}>
+
+                    ${year}
+
                 </option>
 
             `;
 
         }
-
-
-        yearElement.innerHTML =
-            yearHtml;
-
-
-        yearElement.value =
-            currentYear;
 
     }
 
@@ -210,61 +94,96 @@ function initDetailMonthYear() {
 
 
 // ========================================
-// LOAD CHI TIẾT BÁO CÁO
+// LOAD NHÂN VIÊN
 // ========================================
 
-async function loadReportDetail() {
+async function loadReportEmployees() {
 
-    const manv =
-        document
-            .getElementById("reportEmployee")
-            .value;
+    const select =
+        document.getElementById("reportEmployee");
 
-
-    const month =
-        document
-            .getElementById("detailMonth")
-            .value;
-
-
-    const year =
-        document
-            .getElementById("detailYear")
-            .value;
-
-
-    if (!manv) {
-
-        renderReportDetail([]);
+    if (!select) {
 
         return;
 
     }
 
+    const employees =
+        await apiGet("employeeList");
+
+    select.innerHTML = "";
+
+    employees.forEach(function(nv) {
+
+        select.innerHTML += `
+
+            <option value="${escapeHtml(nv.manv)}">
+
+                ${escapeHtml(nv.manv)} - ${escapeHtml(nv.hoten)}
+
+            </option>
+
+        `;
+
+    });
+
+}
+
+
+// ========================================
+// LOAD BẢNG CÔNG CHI TIẾT
+// ========================================
+
+async function loadReportDetail() {
+
+    const manv =
+        document.getElementById("reportEmployee")?.value || "";
+
+    const month =
+        document.getElementById("detailMonth")?.value || "";
+
+    const year =
+        document.getElementById("detailYear")?.value || "";
+
+    if (!manv) {
+
+        alert("Vui lòng chọn nhân viên.");
+
+        return;
+
+    }
 
     try {
 
-        const data = await apiGet(
+        const attendanceRows =
+            await apiGet(
+                "reportDetail",
+                {
+                    manv: manv,
+                    month: month,
+                    year: year
+                }
+            );
 
-            "reportDetail",
+        const leaveRows =
+            await apiGet(
+                "approvedEmployeeLeaves",
+                {
+                    manv: manv,
+                    month: month,
+                    year: year
+                }
+            );
 
-            {
+        currentReportDetailRows =
+            mergeReportDetailWithLeaves(
+                attendanceRows,
+                leaveRows
+            );
 
-                manv:
-                    manv,
-
-                month:
-                    month,
-
-                year:
-                    year
-
-            }
-
+        renderReportDetail(
+            currentReportDetailRows
         );
-
-
-        renderReportDetail(data);
 
     }
     catch (error) {
@@ -274,12 +193,8 @@ async function loadReportDetail() {
             error
         );
 
-
-        renderReportDetail([]);
-
-
         alert(
-            "Không tải được chi tiết báo cáo."
+            "Không tải được bảng công nhân viên."
         );
 
     }
@@ -288,36 +203,137 @@ async function loadReportDetail() {
 
 
 // ========================================
-// RENDER CHI TIẾT
+// GỘP CHẤM CÔNG + NGHỈ PHÉP
 // ========================================
 
-function renderReportDetail(data) {
+function mergeReportDetailWithLeaves(
+    attendanceRows,
+    leaveRows
+) {
 
-    const table =
-        document.getElementById(
-            "tableReportDetail"
-        );
+    const rows =
+        Array.isArray(attendanceRows)
+            ? attendanceRows.slice()
+            : [];
+
+    const existingDateMap = {};
+
+    rows.forEach(function(row) {
+
+        const dateKey =
+            getReportRowDateKey(row);
+
+        if (dateKey) {
+
+            existingDateMap[dateKey] = true;
+
+        }
+
+    });
+
+    if (
+        Array.isArray(leaveRows)
+    ) {
+
+        leaveRows.forEach(function(leave) {
+
+            const dateKey =
+                getReportRowDateKey(leave);
+
+            if (!dateKey) {
+
+                return;
+
+            }
+
+            /**
+             * Nếu ngày đó đã có chấm công,
+             * không thêm dòng nghỉ để tránh trùng.
+             */
+            if (existingDateMap[dateKey]) {
+
+                return;
+
+            }
+
+            rows.push({
+
+                ngay: dateKey,
+
+                congtrinh:
+                    "📝 " + leave.loaiNghi,
+
+                checkin: "",
+
+                checkout: "",
+
+                tonggio: "",
+
+                cong:
+                    "Nghỉ phép",
+
+                ot: "",
+
+                tre: "",
+
+                isLeave: true,
+
+                maDon:
+                    leave.maDon,
+
+                loaiNghi:
+                    leave.loaiNghi,
+
+                lyDo:
+                    leave.lyDo
+
+            });
+
+        });
+
+    }
+
+    rows.sort(function(a, b) {
+
+        return String(getReportRowDateKey(a))
+            .localeCompare(
+                String(getReportRowDateKey(b))
+            );
+
+    });
+
+    return rows;
+
+}
 
 
-    if (!table) {
+// ========================================
+// RENDER BẢNG CÔNG CHI TIẾT
+// ========================================
+
+function renderReportDetail(rows) {
+
+    const tbody =
+        document.getElementById("tableReportDetail");
+
+    if (!tbody) {
 
         return;
 
     }
 
-
     if (
-        !Array.isArray(data) ||
-        data.length === 0
+        !rows ||
+        rows.length === 0
     ) {
 
-        table.innerHTML = `
+        tbody.innerHTML = `
 
             <tr>
 
                 <td colspan="8">
 
-                    Không có dữ liệu chi tiết
+                    Không có dữ liệu.
 
                 </td>
 
@@ -325,49 +341,68 @@ function renderReportDetail(data) {
 
         `;
 
-
         return;
 
     }
 
+    tbody.innerHTML =
+        rows.map(function(row) {
 
-    table.innerHTML =
-        data.map(function(x) {
+            const isLeave =
+                row.isLeave === true;
 
             return `
 
-                <tr>
+                <tr class="${isLeave ? "leave-report-row" : ""}">
 
                     <td>
-                        ${escapeHtml(x.date)}
+                        ${formatReportDetailDate(
+                            getReportRowDateKey(row)
+                        )}
                     </td>
 
                     <td>
-                        ${escapeHtml(x.site)}
+                        ${escapeHtml(
+                            getReportSiteText(row)
+                        )}
                     </td>
 
                     <td>
-                        ${escapeHtml(x.checkin)}
+                        ${formatReportTime(
+                            getReportCheckIn(row)
+                        )}
                     </td>
 
                     <td>
-                        ${escapeHtml(x.checkout)}
+                        ${formatReportTime(
+                            getReportCheckOut(row)
+                        )}
                     </td>
 
                     <td>
-                        ${escapeHtml(x.hours)}
+                        ${escapeHtml(
+                            getReportTotalHours(row)
+                        )}
                     </td>
 
                     <td>
-                        ${escapeHtml(x.daywork)}
+                        ${
+                            isLeave
+                                ? `<span class="status-pending">Nghỉ phép</span>`
+                                : escapeHtml(getReportWorkDay(row))
+                        }
                     </td>
 
                     <td>
-                        ${escapeHtml(x.ot)}
+                        ${escapeHtml(
+                            getReportOvertime(row)
+                        )}
                     </td>
 
                     <td>
-                        ${escapeHtml(x.late)}
+                        ${escapeHtml(
+                            getReportLate(row)
+                        )}
                     </td>
 
                 </tr>
@@ -375,5 +410,317 @@ function renderReportDetail(data) {
             `;
 
         }).join("");
+
+}
+
+
+// ========================================
+// EXPORT BẢNG CÔNG CHI TIẾT
+// ========================================
+
+function exportEmployeeReport() {
+
+    if (
+        !currentReportDetailRows ||
+        currentReportDetailRows.length === 0
+    ) {
+
+        alert("Không có dữ liệu để xuất.");
+
+        return;
+
+    }
+
+    const headers = [
+        "Ngày",
+        "Công trình",
+        "Check In",
+        "Check Out",
+        "Tổng giờ",
+        "Công",
+        "OT",
+        "Trễ"
+    ];
+
+    const lines = [
+        headers.join(",")
+    ];
+
+    currentReportDetailRows.forEach(function(row) {
+
+        const values = [
+
+            formatReportDetailDate(
+                getReportRowDateKey(row)
+            ),
+
+            getReportSiteText(row),
+
+            formatReportTime(
+                getReportCheckIn(row)
+            ),
+
+            formatReportTime(
+                getReportCheckOut(row)
+            ),
+
+            getReportTotalHours(row),
+
+            row.isLeave
+                ? "Nghỉ phép"
+                : getReportWorkDay(row),
+
+            getReportOvertime(row),
+
+            getReportLate(row)
+
+        ];
+
+        lines.push(
+            values.map(csvEscape)
+                .join(",")
+        );
+
+    });
+
+    const blob = new Blob(
+        [
+            "\uFEFF" + lines.join("\n")
+        ],
+        {
+            type: "text/csv;charset=utf-8;"
+        }
+    );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const link =
+        document.createElement("a");
+
+    link.href = url;
+
+    link.download =
+        "bang-cong-nhan-vien.csv";
+
+    link.click();
+
+    URL.revokeObjectURL(url);
+
+}
+
+
+// ========================================
+// DATA HELPER
+// ========================================
+
+function getReportRowDateKey(row) {
+
+    const value =
+        row.ngay ||
+        row.date ||
+        row.ngayChamCong ||
+        row.ngayCong ||
+        "";
+
+    if (!value) {
+
+        return "";
+
+    }
+
+    if (
+        typeof value === "string" &&
+        /^\d{4}-\d{2}-\d{2}/.test(value)
+    ) {
+
+        return value.substring(0, 10);
+
+    }
+
+    const date =
+        new Date(value);
+
+    if (
+        isNaN(date.getTime())
+    ) {
+
+        return "";
+
+    }
+
+    return date
+        .toISOString()
+        .substring(0, 10);
+
+}
+
+
+function getReportSiteText(row) {
+
+    return row.congtrinh ||
+        row.congTrinh ||
+        row.site ||
+        row.tenct ||
+        row.tenCT ||
+        "";
+
+}
+
+
+function getReportCheckIn(row) {
+
+    return row.checkin ||
+        row.checkIn ||
+        row.check_in ||
+        "";
+
+}
+
+
+function getReportCheckOut(row) {
+
+    return row.checkout ||
+        row.checkOut ||
+        row.check_out ||
+        "";
+
+}
+
+
+function getReportTotalHours(row) {
+
+    return row.tonggio ||
+        row.tongGio ||
+        row.totalHours ||
+        row.hours ||
+        "";
+
+}
+
+
+function getReportWorkDay(row) {
+
+    return row.cong ||
+        row.ngayCong ||
+        row.workDay ||
+        "";
+
+}
+
+
+function getReportOvertime(row) {
+
+    return row.ot ||
+        row.overtime ||
+        row.overtimeHours ||
+        "";
+
+}
+
+
+function getReportLate(row) {
+
+    return row.tre ||
+        row.late ||
+        row.lateMinutes ||
+        "";
+
+}
+
+
+// ========================================
+// FORMAT HELPER
+// ========================================
+
+function formatReportDetailDate(value) {
+
+    if (!value) {
+
+        return "";
+
+    }
+
+    if (
+        typeof value === "string" &&
+        /^\d{4}-\d{2}-\d{2}/.test(value)
+    ) {
+
+        const parts =
+            value.substring(0, 10).split("-");
+
+        return parts[2] +
+            "/" +
+            parts[1] +
+            "/" +
+            parts[0];
+
+    }
+
+    const date =
+        new Date(value);
+
+    if (
+        isNaN(date.getTime())
+    ) {
+
+        return "";
+
+    }
+
+    return date.toLocaleDateString(
+        "vi-VN"
+    );
+
+}
+
+
+function formatReportTime(value) {
+
+    if (!value) {
+
+        return "";
+
+    }
+
+    if (
+        typeof value === "string" &&
+        /^\d{2}:\d{2}/.test(value)
+    ) {
+
+        return value;
+
+    }
+
+    const date =
+        new Date(value);
+
+    if (
+        isNaN(date.getTime())
+    ) {
+
+        return String(value || "");
+
+    }
+
+    return date.toLocaleTimeString(
+        "vi-VN",
+        {
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
+
+}
+
+
+function csvEscape(value) {
+
+    const text =
+        String(value || "");
+
+    return '"' +
+        text.replace(/"/g, '""') +
+        '"';
 
 }

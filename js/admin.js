@@ -1,12 +1,23 @@
 // ========================================
-// ADMIN PAGE STATE
+// ADMIN STATE
 // ========================================
 
 let adminAttendanceLoaded = false;
+
 let adminReportLoaded = false;
 
+let adminContractLoaded = false;
+
+let adminLeaveLoaded = false;
+
+let adminAdvanceLoaded = false;
+
+let adminPayrollLoaded = false;
+
+let adminAttendanceAdjustmentLoaded = false;
+
 // ========================================
-// INIT
+// INIT ADMIN
 // ========================================
 
 document.addEventListener(
@@ -15,13 +26,10 @@ document.addEventListener(
 );
 
 
-// ========================================
-// KHỞI TẠO ADMIN
-// ========================================
-
 async function initAdmin() {
 
-    const user = getCurrentUser();
+    const user =
+        getCurrentUser();
 
 
     if (!user) {
@@ -34,7 +42,12 @@ async function initAdmin() {
     }
 
 
-    if (user.role !== "admin") {
+    const userRole = String(
+        user.role || ""
+    ).toLowerCase();
+
+
+    if (userRole !== "admin") {
 
         alert(
             "Bạn không có quyền truy cập."
@@ -57,6 +70,9 @@ async function initAdmin() {
 
 
     try {
+
+        await loadEmployeeDepartments();
+
 
         await Promise.all([
 
@@ -124,36 +140,128 @@ function setupAdminNavigation() {
         },
 
         {
-    buttonId: "btnReport",
-    sectionId: "reportSection",
+            buttonId: "btnReport",
+            sectionId: "reportSection",
+            onOpen: async function() {
+
+                if (!adminReportLoaded) {
+
+                    if (
+                        typeof initReport === "function"
+                    ) {
+
+                        await initReport();
+
+                    }
+
+
+                    if (
+                        typeof initReportDetail === "function"
+                    ) {
+
+                        await initReportDetail();
+
+                    }
+
+
+                    adminReportLoaded = true;
+
+                }
+
+            }
+        },
+
+        {
+            buttonId: "btnContract",
+            sectionId: "contractSection",
+            onOpen: async function() {
+
+                if (
+                    !adminContractLoaded &&
+                    typeof loadContractAdmin === "function"
+                ) {
+
+                    await loadContractAdmin();
+
+                    adminContractLoaded = true;
+
+                }
+
+            }
+        },
+        {
+    buttonId: "btnLeave",
+    sectionId: "leaveSection",
     onOpen: async function() {
 
-        if (!adminReportLoaded) {
+        if (
+            !adminLeaveLoaded &&
+            typeof loadLeaveAdmin === "function"
+        ) {
 
-            if (
-                typeof initReport === "function"
-            ) {
+            await loadLeaveAdmin();
 
-                await initReport();
+            adminLeaveLoaded = true;
 
-            }
+        }
 
+    }
+},
+{
+    buttonId: "btnAdvance",
+    sectionId: "advanceSection",
+    onOpen: async function() {
 
-            if (
-                typeof initReportDetail === "function"
-            ) {
+        if (
+            !adminAdvanceLoaded &&
+            typeof loadAdvanceAdmin === "function"
+        ) {
 
-                await initReportDetail();
+            await loadAdvanceAdmin();
 
-            }
+            adminAdvanceLoaded = true;
 
+        }
 
-            adminReportLoaded = true;
+    }
+},
+{
+    buttonId: "btnPayroll",
+    sectionId: "payrollSection",
+    onOpen: async function() {
+
+        if (
+            !adminPayrollLoaded &&
+            typeof loadPayrollAdmin === "function"
+        ) {
+
+            await loadPayrollAdmin();
+
+            adminPayrollLoaded = true;
+
+        }
+
+    }
+},
+{
+    buttonId: "btnAttendanceAdjustment",
+    sectionId: "attendanceAdjustmentSection",
+    onOpen: async function() {
+
+        if (
+            !adminAttendanceAdjustmentLoaded &&
+            typeof loadAttendanceAdjustmentAdmin === "function"
+        ) {
+
+            await loadAttendanceAdjustmentAdmin();
+
+            adminAttendanceAdjustmentLoaded = true;
 
         }
 
     }
 }
+
 
     ];
 
@@ -179,9 +287,7 @@ function setupAdminNavigation() {
 
 
         button.addEventListener(
-
             "click",
-
             async function() {
 
                 showAdminSection(
@@ -210,7 +316,6 @@ function setupAdminNavigation() {
                 }
 
             }
-
         );
 
     });
@@ -219,12 +324,10 @@ function setupAdminNavigation() {
 
 
 // ========================================
-// HIỂN THỊ SECTION
+// SHOW SECTION
 // ========================================
 
-function showAdminSection(
-    sectionId
-) {
+function showAdminSection(sectionId) {
 
     const sectionIds = [
 
@@ -234,7 +337,17 @@ function showAdminSection(
 
         "attendanceSection",
 
-        "reportSection"
+        "reportSection",
+
+        "contractSection",
+
+        "leaveSection",
+
+        "advanceSection",
+
+        "payrollSection",
+
+        "attendanceAdjustmentSection"
 
     ];
 
@@ -253,11 +366,8 @@ function showAdminSection(
 
 
         section.classList.toggle(
-
             "active",
-
             id === sectionId
-
         );
 
     });

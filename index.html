@@ -47,11 +47,52 @@ Hệ thống chấm công nhân viên
 </p>
 
 <p id="userInfo"></p>
+<div class="employee-tabs">
 
+  <button
+    type="button"
+    id="tabBtnAttendance"
+    class="employee-tab-btn active"
+    onclick="showEmployeeTab('attendance')"
+  >
+    ✅ Chấm công
+  </button>
+
+  <button
+    type="button"
+    id="tabBtnLeave"
+    class="employee-tab-btn"
+    onclick="showEmployeeTab('leave')"
+  >
+    📝 Nghỉ phép
+  </button>
+
+  <button
+    type="button"
+    id="tabBtnAdvance"
+    class="employee-tab-btn"
+    onclick="showEmployeeTab('advance')"
+  >
+    💵 Tạm ứng
+  </button>
+
+  <button
+    type="button"
+    id="tabBtnAdjustment"
+    class="employee-tab-btn"
+    onclick="showEmployeeTab('adjustment')"
+  >
+    🕒 Công bù
+  </button>
+
+</div>
 <div class="box">
 
 <label>
-
+<div
+  id="employeeTabAttendance"
+  class="employee-tab-content active"
+>
 📌 Hình thức
 
 </label>
@@ -121,6 +162,12 @@ onclick="logout()">
 🚪 Đăng xuất
 
 </button>
+</div>
+<div
+  id="employeeTabLeave"
+  class="employee-tab-content"
+>
+
 <div class="leave-card">
 
   <h3>📝 Xin nghỉ phép</h3>
@@ -159,6 +206,10 @@ onclick="logout()">
   </h3>
 
   <div id="employeeLeaveList"></div>
+  <div
+  id="employeeTabAdvance"
+  class="employee-tab-content"
+>
 <div class="advance-card">
 
   <h3>💵 Đề nghị tạm ứng</h3>
@@ -195,6 +246,12 @@ onclick="logout()">
   <div id="employeeAdvanceList"></div>
 </div>
 </div>
+</div>
+</div>
+<div
+  id="employeeTabAdjustment"
+  class="employee-tab-content"
+>
 <div class="adjustment-card">
 
   <h3>🕒 Chấm công bù</h3>
@@ -235,11 +292,13 @@ onclick="logout()">
 
 </div>
 </div>
+</div>
 
 
 </div>
 
 <script src="js/common.js"></script>
+<script src="js/indexTabs.js"></script>
 <script src="js/attendance.js"></script>
 <script src="js/leaveEmployee.js"></script>
 <script src="js/advanceEmployee.js"></script>

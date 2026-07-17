@@ -602,3 +602,56 @@ margin-bottom:20px;
     border-bottom: 1px solid #e5e7eb;
     text-align: left;
 }
+/* ================================
+   EMPLOYEE INDEX TABS
+================================ */
+
+.employee-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin: 20px 0;
+}
+
+.employee-tab-btn {
+    padding: 10px 8px;
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    background: #f0fdf4;
+    color: #166534;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.employee-tab-btn.active {
+    background: #16a34a;
+    color: #ffffff;
+    border-color: #16a34a;
+}
+
+.employee-tab-content {
+    display: none;
+}
+
+.employee-tab-content.active {
+    display: block;
+}
+
+.employee-tab-content .leave-card,
+.employee-tab-content .advance-card,
+.employee-tab-content .adjustment-card {
+    margin-top: 12px;
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+    .employee-tabs {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .employee-tab-btn {
+        font-size: 12px;
+        padding: 9px 6px;
+    }
+}

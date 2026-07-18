@@ -1170,3 +1170,53 @@ transform:translateY(-2px);
         flex-direction: column;
     }
 }
+/* ================================
+   SYSTEM LOG ADMIN
+================================ */
+
+.system-log-table-scroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+#systemLogList table {
+    min-width: 1200px;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#systemLogList th,
+#systemLogList td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 13px;
+    text-align: left;
+    vertical-align: top;
+}
+
+#systemLogList th {
+    background: #15803d;
+    color: white;
+}
+
+.system-log-module {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #e0f2fe;
+    color: #0369a1;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.system-log-json {
+    max-width: 320px;
+    max-height: 90px;
+    overflow: auto;
+    margin: 0;
+    padding: 8px;
+    background: #f9fafb;
+    border-radius: 8px;
+    font-size: 12px;
+    white-space: pre-wrap;
+}

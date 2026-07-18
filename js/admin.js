@@ -16,6 +16,7 @@ let adminPayrollLoaded = false;
 
 let adminAttendanceAdjustmentLoaded = false;
 
+let adminSystemLogLoaded = false;
 // ========================================
 // INIT ADMIN
 // ========================================
@@ -260,6 +261,24 @@ function setupAdminNavigation() {
         }
 
     }
+},
+{
+    buttonId: "btnSystemLog",
+    sectionId: "systemLogSection",
+    onOpen: async function() {
+
+        if (
+            !adminSystemLogLoaded &&
+            typeof loadSystemLogAdmin === "function"
+        ) {
+
+            await loadSystemLogAdmin();
+
+            adminSystemLogLoaded = true;
+
+        }
+
+    }
 }
 
 
@@ -347,7 +366,9 @@ function showAdminSection(sectionId) {
 
         "payrollSection",
 
-        "attendanceAdjustmentSection"
+        "attendanceAdjustmentSection",
+
+        "systemLogSection"
 
     ];
 

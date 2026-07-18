@@ -91,7 +91,9 @@
     <button id="btnPayroll">
   💰 Lương
     </button>
-
+<button id="btnSystemLog">
+  📜 Nhật ký
+</button>
 
   </div>
 
@@ -1101,6 +1103,68 @@
   </div>
 
 </div>
+<div id="systemLogSection" class="section">
+
+  <h3 class="section-title">
+    📜 Nhật ký hệ thống
+  </h3>
+
+  <div class="form-card">
+
+    <div class="form-grid">
+
+      <div>
+        <label>Module</label>
+        <select id="systemLogModule">
+          <option value="">Tất cả</option>
+          <option value="NghiPhep">Nghỉ phép</option>
+          <option value="TamUng">Tạm ứng</option>
+          <option value="ChamCongBu">Chấm công bù</option>
+          <option value="HopDong">Hợp đồng</option>
+          <option value="NhanVien">Nhân viên</option>
+          <option value="Luong">Lương</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Tìm kiếm</label>
+        <input
+          id="systemLogKeyword"
+          placeholder="Mã đơn, mã NV, tên admin..."
+        >
+      </div>
+
+      <div>
+        <label>Số dòng</label>
+        <input
+          id="systemLogLimit"
+          type="number"
+          value="100"
+          min="10"
+          max="500"
+        >
+      </div>
+
+      <div style="display:flex; align-items:flex-end;">
+        <button
+          type="button"
+          class="btn btn-primary"
+          onclick="loadSystemLogs()"
+        >
+          Tải nhật ký
+        </button>
+      </div>
+
+    </div>
+
+    <div
+      id="systemLogList"
+      style="margin-top:16px;"
+    ></div>
+
+  </div>
+
+</div>
   <script src="js/common.js"></script>
   <script src="js/dashboard.js"></script>
   <script src="js/site.js"></script>
@@ -1113,6 +1177,7 @@
   <script src="js/attendanceAdmin.js"></script>
   <script src="js/report.js"></script>
   <script src="js/reportDetail.js"></script>
+  <script src="js/systemLogAdmin.js"></script>
   <script src="js/attendanceAdjustmentAdmin.js"></script>
   <script src="js/admin.js"></script>
 

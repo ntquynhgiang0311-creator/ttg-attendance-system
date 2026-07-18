@@ -3,9 +3,7 @@
 // ========================================
 
 let editingEmployee = null;
-
 let nhanVien = [];
-
 let isSavingEmployee = false;
 
 
@@ -21,7 +19,6 @@ async function loadNhanVien() {
             "employeeList"
         );
 
-
         renderNhanVien();
 
     }
@@ -32,12 +29,9 @@ async function loadNhanVien() {
             error
         );
 
-
         nhanVien = [];
 
-
         renderNhanVien();
-
 
         throw error;
 
@@ -52,11 +46,10 @@ async function loadNhanVien() {
 
 function renderNhanVien() {
 
-    const table = document
-        .getElementById(
+    const table =
+        document.getElementById(
             "tableEmployee"
         );
-
 
     if (!table) {
 
@@ -64,59 +57,50 @@ function renderNhanVien() {
 
     }
 
-
     if (
         !Array.isArray(nhanVien) ||
         nhanVien.length === 0
     ) {
 
         table.innerHTML = `
-
             <tr>
-
                 <td colspan="7">
-
                     Chưa có nhân viên
-
                 </td>
-
             </tr>
-
         `;
-
 
         return;
 
     }
 
+    table.innerHTML =
+        nhanVien.map(function(nv) {
 
-    table.innerHTML = nhanVien
-        .map(function(nv) {
+            const isActive =
+                String(nv.status || "")
+                    .toLowerCase() === "active";
 
-           const isActive =
-    String(nv.status || "").toLowerCase() === "active";
-
-const toggleButton = isActive
-    ? `
-        <button
-            class="btn btn-sm btn-danger"
-            onclick="toggleEmployee('${nv.manv}')"
-        >
-            🔒 Khóa
-        </button>
-      `
-    : `
-        <button
-            class="btn btn-sm btn-primary"
-            onclick="toggleEmployee('${nv.manv}')"
-        >
-            ✅ Mở
-        </button>
-      `;
-
+            const toggleButton =
+                isActive
+                    ? `
+                        <button
+                            class="btn btn-sm btn-danger"
+                            onclick="toggleEmployee('${escapeHtml(nv.manv)}')"
+                        >
+                            🔒 Khóa
+                        </button>
+                      `
+                    : `
+                        <button
+                            class="btn btn-sm btn-primary"
+                            onclick="toggleEmployee('${escapeHtml(nv.manv)}')"
+                        >
+                            ✅ Mở
+                        </button>
+                      `;
 
             return `
-
                 <tr>
 
                     <td>
@@ -140,46 +124,37 @@ const toggleButton = isActive
                     </td>
 
                     <td>
-
-                        <span class="${
-                            isActive
-                                ? "active"
-                                : "inactive"
-                        }">
-
+                        <span class="${isActive ? "active" : "inactive"}">
                             ${escapeHtml(nv.status)}
-
                         </span>
-
                     </td>
 
-                   <td>
-    <div class="action-buttons">
+                    <td>
+                        <div class="action-buttons">
 
-        <button
-            class="btn btn-sm btn-warning"
-            onclick="editEmployee('${nv.manv}')"
-        >
-            ✏️ Sửa
-        </button>
+                            <button
+                                class="btn btn-sm btn-warning"
+                                onclick="editEmployee('${escapeHtml(nv.manv)}')"
+                            >
+                                ✏️ Sửa
+                            </button>
 
-        <button
-            class="btn btn-sm btn-info"
-            onclick="openHREmployeeProfile('${nv.manv}')"
-        >
-            👤 Hồ sơ
-        </button>
+                            <button
+                                class="btn btn-sm btn-info"
+                                onclick="openHREmployeeProfile('${escapeHtml(nv.manv)}')"
+                            >
+                                👤 Hồ sơ
+                            </button>
 
-        ${toggleButton}
+                            ${toggleButton}
 
-    </div>
-</td>
+                        </div>
+                    </td>
+
                 </tr>
-
             `;
 
-        })
-        .join("");
+        }).join("");
 
 }
 
@@ -192,29 +167,20 @@ function getEmployeeFormData() {
 
     return {
 
-        hoten: document
-            .getElementById("hoten")
-            .value
-            .trim(),
+        hoten:
+            getEmployeeInputValue("hoten"),
 
-        sdt: document
-            .getElementById("sdt")
-            .value
-            .trim(),
+        sdt:
+            getEmployeeInputValue("sdt"),
 
-        matkhau: document
-            .getElementById("matkhau")
-            .value,
+        matkhau:
+            getEmployeeRawValue("matkhau"),
 
-        role: document
-            .getElementById("role")
-            .value
-            .trim(),
+        role:
+            getEmployeeInputValue("role"),
 
-        pb: document
-            .getElementById("pb")
-            .value
-            .trim()
+        pb:
+            getEmployeeInputValue("pb")
 
     };
 
@@ -225,9 +191,7 @@ function getEmployeeFormData() {
 // VALIDATE FORM
 // ========================================
 
-function validateEmployeeForm(
-    data
-) {
+function validateEmployeeForm(data) {
 
     if (!data.hoten) {
 
@@ -235,13 +199,11 @@ function validateEmployeeForm(
 
     }
 
-
     if (!data.sdt) {
 
         return "Vui lòng nhập số điện thoại.";
 
     }
-
 
     if (
         !/^[0-9]+$/.test(data.sdt)
@@ -250,7 +212,6 @@ function validateEmployeeForm(
         return "Số điện thoại chỉ được chứa chữ số.";
 
     }
-
 
     if (
         data.sdt.length < 9 ||
@@ -261,9 +222,6 @@ function validateEmployeeForm(
 
     }
 
-
-    // Thêm mới bắt buộc mật khẩu.
-    // Cập nhật không bắt buộc.
     if (
         !editingEmployee &&
         !data.matkhau
@@ -273,13 +231,11 @@ function validateEmployeeForm(
 
     }
 
-
     if (!data.role) {
 
         return "Vui lòng chọn vai trò.";
 
     }
-
 
     if (!data.pb) {
 
@@ -287,24 +243,15 @@ function validateEmployeeForm(
 
     }
 
-
-    // Kiểm tra nhanh SĐT trùng trên dữ liệu hiện tại
     const duplicatePhone =
         nhanVien.find(function(nv) {
 
             return (
-
-                String(nv.sdt || "").trim() ===
-                    data.sdt
-
-                &&
-
+                String(nv.sdt || "").trim() === data.sdt &&
                 nv.manv !== editingEmployee
-
             );
 
         });
-
 
     if (duplicatePhone) {
 
@@ -316,7 +263,6 @@ function validateEmployeeForm(
         );
 
     }
-
 
     return "";
 
@@ -335,14 +281,11 @@ async function luuNhanVien() {
 
     }
 
-
     const data =
         getEmployeeFormData();
 
-
     const validationMessage =
         validateEmployeeForm(data);
-
 
     if (validationMessage) {
 
@@ -352,85 +295,77 @@ async function luuNhanVien() {
 
     }
 
+    const currentUser =
+        getCurrentUser() || {};
 
-    const action = editingEmployee
-        ? "updateEmployee"
-        : "addEmployee";
+    const action =
+        editingEmployee
+            ? "updateEmployee"
+            : "addEmployee";
 
+    const payload = {
+
+        manv:
+            editingEmployee || "",
+
+        hoten:
+            data.hoten,
+
+        sdt:
+            data.sdt,
+
+        matkhau:
+            data.matkhau,
+
+        role:
+            data.role,
+
+        pb:
+            data.pb,
+
+        actorManv:
+            currentUser.manv || ""
+
+    };
 
     isSavingEmployee = true;
 
-
-    setEmployeeSaveButtonState(
-        true
-    );
-
+    setEmployeeSaveButtonState(true);
 
     try {
 
-        const result = await apiPostText(
-
-            action,
-
-            {
-
-                manv:
-                    editingEmployee,
-
-                hoten:
-                    data.hoten,
-
-                sdt:
-                    data.sdt,
-
-                matkhau:
-                    data.matkhau,
-
-                role:
-                    data.role,
-
-                pb:
-                    data.pb
-
-            }
-
-        );
-
+        const result =
+            await apiPostText(
+                action,
+                payload
+            );
 
         if (result !== "OK") {
 
             alert(
-
                 result ||
-
                 "Không lưu được nhân viên."
-
             );
-
 
             return;
 
         }
 
-
         alert(
-
             editingEmployee
-
                 ? "Cập nhật nhân viên thành công"
-
                 : "Thêm nhân viên thành công"
-
         );
-
 
         resetEmployeeForm();
 
-
         await loadNhanVien();
 
+        if (typeof loadDashboard === "function") {
 
-        await loadDashboard();
+            await loadDashboard();
+
+        }
 
     }
     catch (error) {
@@ -439,7 +374,6 @@ async function luuNhanVien() {
             "luuNhanVien:",
             error
         );
-
 
         alert(
             "Không thể kết nối hệ thống."
@@ -450,10 +384,7 @@ async function luuNhanVien() {
 
         isSavingEmployee = false;
 
-
-        setEmployeeSaveButtonState(
-            false
-        );
+        setEmployeeSaveButtonState(false);
 
     }
 
@@ -466,14 +397,12 @@ async function luuNhanVien() {
 
 function editEmployee(manv) {
 
-    const nv = nhanVien.find(
-        function(item) {
+    const nv =
+        nhanVien.find(function(item) {
 
             return item.manv === manv;
 
-        }
-    );
-
+        });
 
     if (!nv) {
 
@@ -485,40 +414,38 @@ function editEmployee(manv) {
 
     }
 
+    editingEmployee =
+        nv.manv;
 
-    editingEmployee = nv.manv;
+    setEmployeeValue(
+        "hoten",
+        nv.hoten || ""
+    );
 
+    setEmployeeValue(
+        "sdt",
+        nv.sdt || ""
+    );
 
-    document
-        .getElementById("hoten")
-        .value = nv.hoten || "";
+    setEmployeeValue(
+        "matkhau",
+        ""
+    );
 
+    setEmployeeValue(
+        "role",
+        nv.role || "User"
+    );
 
-    document
-        .getElementById("sdt")
-        .value = nv.sdt || "";
-
-
-    document
-        .getElementById("matkhau")
-        .value = "";
-
-
-    document
-        .getElementById("role")
-        .value = nv.role || "User";
-
-
-    document
-        .getElementById("pb")
-        .value = nv.pb || "";
-
+    setEmployeeValue(
+        "pb",
+        nv.pb || ""
+    );
 
     const passwordInput =
         document.getElementById(
             "matkhau"
         );
-
 
     if (passwordInput) {
 
@@ -527,12 +454,10 @@ function editEmployee(manv) {
 
     }
 
-
     const button =
         document.getElementById(
             "btnLuuNhanVien"
         );
-
 
     if (button) {
 
@@ -548,18 +473,14 @@ function editEmployee(manv) {
 // KHÓA / MỞ NHÂN VIÊN
 // ========================================
 
-async function toggleEmployee(
-    manv
-) {
+async function toggleEmployee(manv) {
 
-    const nv = nhanVien.find(
-        function(item) {
+    const nv =
+        nhanVien.find(function(item) {
 
             return item.manv === manv;
 
-        }
-    );
-
+        });
 
     if (!nv) {
 
@@ -571,31 +492,23 @@ async function toggleEmployee(
 
     }
 
-
     const isActive =
-        nv.status === "Active";
-
+        String(nv.status || "")
+            .toLowerCase() === "active";
 
     const actionText =
         isActive
             ? "khóa"
-            : "mở";
+            : "mở khóa";
 
-
-    const confirmed = confirm(
-
-        "Bạn có chắc muốn " +
-
-        actionText +
-
-        " nhân viên \"" +
-
-        nv.hoten +
-
-        "\"?"
-
-    );
-
+    const confirmed =
+        confirm(
+            "Bạn có chắc muốn " +
+            actionText +
+            " nhân viên \"" +
+            nv.hoten +
+            "\"?"
+        );
 
     if (!confirmed) {
 
@@ -603,40 +516,41 @@ async function toggleEmployee(
 
     }
 
-
     try {
 
-        const result = await apiPostText(
+        const currentUser =
+            getCurrentUser() || {};
 
-            "toggleEmployee",
+        const result =
+            await apiPostText(
+                "toggleEmployee",
+                {
+                    manv:
+                        manv,
 
-            {
-                manv: manv
-            }
-
-        );
-
+                    actorManv:
+                        currentUser.manv || ""
+                }
+            );
 
         if (result !== "OK") {
 
             alert(
-
                 result ||
-
                 "Không cập nhật được trạng thái nhân viên."
-
             );
-
 
             return;
 
         }
 
-
         await loadNhanVien();
 
+        if (typeof loadDashboard === "function") {
 
-        await loadDashboard();
+            await loadDashboard();
+
+        }
 
     }
     catch (error) {
@@ -645,7 +559,6 @@ async function toggleEmployee(
             "toggleEmployee:",
             error
         );
-
 
         alert(
             "Không thể kết nối hệ thống."
@@ -664,73 +577,30 @@ function resetEmployeeForm() {
 
     editingEmployee = null;
 
+    setEmployeeValue(
+        "hoten",
+        ""
+    );
 
-    const hotenElement =
-        document.getElementById(
-            "hoten"
-        );
+    setEmployeeValue(
+        "sdt",
+        ""
+    );
 
+    setEmployeeValue(
+        "matkhau",
+        ""
+    );
 
-    const sdtElement =
-        document.getElementById(
-            "sdt"
-        );
-
-
-    const matKhauElement =
-        document.getElementById(
-            "matkhau"
-        );
-
-
-    const roleElement =
-        document.getElementById(
-            "role"
-        );
-
+    setEmployeeValue(
+        "role",
+        "User"
+    );
 
     const pbElement =
         document.getElementById(
             "pb"
         );
-
-
-    const button =
-        document.getElementById(
-            "btnLuuNhanVien"
-        );
-
-
-    if (hotenElement) {
-
-        hotenElement.value = "";
-
-    }
-
-
-    if (sdtElement) {
-
-        sdtElement.value = "";
-
-    }
-
-
-    if (matKhauElement) {
-
-        matKhauElement.value = "";
-
-        matKhauElement.placeholder =
-            "Mật khẩu";
-
-    }
-
-
-    if (roleElement) {
-
-        roleElement.value = "User";
-
-    }
-
 
     if (pbElement) {
 
@@ -738,6 +608,22 @@ function resetEmployeeForm() {
 
     }
 
+    const matKhauElement =
+        document.getElementById(
+            "matkhau"
+        );
+
+    if (matKhauElement) {
+
+        matKhauElement.placeholder =
+            "Mật khẩu";
+
+    }
+
+    const button =
+        document.getElementById(
+            "btnLuuNhanVien"
+        );
 
     if (button) {
 
@@ -755,15 +641,12 @@ function resetEmployeeForm() {
 // TRẠNG THÁI NÚT LƯU
 // ========================================
 
-function setEmployeeSaveButtonState(
-    loading
-) {
+function setEmployeeSaveButtonState(loading) {
 
     const button =
         document.getElementById(
             "btnLuuNhanVien"
         );
-
 
     if (!button) {
 
@@ -771,9 +654,7 @@ function setEmployeeSaveButtonState(
 
     }
 
-
     button.disabled = loading;
-
 
     if (loading) {
 
@@ -784,16 +665,14 @@ function setEmployeeSaveButtonState(
 
     }
 
-
     button.innerHTML =
-
         editingEmployee
-
             ? "💾 Cập nhật nhân viên"
-
             : "💾 Lưu nhân viên";
 
 }
+
+
 // ========================================
 // LOAD PHÒNG BAN CHO FORM NHÂN VIÊN
 // ========================================
@@ -802,14 +681,15 @@ async function loadEmployeeDepartments() {
 
     try {
 
-        const departments = await apiGet(
-            "departments"
-        );
-
+        const departments =
+            await apiGet(
+                "departments"
+            );
 
         const select =
-            document.getElementById("pb");
-
+            document.getElementById(
+                "pb"
+            );
 
         if (!select) {
 
@@ -817,16 +697,13 @@ async function loadEmployeeDepartments() {
 
         }
 
-
         select.innerHTML =
             departments.map(function(pb) {
 
                 return `
-
                     <option value="${escapeHtml(pb.ten)}">
                         ${escapeHtml(pb.ten)}
                     </option>
-
                 `;
 
             }).join("");
@@ -839,11 +716,67 @@ async function loadEmployeeDepartments() {
             error
         );
 
-
         alert(
             "Không tải được danh sách phòng ban."
         );
 
     }
+
+}
+
+
+// ========================================
+// HELPER
+// ========================================
+
+function getEmployeeInputValue(id) {
+
+    const element =
+        document.getElementById(id);
+
+    if (!element) {
+
+        return "";
+
+    }
+
+    return String(
+        element.value || ""
+    ).trim();
+
+}
+
+
+function getEmployeeRawValue(id) {
+
+    const element =
+        document.getElementById(id);
+
+    if (!element) {
+
+        return "";
+
+    }
+
+    return String(
+        element.value || ""
+    );
+
+}
+
+
+function setEmployeeValue(id, value) {
+
+    const element =
+        document.getElementById(id);
+
+    if (!element) {
+
+        return;
+
+    }
+
+    element.value =
+        value || "";
 
 }

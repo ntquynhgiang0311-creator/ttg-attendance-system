@@ -378,7 +378,11 @@ async function saveHREmployeeProfile() {
 
 
     try {
+const currentUser =
+    getCurrentUser() || {};
 
+data.actorManv =
+    currentUser.manv || "";
         const result = await apiPostText(
 
             "updateHREmployeeProfile",
@@ -843,7 +847,10 @@ khauTruMacDinh:
             getHRValue("contractFileURL"),
 
         ghiChu:
-            getHRValue("contractGhiChu")
+            getHRValue("contractGhiChu"),
+        
+        actorManv:
+    (getCurrentUser() || {}).manv || ""
 
     };
 
@@ -862,14 +869,11 @@ async function saveEmployeeContract() {
 
     }
 
-
     const data =
         getContractFormData();
 
-
     const validationMessage =
         validateContractForm(data);
-
 
     if (validationMessage) {
 
@@ -879,55 +883,50 @@ async function saveEmployeeContract() {
 
     }
 
+    const currentUser =
+        getCurrentUser() || {};
+
+    data.actorManv =
+        currentUser.manv || "";
 
     const action =
         data.mahd
             ? "updateEmployeeContract"
             : "addEmployeeContract";
 
-
     isSavingContract = true;
-
 
     setContractSaveButtonState(true);
 
-
     try {
-
-        const result = await apiPostText(
-
-            action,
-
-            data
-
-        );
-
+        const result =
+            await apiPostText(
+                action,
+                data
+            );
 
         if (result !== "OK") {
 
             alert(
-
                 result ||
-
                 "Không lưu được hợp đồng."
-
             );
 
             return;
 
         }
 
-
         alert(
             "Lưu hợp đồng thành công"
         );
 
+        const manv =
+            data.manv;
 
         resetContractForm();
 
-
         await loadEmployeeContracts(
-            data.manv
+            manv
         );
 
     }
@@ -938,7 +937,6 @@ async function saveEmployeeContract() {
             error
         );
 
-
         alert(
             "Không thể kết nối hệ thống."
         );
@@ -947,7 +945,6 @@ async function saveEmployeeContract() {
     finally {
 
         isSavingContract = false;
-
 
         setContractSaveButtonState(false);
 
@@ -1210,25 +1207,10 @@ setHRValue(
 
 async function expireEmployeeContract(mahd) {
 
-    await updateContractStatus(
-
-        mahd,
-
-        "Hết hạn"
-
-    );
-
-}
-
-
-async function liquidateEmployeeContract(mahd) {
-
-    const ok = confirm(
-
-        "Xác nhận thanh lý hợp đồng này?"
-
-    );
-
+    const ok =
+        confirm(
+            "Xác nhận chuyển hợp đồng này sang Hết hạn?"
+        );
 
     if (!ok) {
 
@@ -1236,54 +1218,88 @@ async function liquidateEmployeeContract(mahd) {
 
     }
 
+    await updateContractStatus(
+        mahd,
+        "Hết hạn"
+    );
+
+}
+
+
+async function liquidateEmployeeContract(mahd) {
+
+    const ok =
+        confirm(
+            "Xác nhận thanh lý hợp đồng này?"
+        );
+
+    if (!ok) {
+
+        return;
+
+    }
 
     await updateContractStatus(
-
         mahd,
-
         "Đã thanh lý"
-
     );
 
 }
 
 
 async function updateContractStatus(
-
     mahd,
-
     trangThai
-
 ) {
 
-    const manv =
-        getHRValue("hrManv");
+    try {
 
+        const manv =
+            getHRValue("hrManv");
 
-    const result = await apiPostText(
+        const currentUser =
+            getCurrentUser() || {};
 
-        "updateEmployeeContractStatus",
+        const result =
+            await apiPostText(
+                "updateEmployeeContractStatus",
+                {
+                    mahd:
+                        mahd,
 
-        {
-            mahd: mahd,
-            trangThai: trangThai
+                    trangThai:
+                        trangThai,
+
+                    actorManv:
+                        currentUser.manv || ""
+                }
+            );
+
+        if (result !== "OK") {
+
+            alert(result);
+
+            return;
+
         }
 
-    );
-
-
-    if (result !== "OK") {
-
-        alert(result);
-
-        return;
+        await loadEmployeeContracts(
+            manv
+        );
 
     }
+    catch (error) {
 
+        console.error(
+            "updateContractStatus:",
+            error
+        );
 
-    await loadEmployeeContracts(
-        manv
-    );
+        alert(
+            "Không cập nhật được trạng thái hợp đồng."
+        );
+
+    }
 
 }
 

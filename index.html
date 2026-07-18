@@ -3,326 +3,368 @@
 
 <head>
 
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
 
-<title>Chấm công</title>
+  <title>Chấm công</title>
 
-<link rel="stylesheet"
-href="css/index.css">
+  <link
+    rel="stylesheet"
+    href="css/index.css"
+  >
 
-<link rel="manifest" href="manifest.json">
+  <link
+    rel="manifest"
+    href="manifest.json"
+  >
 
-<link rel="apple-touch-icon" href="images/logo.jpg">
+  <link
+    rel="apple-touch-icon"
+    href="images/logo.jpg"
+  >
 
-<meta name="mobile-web-app-capable"
-content="yes">
+  <meta
+    name="mobile-web-app-capable"
+    content="yes"
+  >
 
-<meta name="apple-mobile-web-app-capable"
-content="yes">
+  <meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+  >
 
-<meta name="apple-mobile-web-app-title" content="TTG">
+  <meta
+    name="apple-mobile-web-app-title"
+    content="TTG"
+  >
 
-<meta name="theme-color" content="#2E7D32">
+  <meta
+    name="theme-color"
+    content="#2E7D32"
+  >
 
 </head>
 
 <body>
 
-<div class="container">
+  <div class="container">
 
-<div class="card">
+    <div class="card">
 
-<img src="images/logo.jpg"
-class="logo">
+      <img
+        src="images/logo.jpg"
+        class="logo"
+      >
 
-<h2>TOÀN THỊNH GROUP</h2>
+      <h2>TOÀN THỊNH GROUP</h2>
 
-<p class="subtitle">
+      <p class="subtitle">
+        Hệ thống chấm công nhân viên
+      </p>
 
-Hệ thống chấm công nhân viên
+      <p id="userInfo"></p>
 
-</p>
+      <!-- TABS -->
+      <div class="employee-tabs">
 
-<p id="userInfo"></p>
-<div class="employee-tabs">
+        <button
+          type="button"
+          id="tabBtnAttendance"
+          class="employee-tab-btn active"
+          onclick="showEmployeeTab('attendance')"
+        >
+          ✅ Chấm công
+        </button>
 
-  <button
-    type="button"
-    id="tabBtnAttendance"
-    class="employee-tab-btn active"
-    onclick="showEmployeeTab('attendance')"
-  >
-    ✅ Chấm công
-  </button>
+        <button
+          type="button"
+          id="tabBtnLeave"
+          class="employee-tab-btn"
+          onclick="showEmployeeTab('leave')"
+        >
+          📝 Nghỉ phép
+        </button>
 
-  <button
-    type="button"
-    id="tabBtnLeave"
-    class="employee-tab-btn"
-    onclick="showEmployeeTab('leave')"
-  >
-    📝 Nghỉ phép
-  </button>
+        <button
+          type="button"
+          id="tabBtnAdvance"
+          class="employee-tab-btn"
+          onclick="showEmployeeTab('advance')"
+        >
+          💵 Tạm ứng
+        </button>
 
-  <button
-    type="button"
-    id="tabBtnAdvance"
-    class="employee-tab-btn"
-    onclick="showEmployeeTab('advance')"
-  >
-    💵 Tạm ứng
-  </button>
+        <button
+          type="button"
+          id="tabBtnAdjustment"
+          class="employee-tab-btn"
+          onclick="showEmployeeTab('adjustment')"
+        >
+          🕒 Công bù
+        </button>
 
-  <button
-    type="button"
-    id="tabBtnAdjustment"
-    class="employee-tab-btn"
-    onclick="showEmployeeTab('adjustment')"
-  >
-    🕒 Công bù
-  </button>
+      </div>
 
-</div>
-<div class="box">
+      <!-- TAB CHẤM CÔNG -->
+      <div
+        id="employeeTabAttendance"
+        class="employee-tab-content active"
+      >
 
-<label>
-<div
-  id="employeeTabAttendance"
-  class="employee-tab-content active"
->
-📌 Hình thức
+        <div class="box">
 
-</label>
+          <label>
+            📌 Hình thức
+          </label>
 
-<select id="type">
+          <select id="type">
+            <option>Check In</option>
+            <option>Check Out</option>
+          </select>
 
-<option>Check In</option>
+        </div>
 
-<option>Check Out</option>
+        <div class="gps-box">
 
-</select>
+          <h4>
+            📍 Vị trí hiện tại
+          </h4>
 
-</div>
+          <p id="gps">
+            Chưa xác định
+          </p>
 
-<div class="gps-box">
+        </div>
 
-<h4>
+        <div class="info-card">
 
-📍 Vị trí hiện tại
+          <p>🏢 Địa điểm</p>
 
-</h4>
+          <span id="siteName">
+            Chưa xác định
+          </span>
 
-<p id="gps">
+        </div>
 
-Chưa xác định
+        <div class="info-card">
 
-</p>
+          <p>📏 Khoảng cách</p>
 
-</div>
+          <span id="distance">
+            0 m
+          </span>
 
-<div class="info-card">
+        </div>
 
-<p>🏢 Địa điểm</p>
+        <button
+          class="check-btn"
+          onclick="getLocation()"
+        >
+          XÁC NHẬN CHẤM CÔNG
+        </button>
 
-<span id="siteName">
+        <button
+          class="logout-btn"
+          onclick="logout()"
+        >
+          🚪 Đăng xuất
+        </button>
 
-Chưa xác định
+      </div>
 
-</span>
+      <!-- TAB NGHỈ PHÉP -->
+      <div
+        id="employeeTabLeave"
+        class="employee-tab-content"
+      >
 
-</div>
+        <div class="leave-card">
 
-<div class="info-card">
+          <h3>📝 Xin nghỉ phép</h3>
 
-<p>📏 Khoảng cách</p>
+          <label>Loại nghỉ</label>
 
-<span id="distance">
+          <select id="leaveLoaiNghi">
+            <option value="">-- Chọn loại nghỉ --</option>
+            <option>Nghỉ phép năm</option>
+            <option>Nghỉ bệnh</option>
+            <option>Nghỉ việc riêng</option>
+            <option>Nghỉ không lương</option>
+          </select>
 
-0 m
+          <label>Từ ngày</label>
 
-</span>
+          <input
+            id="leaveTuNgay"
+            type="date"
+          >
 
-</div>
+          <label>Đến ngày</label>
 
-<button
-class="check-btn"
-onclick="getLocation()">
-
-XÁC NHẬN CHẤM CÔNG
-
-</button>
-
-<button
-class="logout-btn"
-onclick="logout()">
-
-🚪 Đăng xuất
-
-</button>
-</div>
-<div
-  id="employeeTabLeave"
-  class="employee-tab-content"
->
+          <input
+            id="leaveDenNgay"
+            type="date"
+          >
 
-<div class="leave-card">
-
-  <h3>📝 Xin nghỉ phép</h3>
+          <label>Lý do</label>
 
-  <label>Loại nghỉ</label>
-  <select id="leaveLoaiNghi">
-    <option value="">-- Chọn loại nghỉ --</option>
-    <option>Nghỉ phép năm</option>
-    <option>Nghỉ bệnh</option>
-    <option>Nghỉ việc riêng</option>
-    <option>Nghỉ không lương</option>
-  </select>
-
-  <label>Từ ngày</label>
-  <input id="leaveTuNgay" type="date">
-
-  <label>Đến ngày</label>
-  <input id="leaveDenNgay" type="date">
-
-  <label>Lý do</label>
-  <textarea
-    id="leaveLyDo"
-    rows="3"
-    placeholder="Nhập lý do nghỉ..."
-  ></textarea>
-
-  <button
-    id="btnSubmitLeave"
-    onclick="submitLeaveRequest()"
-  >
-    Gửi đơn nghỉ
-  </button>
-
-  <h3 style="margin-top:20px;">
-    📋 Lịch sử đơn nghỉ
-  </h3>
-
-  <div id="employeeLeaveList"></div>
-  <div
-  id="employeeTabAdvance"
-  class="employee-tab-content"
->
-<div class="advance-card">
+          <textarea
+            id="leaveLyDo"
+            rows="3"
+            placeholder="Nhập lý do nghỉ..."
+          ></textarea>
 
-  <h3>💵 Đề nghị tạm ứng</h3>
+          <button
+            id="btnSubmitLeave"
+            onclick="submitLeaveRequest()"
+          >
+            Gửi đơn nghỉ
+          </button>
 
-  <label>Ngày tạm ứng</label>
-  <input id="advanceNgayTamUng" type="date">
+          <h3 style="margin-top:20px;">
+            📋 Lịch sử đơn nghỉ
+          </h3>
 
-  <label>Số tiền</label>
-  <input
-    id="advanceSoTien"
-    type="number"
-    min="1000"
-    placeholder="VD: 1000000"
-  >
+          <div id="employeeLeaveList"></div>
 
-  <label>Lý do</label>
-  <textarea
-    id="advanceLyDo"
-    rows="3"
-    placeholder="Nhập lý do tạm ứng..."
-  ></textarea>
+        </div>
 
-  <button
-    id="btnSubmitAdvance"
-    onclick="submitAdvanceRequest()"
-  >
-    Gửi đề nghị tạm ứng
-  </button>
+      </div>
 
-  <h3 style="margin-top:20px;">
-    📋 Lịch sử tạm ứng
-  </h3>
+      <!-- TAB TẠM ỨNG -->
+      <div
+        id="employeeTabAdvance"
+        class="employee-tab-content"
+      >
 
-  <div id="employeeAdvanceList"></div>
-</div>
-</div>
-</div>
-</div>
-<div
-  id="employeeTabAdjustment"
-  class="employee-tab-content"
->
-<div class="adjustment-card">
+        <div class="advance-card">
 
-  <h3>🕒 Chấm công bù</h3>
+          <h3>💵 Đề nghị tạm ứng</h3>
 
-  <label>Ngày chấm công</label>
-  <input id="adjustmentNgayChamCong" type="date" readonly>
+          <label>Ngày tạm ứng</label>
 
-  <label>Địa điểm</label>
-  <select id="adjustmentMaCT">
-    <option value="">-- Chọn địa điểm --</option>
-  </select>
+          <input
+            id="advanceNgayTamUng"
+            type="date"
+          >
 
-  <label>Giờ vào cần bù</label>
-  <input id="adjustmentGioVao" type="time">
+          <label>Số tiền</label>
 
-  <label>Giờ ra cần bù</label>
-  <input id="adjustmentGioRa" type="time">
+          <input
+            id="advanceSoTien"
+            type="number"
+            min="1000"
+            placeholder="VD: 1000000"
+          >
 
-  <label>Lý do</label>
-  <textarea
-    id="adjustmentLyDo"
-    rows="3"
-    placeholder="VD: Quên bấm Check In, điện thoại hết pin..."
-  ></textarea>
+          <label>Lý do</label>
 
-  <button
-    id="btnSubmitAdjustment"
-    onclick="submitAttendanceAdjustment()"
-  >
-    Gửi đơn chấm công bù
-  </button>
+          <textarea
+            id="advanceLyDo"
+            rows="3"
+            placeholder="Nhập lý do tạm ứng..."
+          ></textarea>
 
-  <h3 style="margin-top:20px;">
-    📋 Lịch sử chấm công bù
-  </h3>
+          <button
+            id="btnSubmitAdvance"
+            onclick="submitAdvanceRequest()"
+          >
+            Gửi đề nghị tạm ứng
+          </button>
 
-  <div id="employeeAdjustmentList"></div>
+          <h3 style="margin-top:20px;">
+            📋 Lịch sử tạm ứng
+          </h3>
 
-</div>
-</div>
-</div>
+          <div id="employeeAdvanceList"></div>
 
+        </div>
 
-</div>
+      </div>
 
-<script src="js/common.js"></script>
-<script src="js/indexTabs.js"></script>
-<script src="js/attendance.js"></script>
-<script src="js/leaveEmployee.js"></script>
-<script src="js/advanceEmployee.js"></script>
-<script src="js/attendanceAdjustmentEmployee.js"></script>
+      <!-- TAB CHẤM CÔNG BÙ -->
+      <div
+        id="employeeTabAdjustment"
+        class="employee-tab-content"
+      >
 
+        <div class="adjustment-card">
 
-</body>
-</html>
+          <h3>🕒 Chấm công bù</h3>
 
-<script>
-if(
+          <label>Ngày chấm công</label>
 
-'serviceWorker' in navigator
+          <input
+            id="adjustmentNgayChamCong"
+            type="date"
+            readonly
+          >
 
-){
+          <label>Địa điểm</label>
 
-navigator.serviceWorker.register(
+          <select id="adjustmentMaCT">
+            <option value="">-- Chọn địa điểm --</option>
+          </select>
 
-'./sw.js'
+          <label>Giờ vào cần bù</label>
 
-);
+          <input
+            id="adjustmentGioVao"
+            type="time"
+          >
 
-}
-</script>
+          <label>Giờ ra cần bù</label>
+
+          <input
+            id="adjustmentGioRa"
+            type="time"
+          >
+
+          <label>Lý do</label>
+
+          <textarea
+            id="adjustmentLyDo"
+            rows="3"
+            placeholder="VD: Quên bấm Check In, điện thoại hết pin..."
+          ></textarea>
+
+          <button
+            id="btnSubmitAdjustment"
+            onclick="submitAttendanceAdjustment()"
+          >
+            Gửi đơn chấm công bù
+          </button>
+
+          <h3 style="margin-top:20px;">
+            📋 Lịch sử chấm công bù
+          </h3>
+
+          <div id="employeeAdjustmentList"></div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="js/common.js"></script>
+  <script src="js/indexTabs.js"></script>
+  <script src="js/attendance.js"></script>
+  <script src="js/leaveEmployee.js"></script>
+  <script src="js/advanceEmployee.js"></script>
+  <script src="js/attendanceAdjustmentEmployee.js"></script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js");
+    }
+  </script>
 
 </body>
 

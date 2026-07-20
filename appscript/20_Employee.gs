@@ -171,6 +171,49 @@ function addEmployeeV2(data) {
 
     ]);
 
+    try {
+
+  writeSystemLog({
+
+    actorManv:
+      normalizeText(data.actorManv),
+
+    module:
+      "NhanVien",
+
+    action:
+      "Thêm nhân viên",
+
+    targetId:
+      maNV,
+
+    oldValue:
+      "",
+
+    newValue:
+      {
+        manv: maNV,
+        hoten: employee.hoten,
+        sdt: employee.sdt,
+        role: employee.role,
+        status: CONFIG.STATUS.ACTIVE,
+        pb: employee.pb
+      },
+
+    note:
+      "Thêm nhân viên mới"
+
+  });
+
+}
+catch (error) {
+
+  Logger.log(
+    "System log addEmployeeV2 error: " +
+    error.message
+  );
+
+}
 
     SpreadsheetApp.flush();
 
@@ -215,7 +258,6 @@ function updateEmployeeV2(data) {
     data.manv
   );
 
-
   if (isEmpty(manv)) {
 
     return textResponse(
@@ -224,13 +266,11 @@ function updateEmployeeV2(data) {
 
   }
 
-
   const validation =
     validateEmployeeInput_(
       data,
       false
     );
-
 
   if (!validation.success) {
 
@@ -240,10 +280,8 @@ function updateEmployeeV2(data) {
 
   }
 
-
-  const lock = LockService
-    .getScriptLock();
-
+  const lock =
+    LockService.getScriptLock();
 
   if (!lock.tryLock(5000)) {
 
@@ -253,22 +291,18 @@ function updateEmployeeV2(data) {
 
   }
 
-
   try {
 
     const sheet = getSheet(
       CONFIG.SHEETS.EMPLOYEES
     );
 
-
     const values = sheet
       .getDataRange()
       .getValues();
 
-
     const employee =
       validation.employee;
-
 
     // =========================
     // KIỂM TRA SĐT TRÙNG
@@ -276,32 +310,21 @@ function updateEmployeeV2(data) {
 
     const duplicate =
       findEmployeeByPhone_(
-
         sheet,
-
         employee.sdt,
-
         manv
-
       );
-
 
     if (duplicate) {
 
       return textResponse(
-
         "Số điện thoại đã được sử dụng bởi " +
-
         duplicate.manv +
-
         " - " +
-
         duplicate.hoten
-
       );
 
     }
-
 
     // =========================
     // TÌM NHÂN VIÊN
@@ -323,21 +346,37 @@ function updateEmployeeV2(data) {
 
       }
 
+      const oldValue = {
+
+        manv:
+          values[i][0],
+
+        hoten:
+          values[i][1],
+
+        sdt:
+          values[i][2],
+
+        role:
+          values[i][4],
+
+        status:
+          values[i][5],
+
+        pb:
+          values[i][7]
+
+      };
 
       /**
        * B = Họ tên
        * C = SĐT
-       *
        * D = Mật khẩu giữ nguyên
-       *
        * E = Role
-       *
        * F = Status giữ nguyên
        * G = DeviceID giữ nguyên
-       *
        * H = Phòng ban
        */
-
 
       sheet
         .getRange(
@@ -348,7 +387,6 @@ function updateEmployeeV2(data) {
           employee.hoten
         );
 
-
       sheet
         .getRange(
           i + 1,
@@ -357,7 +395,6 @@ function updateEmployeeV2(data) {
         .setValue(
           employee.sdt
         );
-
 
       sheet
         .getRange(
@@ -368,7 +405,6 @@ function updateEmployeeV2(data) {
           employee.role
         );
 
-
       sheet
         .getRange(
           i + 1,
@@ -378,14 +414,66 @@ function updateEmployeeV2(data) {
           employee.pb
         );
 
-
       SpreadsheetApp.flush();
 
+      try {
+
+        writeSystemLog({
+
+          actorManv:
+            normalizeText(data.actorManv),
+
+          module:
+            "NhanVien",
+
+          action:
+            "Sửa thông tin nhân viên",
+
+          targetId:
+            manv,
+
+          oldValue:
+            oldValue,
+
+          newValue:
+            {
+              manv:
+                manv,
+
+              hoten:
+                employee.hoten,
+
+              sdt:
+                employee.sdt,
+
+              role:
+                employee.role,
+
+              status:
+                oldValue.status,
+
+              pb:
+                employee.pb
+            },
+
+          note:
+            "Cập nhật thông tin nhân viên"
+
+        });
+
+      }
+      catch (error) {
+
+        Logger.log(
+          "System log updateEmployeeV2 error: " +
+          error.message
+        );
+
+      }
 
       return textResponse("OK");
 
     }
-
 
     return textResponse(
       "Không tìm thấy nhân viên"
@@ -395,17 +483,13 @@ function updateEmployeeV2(data) {
   catch (error) {
 
     logError(
-      "updateEmployee",
+      "updateEmployeeV2",
       error
     );
 
-
     return textResponse(
-
       "ERROR: " +
-
       error.message
-
     );
 
   }
@@ -470,29 +554,59 @@ function toggleEmployeeV2(data) {
       );
 
 
-    const newStatus =
+ const newStatus =
+  currentStatus === CONFIG.STATUS.ACTIVE
+    ? CONFIG.STATUS.INACTIVE
+    : CONFIG.STATUS.ACTIVE;
 
-      currentStatus ===
-      CONFIG.STATUS.ACTIVE
+sheet
+  .getRange(i + 1, 6)
+  .setValue(newStatus);
 
-        ?
+try {
 
-        CONFIG.STATUS.INACTIVE
+  writeSystemLog({
 
-        :
+    actorManv:
+      normalizeText(data.actorManv),
 
-        CONFIG.STATUS.ACTIVE;
+    module:
+      "NhanVien",
 
+    action:
+      newStatus === CONFIG.STATUS.ACTIVE
+        ? "Mở khóa nhân viên"
+        : "Khóa nhân viên",
 
-    sheet
-      .getRange(
-        i + 1,
-        6
-      )
-      .setValue(newStatus);
+    targetId:
+      manv,
 
+    oldValue:
+      {
+        status: currentStatus
+      },
 
-    return textResponse("OK");
+    newValue:
+      {
+        status: newStatus
+      },
+
+    note:
+      "Khóa/mở khóa tài khoản nhân viên"
+
+  });
+
+}
+catch (error) {
+
+  Logger.log(
+    "System log toggleEmployeeV2 error: " +
+    error.message
+  );
+
+}
+
+return textResponse("OK");
 
   }
 

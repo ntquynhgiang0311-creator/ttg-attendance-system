@@ -3,7 +3,15 @@ const CONFIG = {
   SHEETS: {
     EMPLOYEES: "NhanVien",
     SITES: "CongTrinh",
-    ATTENDANCE: "ChamCong"
+    ATTENDANCE: "ChamCong",
+    DEPARTMENTS: "PhongBan",
+    POSITIONS: "ChucVu",
+    CONTRACTS: "HopDong",
+    LEAVES: "NghiPhep",
+     ADVANCES: "TamUng",
+     PAYROLL_CONFIG: "CauHinhLuong",
+     ATTENDANCE_ADJUSTMENTS: "ChamCongBu",
+     SYSTEM_LOGS: "NhatKyHeThong"
   },
 
   STATUS: {
@@ -18,12 +26,20 @@ const CONFIG = {
 
   CODE_PREFIX: {
     EMPLOYEE: "NV",
-    SITE: "CT"
+    SITE: "CT",
+    CONTRACT: "HD",
+    LEAVE: "NP",
+    ADVANCE: "TU",
+    ATTENDANCE_ADJUSTMENT: "CCB"
   },
 
   CODE_LENGTH: {
     EMPLOYEE: 3,
-    SITE: 3
+    SITE: 3,
+    CONTRACT: 3,
+    LEAVE: 3,
+    ADVANCE: 3,
+    ATTENDANCE_ADJUSTMENT: "CCB"
   },
 
   /**
@@ -44,6 +60,12 @@ const CONFIG = {
 
     HALF_DAY_HOURS: 4
 
-  }
+  },
+  LEAVE_RULES: {
+  MIN_NOTICE_DAYS: 3,
+  URGENT_TYPES: [
+    "Nghỉ bệnh"
+  ]
+}
 
 };

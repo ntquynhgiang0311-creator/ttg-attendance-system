@@ -224,9 +224,10 @@ async function savePayrollConfigFromAdmin() {
 
     }
 
-    const ok = confirm(
-        "Xác nhận lưu công chuẩn tháng này?"
-    );
+    const ok =
+        confirm(
+            "Xác nhận lưu công chuẩn tháng này?"
+        );
 
     if (!ok) {
 
@@ -240,15 +241,32 @@ async function savePayrollConfigFromAdmin() {
             await apiPostText(
                 "savePayrollConfig",
                 {
-                    month: month,
-                    year: year,
-                    congChuan: congChuan,
-                    ghiChu: ghiChu,
-                    updatedBy:
-                        user.manv
-                            ? user.manv + " - " + (user.hoten || "")
-                            : "Admin"
-                }
+    month:
+        month,
+
+    year:
+        year,
+
+    congChuan:
+        congChuan,
+
+    standardDays:
+        congChuan,
+
+    ghiChu:
+        ghiChu,
+
+    note:
+        ghiChu,
+
+    updatedBy:
+        user.manv
+            ? user.manv + " - " + (user.hoten || "")
+            : "Admin",
+
+    actorManv:
+        user.manv || ""
+}
             );
 
         if (result !== "OK") {
@@ -292,6 +310,9 @@ async function resetPayrollConfigFromAdmin() {
     const year =
         document.getElementById("payrollConfigYear")?.value || "";
 
+    const user =
+        getCurrentUser() || {};
+
     if (!month || !year) {
 
         alert("Vui lòng chọn tháng/năm.");
@@ -300,9 +321,10 @@ async function resetPayrollConfigFromAdmin() {
 
     }
 
-    const ok = confirm(
-        "Xác nhận xóa cấu hình thủ công và tự động tính lại?"
-    );
+    const ok =
+        confirm(
+            "Xác nhận reset công chuẩn về tự động tính?"
+        );
 
     if (!ok) {
 
@@ -316,8 +338,14 @@ async function resetPayrollConfigFromAdmin() {
             await apiPostText(
                 "resetPayrollConfig",
                 {
-                    month: month,
-                    year: year
+                    month:
+                        month,
+
+                    year:
+                        year,
+
+                    actorManv:
+                        user.manv || ""
                 }
             );
 
@@ -329,7 +357,7 @@ async function resetPayrollConfigFromAdmin() {
 
         }
 
-        alert("Đã chuyển về tự động tính công chuẩn.");
+        alert("Đã reset công chuẩn về tự động.");
 
         await loadPayrollConfig();
 

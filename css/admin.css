@@ -1220,3 +1220,46 @@ transform:translateY(-2px);
     font-size: 12px;
     white-space: pre-wrap;
 }
+.table-scroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table-input {
+    width: 110px;
+    padding: 7px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.table-note {
+    width: 180px;
+}
+
+#employeeAllowanceList table,
+#siteAllowanceExcludeList table {
+    min-width: 1100px;
+}
+#payrollSection .form-card {
+    margin-bottom: 24px;
+}
+
+#payrollSection .form-card + .form-card {
+    margin-top: 24px;
+}
+
+#payrollSection .form-card h3,
+#payrollSection .section-title {
+    margin-bottom: 18px;
+}
+
+#payrollSection .form-grid {
+    row-gap: 16px;
+    column-gap: 16px;
+}
+
+#employeeAllowanceList,
+#siteAllowanceExcludeList {
+    margin-top: 22px !important;
+}

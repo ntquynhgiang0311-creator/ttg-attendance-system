@@ -227,22 +227,21 @@ function setupAdminNavigation() {
     }
 },
 {
-    buttonId: "btnPayroll",
-    sectionId: "payrollSection",
-    onOpen: async function() {
-
-        if (
-            !adminPayrollLoaded &&
-            typeof loadPayrollAdmin === "function"
-        ) {
-
-            await loadPayrollAdmin();
-
-            adminPayrollLoaded = true;
-
-        }
-
+  buttonId: "btnPayroll",
+  sectionId: "payrollSection",
+  onOpen: async function() {
+    if (
+      typeof loadPayrollAdmin === "function"
+    ) {
+      await loadPayrollAdmin();
     }
+
+    if (
+      typeof loadAllowanceAdmin === "function"
+    ) {
+      await loadAllowanceAdmin();
+    }
+  }
 },
 {
     buttonId: "btnAttendanceAdjustment",

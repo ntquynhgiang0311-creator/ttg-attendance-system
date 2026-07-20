@@ -1014,7 +1014,116 @@
       </button>
 
     </div>
+    </div>
+<div class="form-card">
 
+  <h3 class="section-title">
+    💸 Phụ cấp nhân viên
+  </h3>
+
+  <div class="form-grid">
+
+    <div>
+      <label>Tháng</label>
+      <input
+        id="allowanceMonth"
+        type="number"
+        min="1"
+        max="12"
+      >
+    </div>
+
+    <div>
+      <label>Năm</label>
+      <input
+        id="allowanceYear"
+        type="number"
+        min="2000"
+      >
+    </div>
+
+    <div>
+      <label>Phòng ban</label>
+      <input
+        id="allowancePb"
+        placeholder="Để trống = tất cả"
+      >
+    </div>
+
+    <div>
+      <label>Tìm kiếm</label>
+      <input
+        id="allowanceKeyword"
+        placeholder="Mã NV, tên, ghi chú..."
+      >
+    </div>
+
+    <div style="display:flex; align-items:flex-end;">
+      <button
+        type="button"
+        class="btn btn-primary"
+        onclick="loadEmployeeAllowances()"
+      >
+        Tải phụ cấp
+      </button>
+    </div>
+
+  </div>
+
+  <div
+    id="employeeAllowanceList"
+    style="margin-top:16px;"
+  ></div>
+
+</div>
+
+
+<div class="form-card">
+
+  <h3 class="section-title">
+    🚫 Loại trừ phụ cấp công trình
+  </h3>
+
+  <p style="color:#6b7280; margin-top:-8px;">
+    Dùng để không tính phụ cấp công trình cho Ban chỉ huy, Quản lý hoặc nhân viên được chỉ định.
+  </p>
+
+  <div class="form-grid">
+
+    <div>
+      <label>Phòng ban</label>
+      <input
+        id="excludeAllowancePb"
+        placeholder="Để trống = tất cả"
+      >
+    </div>
+
+    <div>
+      <label>Tìm kiếm</label>
+      <input
+        id="excludeAllowanceKeyword"
+        placeholder="Mã NV, tên, lý do..."
+      >
+    </div>
+
+    <div style="display:flex; align-items:flex-end;">
+      <button
+        type="button"
+        class="btn btn-primary"
+        onclick="loadSiteAllowanceExcludes()"
+      >
+        Tải danh sách
+      </button>
+    </div>
+
+  </div>
+
+  <div
+    id="siteAllowanceExcludeList"
+    style="margin-top:16px;"
+  ></div>
+
+</div>
     <div class="form-card" style="margin-top:20px;">
 
   <h3>📋 Bảng lương nháp</h3>
@@ -1179,6 +1288,7 @@
   <script src="js/reportDetail.js"></script>
   <script src="js/systemLogAdmin.js"></script>
   <script src="js/attendanceAdjustmentAdmin.js"></script>
+  <script src="js/allowanceAdmin.js"></script>
   <script src="js/admin.js"></script>
 
 </body>

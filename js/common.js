@@ -257,3 +257,165 @@ function logout() {
     "login.html";
 
 }
+function getExportValueByIds(ids) {
+
+    for (
+        let i = 0;
+        i < ids.length;
+        i++
+    ) {
+
+        const element =
+            document.getElementById(
+                ids[i]
+            );
+
+        if (
+            element &&
+            element.value
+        ) {
+
+            return element.value;
+
+        }
+
+    }
+
+    return "";
+
+}
+
+
+function getExportSelectedTextByIds(ids) {
+
+    for (
+        let i = 0;
+        i < ids.length;
+        i++
+    ) {
+
+        const element =
+            document.getElementById(
+                ids[i]
+            );
+
+        if (!element) {
+
+            continue;
+
+        }
+
+        if (
+            element.tagName === "SELECT" &&
+            element.selectedIndex >= 0
+        ) {
+
+            return element.options[
+                element.selectedIndex
+            ].text || element.value || "";
+
+        }
+
+        if (element.value) {
+
+            return element.value;
+
+        }
+
+    }
+
+    return "";
+
+}
+
+
+function styleExportTable(table) {
+
+    table.style.borderCollapse =
+        "collapse";
+
+    table.style.fontFamily =
+        "Arial, sans-serif";
+
+    table.style.fontSize =
+        "12px";
+
+    table.style.width =
+        "100%";
+
+    table
+        .querySelectorAll("th")
+        .forEach(function(th) {
+
+            th.style.backgroundColor =
+                "#15803d";
+
+            th.style.color =
+                "#ffffff";
+
+            th.style.fontWeight =
+                "700";
+
+            th.style.textAlign =
+                "center";
+
+            th.style.border =
+                "1px solid #d9ead3";
+
+            th.style.padding =
+                "8px";
+
+        });
+
+    table
+        .querySelectorAll("td")
+        .forEach(function(td) {
+
+            td.style.border =
+                "1px solid #d9ead3";
+
+            td.style.padding =
+                "7px";
+
+            td.style.verticalAlign =
+                "middle";
+
+        });
+
+}
+
+
+function downloadHtmlExcelFile(
+    html,
+    fileName
+) {
+
+    const blob =
+        new Blob(
+            [html],
+            {
+                type: "application/vnd.ms-excel;charset=utf-8;"
+            }
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const link =
+        document.createElement("a");
+
+    link.href =
+        url;
+
+    link.download =
+        fileName;
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+
+}

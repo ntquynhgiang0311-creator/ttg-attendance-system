@@ -425,11 +425,38 @@ function exportEmployeeReport() {
         currentReportDetailRows.length === 0
     ) {
 
-        alert("Không có dữ liệu để xuất.");
+        alert("Chưa có dữ liệu để xuất.");
 
         return;
 
     }
+
+    const employeeText =
+        getExportSelectedTextByIds([
+            "reportEmployeeSelect",
+            "reportDetailEmployee",
+            "reportEmployee",
+            "employeeReportSelect",
+            "detailEmployeeSelect"
+        ]);
+
+    const month =
+        getExportValueByIds([
+            "reportDetailMonth",
+            "reportEmployeeMonth",
+            "employeeReportMonth",
+            "detailMonth",
+            "reportMonth"
+        ]);
+
+    const year =
+        getExportValueByIds([
+            "reportDetailYear",
+            "reportEmployeeYear",
+            "employeeReportYear",
+            "detailYear",
+            "reportYear"
+        ]);
 
     const headers = [
         "Ngày",
@@ -442,70 +469,129 @@ function exportEmployeeReport() {
         "Trễ"
     ];
 
-    const lines = [
-        headers.join(",")
-    ];
+    let html =
+        '<html>' +
+            '<head>' +
+                '<meta charset="UTF-8">' +
+            '</head>' +
+            '<body>' +
+                '<table style="width:100%; border-collapse:collapse;">' +
+                    '<tr>' +
+                        '<td colspan="8" style="font-size:20px;font-weight:700;text-align:center;color:#14532d;">' +
+                            'BẢNG CÔNG NHÂN VIÊN' +
+                        '</td>' +
+                    '</tr>' +
+                    '<tr>' +
+                        '<td colspan="8" style="font-size:13px;text-align:center;font-weight:700;">' +
+                            escapeHtml(employeeText) +
+                        '</td>' +
+                    '</tr>' +
+                    '<tr>' +
+                        '<td colspan="8" style="font-size:13px;text-align:center;">' +
+                            'Tháng ' +
+                            escapeHtml(month) +
+                            '/' +
+                            escapeHtml(year) +
+                        '</td>' +
+                    '</tr>' +
+                    '<tr><td colspan="8">&nbsp;</td></tr>' +
+                    '<tr>';
 
-    currentReportDetailRows.forEach(function(row) {
+    headers.forEach(function(header) {
 
-        const values = [
-
-            formatReportDetailDate(
-                getReportRowDateKey(row)
-            ),
-
-            getReportSiteText(row),
-
-            formatReportTime(
-                getReportCheckIn(row)
-            ),
-
-            formatReportTime(
-                getReportCheckOut(row)
-            ),
-
-            getReportTotalHours(row),
-
-            row.isLeave
-                ? "Nghỉ phép"
-                : getReportWorkDay(row),
-
-            getReportOvertime(row),
-
-            getReportLate(row)
-
-        ];
-
-        lines.push(
-            values.map(csvEscape)
-                .join(",")
-        );
+        html +=
+            '<th style="background:#15803d;color:white;font-weight:700;text-align:center;border:1px solid #d9ead3;padding:8px;">' +
+                escapeHtml(header) +
+            '</th>';
 
     });
 
-    const blob = new Blob(
-        [
-            "\uFEFF" + lines.join("\n")
-        ],
-        {
-            type: "text/csv;charset=utf-8;"
-        }
+    html +=
+        '</tr>';
+
+    currentReportDetailRows.forEach(function(row) {
+
+        html +=
+            '<tr>' +
+                '<td style="border:1px solid #d9ead3;padding:7px;">' +
+                    escapeHtml(
+                        formatReportDetailDate(
+                            getReportRowDateKey(row)
+                        )
+                    ) +
+                '</td>' +
+
+                '<td style="border:1px solid #d9ead3;padding:7px;">' +
+                    escapeHtml(
+                        getReportSiteText(row)
+                    ) +
+                '</td>' +
+
+                '<td style="border:1px solid #d9ead3;padding:7px;text-align:center;">' +
+                    escapeHtml(
+                        formatReportTime(
+                            getReportCheckIn(row)
+                        )
+                    ) +
+                '</td>' +
+
+                '<td style="border:1px solid #d9ead3;padding:7px;text-align:center;">' +
+                    escapeHtml(
+                        formatReportTime(
+                            getReportCheckOut(row)
+                        )
+                    ) +
+                '</td>' +
+
+                '<td style="border:1px solid #d9ead3;padding:7px;text-align:right;">' +
+                    escapeHtml(
+                        getReportTotalHours(row)
+                    ) +
+                '</td>' +
+
+                '<td style="border:1px solid #d9ead3;padding:7px;text-align:right;">' +
+                    escapeHtml(
+                        row.isLeave
+                            ? "Nghỉ phép"
+                            : getReportWorkDay(row)
+                    ) +
+                '</td>' +
+
+                '<td style="border:1px solid #d9ead3;padding:7px;text-align:right;">' +
+                    escapeHtml(
+                        getReportOvertime(row)
+                    ) +
+                '</td>' +
+
+                '<td style="border:1px solid #d9ead3;padding:7px;text-align:right;">' +
+                    escapeHtml(
+                        getReportLate(row)
+                    ) +
+                '</td>' +
+            '</tr>';
+
+    });
+
+    html +=
+                '</table>' +
+            '</body>' +
+        '</html>';
+
+    const fileEmployee =
+        employeeText
+            .replace(/[^a-zA-Z0-9À-ỹ\s-]/g, "")
+            .replace(/\s+/g, "-");
+
+    downloadHtmlExcelFile(
+        html,
+        "bang-cong-" +
+        fileEmployee +
+        "-thang-" +
+        month +
+        "-" +
+        year +
+        ".xls"
     );
-
-    const url =
-        URL.createObjectURL(blob);
-
-    const link =
-        document.createElement("a");
-
-    link.href = url;
-
-    link.download =
-        "bang-cong-nhan-vien.csv";
-
-    link.click();
-
-    URL.revokeObjectURL(url);
 
 }
 
@@ -601,10 +687,50 @@ function getReportTotalHours(row) {
 
 function getReportWorkDay(row) {
 
-    return row.cong ||
-        row.ngayCong ||
-        row.workDay ||
+    if (!row) {
+
+        return "";
+
+    }
+
+    const value =
+        row.daywork ??
+        row.dayWork ??
+        row.cong ??
+        row.ngayCong ??
+        row.workDay ??
+        row.workDays ??
+        row.workday ??
+        row.congTinhLuong ??
+        row.soCong ??
         "";
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return "";
+
+    }
+
+    const numberValue =
+        Number(value);
+
+    if (isNaN(numberValue)) {
+
+        return String(value || "");
+
+    }
+
+    if (numberValue === 0) {
+
+        return "";
+
+    }
+
+    return numberValue.toFixed(2);
 
 }
 

@@ -750,122 +750,162 @@ function updatePayrollDraftSummary(summary) {
 
 }
 
+function getPayrollDraftRowsForExport() {
 
+    if (
+        typeof payrollDraftList !== "undefined" &&
+        Array.isArray(payrollDraftList)
+    ) {
+
+        return payrollDraftList;
+
+    }
+
+    if (
+        typeof payrollDraftData !== "undefined" &&
+        Array.isArray(payrollDraftData)
+    ) {
+
+        return payrollDraftData;
+
+    }
+
+    if (
+        typeof currentPayrollDraft !== "undefined" &&
+        Array.isArray(currentPayrollDraft)
+    ) {
+
+        return currentPayrollDraft;
+
+    }
+
+    if (
+        typeof payrollDraftRows !== "undefined" &&
+        Array.isArray(payrollDraftRows)
+    ) {
+
+        return payrollDraftRows;
+
+    }
+
+    return [];
+
+}
 // ========================================
 // EXPORT BẢNG LƯƠNG NHÁP
 // ========================================
 
 function exportPayrollDraft() {
 
-    if (
-        !currentPayrollDraft ||
-        !currentPayrollDraft.rows ||
-        currentPayrollDraft.rows.length === 0
-    ) {
+    const table =
+        getPayrollDraftTableForExport();
 
-        alert("Không có dữ liệu để xuất.");
+    if (!table) {
+
+        alert("Không tìm thấy bảng lương nháp để xuất.");
 
         return;
 
     }
 
-    const headers = [
+    const month =
+        document.getElementById("payrollDraftMonth")?.value || "";
 
-        "Mã NV",
+    const year =
+        document.getElementById("payrollDraftYear")?.value || "";
 
-        "Họ tên",
+    const clonedTable =
+        table.cloneNode(true);
 
-        "Phòng ban",
+    clonedTable
+        .querySelectorAll("button, input, select")
+        .forEach(function(element) {
+            element.remove();
+        });
 
-        "Mã HĐ",
+    clonedTable
+        .querySelectorAll("th")
+        .forEach(function(th) {
+            th.style.backgroundColor = "#15803d";
+            th.style.color = "#ffffff";
+            th.style.fontWeight = "700";
+            th.style.textAlign = "center";
+            th.style.border = "1px solid #d9ead3";
+            th.style.padding = "8px";
+        });
 
-        "Công chuẩn",
+    clonedTable
+        .querySelectorAll("td")
+        .forEach(function(td) {
+            td.style.border = "1px solid #d9ead3";
+            td.style.padding = "7px";
+            td.style.verticalAlign = "middle";
+        });
 
-        "Lương cơ bản",
+    clonedTable.style.borderCollapse =
+        "collapse";
 
-        "Phụ cấp",
+    clonedTable.style.fontFamily =
+        "Arial, sans-serif";
 
-        "Lương ngày",
+    clonedTable.style.fontSize =
+        "12px";
 
-        "Ngày công",
+    clonedTable.style.width =
+        "100%";
 
-        "Nghỉ phép có lương",
+    const html =
+        '<html>' +
+            '<head>' +
+                '<meta charset="UTF-8">' +
+                '<style>' +
+                    'body { font-family: Arial, sans-serif; }' +
+                    '.title { font-size: 20px; font-weight: 700; color: #14532d; text-align: center; }' +
+                    '.subtitle { font-size: 13px; color: #374151; text-align: center; }' +
+                    '.summary-table td { border: 1px solid #bbf7d0; padding: 8px; font-weight: 700; }' +
+                    '.summary-label { background: #dcfce7; color: #14532d; }' +
+                    '.summary-value { color: #111827; }' +
+                    'table { border-collapse: collapse; }' +
+                    'td, th { mso-number-format:"\\@"; }' +
+                    '.number { mso-number-format:"#,##0"; text-align: right; }' +
+                    '.center { text-align: center; }' +
+                '</style>' +
+            '</head>' +
+            '<body>' +
 
-        "Nghỉ không lương",
+                '<table style="width:100%; border-collapse:collapse;">' +
+                    '<tr>' +
+                        '<td colspan="20" class="title">' +
+                            'BẢNG LƯƠNG NHÁP' +
+                        '</td>' +
+                    '</tr>' +
+                    '<tr>' +
+                        '<td colspan="20" class="subtitle">' +
+                            'Tháng ' +
+                            escapeHtml(month) +
+                            '/' +
+                            escapeHtml(year) +
+                        '</td>' +
+                    '</tr>' +
+                    '<tr><td colspan="20">&nbsp;</td></tr>' +
+                '</table>' +
 
-        "Tiền công",
+                buildPayrollExportSummaryHtml() +
 
-        "Tiền nghỉ phép",
+                '<br>' +
 
-        "Tổng thu nhập",
+                clonedTable.outerHTML +
 
-        "Tạm ứng",
+            '</body>' +
+        '</html>';
 
-        "Thực lãnh",
-
-        "Ghi chú"
-
-    ];
-
-    const lines = [
-        headers.join(",")
-    ];
-
-    currentPayrollDraft.rows.forEach(function(row) {
-
-        const values = [
-
-            row.manv,
-
-            row.hoten,
-
-            row.pb,
-
-            row.mahd,
-
-            row.congChuan,
-
-            row.luongCoBan,
-
-            row.phuCap,
-
-            row.luongNgay,
-
-            row.ngayCong,
-
-            row.nghiPhepCoLuong,
-
-            row.nghiKhongLuong,
-
-            row.tienCong,
-
-            row.tienNghiPhep,
-
-            row.tongThuNhap,
-
-            row.tamUng,
-
-            row.thucLanh,
-
-            row.ghiChu
-
-        ];
-
-        lines.push(
-            values.map(payrollCsvEscape)
-                .join(",")
+    const blob =
+        new Blob(
+            [html],
+            {
+                type: "application/vnd.ms-excel;charset=utf-8;"
+            }
         );
-
-    });
-
-    const blob = new Blob(
-        [
-            "\uFEFF" + lines.join("\n")
-        ],
-        {
-            type: "text/csv;charset=utf-8;"
-        }
-    );
 
     const url =
         URL.createObjectURL(blob);
@@ -873,22 +913,21 @@ function exportPayrollDraft() {
     const link =
         document.createElement("a");
 
-    const month =
-        currentPayrollDraft.month;
-
-    const year =
-        currentPayrollDraft.year;
-
-    link.href = url;
+    link.href =
+        url;
 
     link.download =
         "bang-luong-nhap-" +
         month +
         "-" +
         year +
-        ".csv";
+        ".xls";
+
+    document.body.appendChild(link);
 
     link.click();
+
+    document.body.removeChild(link);
 
     URL.revokeObjectURL(url);
 
@@ -960,5 +999,131 @@ function payrollCsvEscape(value) {
     return '"' +
         text.replace(/"/g, '""') +
         '"';
+
+}
+function formatPayrollExportNumber(value) {
+
+    const numberValue =
+        Number(value || 0);
+
+    if (!numberValue) {
+
+        return "0";
+
+    }
+
+    return numberValue.toLocaleString("vi-VN");
+
+}
+function getPayrollDraftTableForExport() {
+
+    const selectors = [
+
+        "#payrollDraftList table",
+
+        "#payrollDraftResult table",
+
+        "#payrollDraftContainer table",
+
+        "#payrollDraftTable",
+
+        "#payrollSection .payroll-draft-table",
+
+        "#payrollSection table:last-of-type"
+
+    ];
+
+    for (
+        let i = 0;
+        i < selectors.length;
+        i++
+    ) {
+
+        const table =
+            document.querySelector(
+                selectors[i]
+            );
+
+        if (
+            table &&
+            table.querySelectorAll("tbody tr").length > 0
+        ) {
+
+            return table;
+
+        }
+
+    }
+
+    return null;
+
+}
+function buildPayrollExportSummaryHtml() {
+
+    const summaryItems = [
+
+        {
+            label: "Nhân viên",
+            value: getPayrollSummaryText("payrollSummaryEmployees")
+        },
+
+        {
+            label: "Tổng thu nhập",
+            value: getPayrollSummaryText("payrollSummaryIncome")
+        },
+
+        {
+            label: "Tạm ứng",
+            value: getPayrollSummaryText("payrollSummaryAdvance")
+        },
+
+        {
+            label: "Thực lãnh",
+            value: getPayrollSummaryText("payrollSummaryNetPay")
+        }
+
+    ];
+
+    let html =
+        '<table class="summary-table" style="width:100%; border-collapse:collapse;">' +
+            '<tr>';
+
+    summaryItems.forEach(function(item) {
+
+        html +=
+            '<td class="summary-label">' +
+                escapeHtml(item.label) +
+            '</td>' +
+            '<td class="summary-value">' +
+                escapeHtml(item.value) +
+            '</td>';
+
+    });
+
+    html +=
+            '</tr>' +
+        '</table>';
+
+    return html;
+
+}
+
+
+function getPayrollSummaryText(id) {
+
+    const element =
+        document.getElementById(id);
+
+    if (!element) {
+
+        return "";
+
+    }
+
+    return String(
+        element.innerText ||
+        element.textContent ||
+        ""
+    ).trim();
 
 }

@@ -3,8 +3,98 @@
 // ========================================
 
 let isSubmittingLeave = false;
+let employeeLeaveTypeConfigs = [];
+async function loadEmployeeLeaveTypeConfigs() {
+
+    try {
+
+        employeeLeaveTypeConfigs =
+            await apiGet(
+                "leaveTypeConfigs",
+                {
+                    status: "Active"
+                }
+            );
+
+        renderEmployeeLeaveTypeSelect();
+
+    } catch (error) {
+
+        console.error("loadEmployeeLeaveTypeConfigs:", error);
+
+    }
+
+}
 
 
+function renderEmployeeLeaveTypeSelect() {
+
+    const select =
+        document.getElementById("leaveType");
+
+    if (!select) {
+
+        return;
+
+    }
+
+    select.innerHTML =
+        '<option value="">-- Chọn loại nghỉ --</option>';
+
+    employeeLeaveTypeConfigs.forEach(function(item) {
+
+        const label =
+            item.nhomNghi === item.chiTiet
+                ? item.nhomNghi
+                : item.nhomNghi + " - " + item.chiTiet;
+
+        select.innerHTML +=
+            '<option value="' + escapeHtml(item.maLoai) + '">' +
+                escapeHtml(label) +
+            '</option>';
+
+    });
+
+}
+
+
+function getSelectedLeaveTypeConfig() {
+
+    const select =
+        document.getElementById("leaveType");
+
+    if (!select) {
+
+        return null;
+
+    }
+
+    const value =
+        select.value || "";
+
+    if (!value) {
+
+        return null;
+
+    }
+
+    return employeeLeaveTypeConfigs.find(function(item) {
+
+        const label =
+            item.nhomNghi === item.chiTiet
+                ? item.nhomNghi
+                : item.nhomNghi + " - " + item.chiTiet;
+
+        return (
+            item.maLoai === value ||
+            item.chiTiet === value ||
+            item.nhomNghi === value ||
+            label === value
+        );
+
+    }) || null;
+
+}
 // ========================================
 // INIT
 // ========================================
@@ -58,12 +148,10 @@ async function submitLeaveRequest() {
 
     }
 
-
     const user =
-        getCurrentUser();
+        getCurrentUser() || {};
 
-
-    if (!user) {
+    if (!user || !user.manv) {
 
         alert(
             "Vui lòng đăng nhập lại."
@@ -76,30 +164,61 @@ async function submitLeaveRequest() {
 
     }
 
+    const selectedLeaveType =
+        getSelectedLeaveTypeConfig();
 
-    const data = {
+    if (!selectedLeaveType) {
+
+        alert(
+            "Vui lòng chọn loại nghỉ."
+        );
+
+        return;
+
+    }
+
+    const payload = {
 
         manv:
-            user.manv,
-
-        loaiNghi:
-            getLeaveInputValue("leaveLoaiNghi"),
+            user.manv || "",
 
         tuNgay:
-            getLeaveInputValue("leaveTuNgay"),
+    getLeaveInputValue("leaveFromDate") ||
+    getLeaveInputValue("leaveTuNgay"),
 
-        denNgay:
-            getLeaveInputValue("leaveDenNgay"),
+denNgay:
+    getLeaveInputValue("leaveToDate") ||
+    getLeaveInputValue("leaveDenNgay"),
+
+        maLoaiNghi:
+            selectedLeaveType.maLoai || "",
+
+        loaiNghi:
+            selectedLeaveType.chiTiet || "",
+
+        nhomNghi:
+            selectedLeaveType.nhomNghi || "",
+
+        chiTietNghi:
+            selectedLeaveType.chiTiet || "",
+
+        huongLuong:
+            selectedLeaveType.huongLuong || "",
+
+        truPhepNam:
+            selectedLeaveType.truPhepNam || "",
+
+        canFileDinhKem:
+            selectedLeaveType.canFileDinhKem || "",
 
         lyDo:
-            getLeaveInputValue("leaveLyDo")
+    getLeaveInputValue("leaveReason") ||
+    getLeaveInputValue("leaveLyDo")
 
     };
 
-
     const validationMessage =
-        validateLeaveForm(data);
-
+        validateLeaveForm(payload);
 
     if (validationMessage) {
 
@@ -109,11 +228,10 @@ async function submitLeaveRequest() {
 
     }
 
-
-    const ok = confirm(
-        "Xác nhận gửi đơn nghỉ phép?"
-    );
-
+    const ok =
+        confirm(
+            "Xác nhận gửi đơn nghỉ phép?"
+        );
 
     if (!ok) {
 
@@ -121,20 +239,20 @@ async function submitLeaveRequest() {
 
     }
 
+    isSubmittingLeave =
+        true;
 
-    isSubmittingLeave = true;
-
-
-    setLeaveSubmitButtonState(true);
-
+    setLeaveSubmitButtonState(
+        true
+    );
 
     try {
 
-        const result = await apiPostText(
-            "addLeaveRequest",
-            data
-        );
-
+        const result =
+            await apiPostText(
+                "addLeaveRequest",
+                payload
+            );
 
         if (result !== "OK") {
 
@@ -147,37 +265,33 @@ async function submitLeaveRequest() {
 
         }
 
-
         alert(
             "Đã gửi đơn nghỉ phép. Vui lòng chờ duyệt."
         );
 
-
         resetLeaveForm();
-
 
         await loadMyLeaveRequests();
 
-    }
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "submitLeaveRequest:",
             error
         );
 
-
         alert(
             "Không thể kết nối hệ thống."
         );
 
-    }
-    finally {
+    } finally {
 
-        isSubmittingLeave = false;
+        isSubmittingLeave =
+            false;
 
-
-        setLeaveSubmitButtonState(false);
+        setLeaveSubmitButtonState(
+            false
+        );
 
     }
 
@@ -378,12 +492,16 @@ if (noticeDays < 0) {
 
 }
 
+const canSubmitUrgent =
+    data.nhomNghi === "Nghỉ không lương" ||
+    data.nhomNghi === "Nghỉ việc riêng";
+
 if (
-    data.loaiNghi !== "Nghỉ bệnh" &&
+    !canSubmitUrgent &&
     noticeDays < 3
 ) {
 
-    return "Đơn nghỉ phép phải gửi trước ít nhất 3 ngày. Trường hợp gấp vui lòng chọn Nghỉ bệnh hoặc báo Admin.";
+    return "Nghỉ phép năm phải gửi trước ít nhất 3 ngày. Nghỉ không lương và nghỉ việc riêng được phép gửi gấp.";
 
 }
 
@@ -407,25 +525,22 @@ if (
 function resetLeaveForm() {
 
     setLeaveInputValue(
-        "leaveLoaiNghi",
+        "leaveType",
         ""
     );
 
-
     setLeaveInputValue(
-        "leaveTuNgay",
+        "leaveFromDate",
         ""
     );
 
-
     setLeaveInputValue(
-        "leaveDenNgay",
+        "leaveToDate",
         ""
     );
 
-
     setLeaveInputValue(
-        "leaveLyDo",
+        "leaveReason",
         ""
     );
 
@@ -599,3 +714,12 @@ function renderEmployeeLeaveStatus(status) {
     return escapeHtml(text);
 
 }
+document.addEventListener("DOMContentLoaded", function() {
+
+    if (document.getElementById("leaveType")) {
+
+        loadEmployeeLeaveTypeConfigs();
+
+    }
+
+});

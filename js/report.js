@@ -709,85 +709,77 @@ function updateReportSummary(rows) {
 // EXPORT REPORT
 // ========================================
 
-function exportReport() {
+function exportMonthlyReport() {
 
-    if (
-        !currentReportRows ||
-        currentReportRows.length === 0
-    ) {
+    const table =
+        getMonthlyReportTableForExport();
 
-        alert(
-            "Không có dữ liệu để xuất."
-        );
+    if (!table) {
+
+        alert("Không tìm thấy bảng báo cáo tháng để xuất.");
 
         return;
 
     }
 
-    const headers = [
+    const month =
+        getExportValueByIds([
+            "reportMonth",
+            "reportFilterMonth",
+            "monthlyReportMonth",
+            "monthReport"
+        ]);
 
-        "Mã NV",
+    const year =
+        getExportValueByIds([
+            "reportYear",
+            "reportFilterYear",
+            "monthlyReportYear",
+            "yearReport"
+        ]);
 
-        "Họ tên",
+    const clonedTable =
+        table.cloneNode(true);
 
-        "Ngày công",
+    clonedTable
+        .querySelectorAll("button, input, select")
+        .forEach(function(element) {
+            element.remove();
+        });
 
-        "Nghỉ phép",
+    styleExportTable(clonedTable);
 
-        "Tổng giờ"
+    const html =
+        '<html>' +
+            '<head>' +
+                '<meta charset="UTF-8">' +
+            '</head>' +
+            '<body>' +
+                '<table style="width:100%; border-collapse:collapse;">' +
+                    '<tr>' +
+                        '<td colspan="20" style="font-size:20px;font-weight:700;text-align:center;color:#14532d;">' +
+                            'BÁO CÁO CÔNG THÁNG' +
+                        '</td>' +
+                    '</tr>' +
+                    '<tr>' +
+                        '<td colspan="20" style="font-size:13px;text-align:center;">' +
+                            'Tháng ' +
+                            escapeHtml(month) +
+                            '/' +
+                            escapeHtml(year) +
+                        '</td>' +
+                    '</tr>' +
+                    '<tr><td colspan="20">&nbsp;</td></tr>' +
+                '</table>' +
 
-    ];
+                clonedTable.outerHTML +
+            '</body>' +
+        '</html>';
 
-    const lines = [
-        headers.join(",")
-    ];
-
-    currentReportRows.forEach(function(row) {
-
-        const values = [
-
-            row.manv,
-
-            row.hoten,
-
-            formatReportNumber(row.ngayCong),
-
-            formatReportNumber(row.nghiPhep),
-
-            formatReportNumber(row.tongGio)
-
-        ];
-
-        lines.push(
-            values.map(csvEscape)
-                .join(",")
-        );
-
-    });
-
-    const blob = new Blob(
-        [
-            "\uFEFF" + lines.join("\n")
-        ],
-        {
-            type: "text/csv;charset=utf-8;"
-        }
+    downloadHtmlExcelFile(
+        html,
+        "bao-cao-thang-" + month + "-" + year + ".xls"
     );
-
-    const url =
-        URL.createObjectURL(blob);
-
-    const link =
-        document.createElement("a");
-
-    link.href = url;
-
-    link.download =
-        "bao-cao-thang.csv";
-
-    link.click();
-
-    URL.revokeObjectURL(url);
 
 }
 
@@ -881,5 +873,404 @@ function csvEscape(value) {
     return '"' +
         text.replace(/"/g, '""') +
         '"';
+
+}
+async function exportReport() {
+
+    const month =
+        document.getElementById("reportMonth")?.value || "";
+
+    const year =
+        document.getElementById("reportYear")?.value || "";
+
+    const pb =
+        document.getElementById("reportPB")?.value || "all";
+
+    try {
+
+        const summaryList =
+            await apiGet(
+                "report",
+                {
+                    month: month,
+                    year: year,
+                    pb: pb
+                }
+            );
+
+        if (
+            !Array.isArray(summaryList) ||
+            summaryList.length === 0
+        ) {
+
+            alert("Không có dữ liệu báo cáo để xuất.");
+
+            return;
+
+        }
+
+        const detailMap = {};
+
+        for (
+            let i = 0;
+            i < summaryList.length;
+            i++
+        ) {
+
+            const employee =
+                summaryList[i];
+
+            if (
+                !employee.manv ||
+                Number(employee.days || 0) === 0
+            ) {
+
+                detailMap[employee.manv] =
+                    [];
+
+                continue;
+
+            }
+
+            detailMap[employee.manv] =
+                await apiGet(
+                    "reportDetail",
+                    {
+                        manv: employee.manv,
+                        month: month,
+                        year: year
+                    }
+                );
+
+        }
+
+        const html =
+            buildFullMonthlyReportExcelHtml(
+                summaryList,
+                detailMap,
+                month,
+                year
+            );
+
+        downloadMonthlyReportExcel(
+            html,
+            "bang-cong-tong-va-chi-tiet-" +
+            month +
+            "-" +
+            year +
+            ".xls"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "exportReport:",
+            error
+        );
+
+        alert(
+            "Không xuất được báo cáo tháng."
+        );
+
+    }
+
+}
+function getMonthlyReportTableForExport() {
+
+    const selectors = [
+        "#reportList table",
+        "#reportResult table",
+        "#monthlyReportList table",
+        "#reportSection table"
+    ];
+
+    for (
+        let i = 0;
+        i < selectors.length;
+        i++
+    ) {
+
+        const table =
+            document.querySelector(
+                selectors[i]
+            );
+
+        if (
+            table &&
+            table.querySelectorAll("tr").length > 1
+        ) {
+
+            return table;
+
+        }
+
+    }
+
+    return null;
+
+}
+function buildFullMonthlyReportExcelHtml(
+    summaryList,
+    detailMap,
+    month,
+    year
+) {
+
+    let totalEmployees = 0;
+    let totalDays = 0;
+    let totalHours = 0;
+    let totalOT = 0;
+    let totalLate = 0;
+
+    summaryList.forEach(function(item) {
+
+        if (Number(item.days || 0) > 0) {
+            totalEmployees++;
+        }
+
+        totalDays += Number(item.days || 0);
+        totalHours += Number(item.hours || 0);
+
+        totalOT += Number(item.ot || 0);
+        totalLate += Number(item.late || 0);
+
+    });
+
+    let html =
+        '<html>' +
+        '<head>' +
+            '<meta charset="UTF-8">' +
+            '<style>' +
+                'body{font-family:Arial,sans-serif;font-size:12px;}' +
+                'table{border-collapse:collapse;width:100%;}' +
+                'td,th{border:1px solid #d9ead3;padding:6px;vertical-align:middle;}' +
+                'th{background:#15803d;color:#ffffff;font-weight:bold;text-align:center;}' +
+                '.title{font-size:20px;font-weight:bold;color:#14532d;text-align:center;}' +
+                '.subtitle{text-align:center;font-size:13px;}' +
+                '.section{background:#dcfce7;color:#14532d;font-weight:bold;font-size:14px;}' +
+                '.center{text-align:center;}' +
+                '.right{text-align:right;}' +
+                '.late{color:#b91c1c;font-weight:bold;}' +
+            '</style>' +
+        '</head>' +
+        '<body>' +
+        '<table>' +
+
+            '<tr>' +
+                '<td colspan="8" class="title">BẢNG CÔNG TỔNG VÀ CHI TIẾT NHÂN VIÊN</td>' +
+            '</tr>' +
+
+            '<tr>' +
+                '<td colspan="8" class="subtitle">Tháng ' +
+                    escapeHtml(month) +
+                    '/' +
+                    escapeHtml(year) +
+                '</td>' +
+            '</tr>' +
+
+            '<tr><td colspan="8">&nbsp;</td></tr>' +
+
+            '<tr>' +
+                '<th>Nhân viên có công</th>' +
+                '<th>Tổng ngày công</th>' +
+                '<th>Tổng giờ</th>' +
+                '<th>Tổng OT</th>' +
+                '<th>Tổng trễ phút</th>' +
+                '<th colspan="3"></th>' +
+            '</tr>' +
+
+            '<tr>' +
+                '<td class="center">' + escapeHtml(totalEmployees) + '</td>' +
+                '<td class="center">' + escapeHtml(formatReportExportNumber(totalDays)) + '</td>' +
+                '<td class="center">' + escapeHtml(formatReportExportNumber(totalHours)) + '</td>' +
+                '<td class="center">' + escapeHtml(formatReportExportNumber(totalOT)) + '</td>' +
+                '<td class="center">' + escapeHtml(totalLate) + '</td>' +
+                '<td colspan="3"></td>' +
+            '</tr>' +
+
+            '<tr><td colspan="8">&nbsp;</td></tr>' +
+
+            '<tr>' +
+                '<td colspan="8" class="section">BẢNG TỔNG NHÂN VIÊN</td>' +
+            '</tr>' +
+
+            '<tr>' +
+                '<th>Mã NV</th>' +
+                '<th>Họ tên</th>' +
+                '<th>PB</th>' +
+                '<th>Ngày công</th>' +
+                '<th>Tổng giờ</th>' +
+                '<th>OT</th>' +
+                '<th>Trễ phút</th>' +
+                '<th>Ghi chú</th>' +
+            '</tr>';
+
+    summaryList.forEach(function(item) {
+
+        if (Number(item.days || 0) === 0) {
+            return;
+        }
+
+        html +=
+            '<tr>' +
+                '<td>' + escapeHtml(item.manv || "") + '</td>' +
+                '<td>' + escapeHtml(item.hoten || "") + '</td>' +
+                '<td>' + escapeHtml(item.pb || "") + '</td>' +
+                '<td class="right">' + escapeHtml(formatReportExportNumber(item.days || 0)) + '</td>' +
+                '<td class="right">' + escapeHtml(formatReportExportNumber(item.hours || 0)) + '</td>' +
+                '<td class="right">' + escapeHtml(formatReportExportNumber(item.ot || 0)) + '</td>' +
+                '<td class="right ' + (Number(item.late || 0) > 0 ? 'late' : '') + '">' +
+                    escapeHtml(Number(item.late || 0) > 0 ? item.late : "") +
+                '</td>' +
+                '<td></td>' +
+            '</tr>';
+
+    });
+
+    html +=
+        '<tr><td colspan="8">&nbsp;</td></tr>' +
+        '<tr>' +
+            '<td colspan="8" class="section">CHI TIẾT CHẤM CÔNG TỪNG NHÂN VIÊN</td>' +
+        '</tr>';
+
+    summaryList.forEach(function(employee) {
+
+        const detailList =
+            detailMap[employee.manv] || [];
+
+        if (!detailList || detailList.length === 0) {
+            return;
+        }
+
+        html +=
+            '<tr><td colspan="8">&nbsp;</td></tr>' +
+
+            '<tr>' +
+                '<td colspan="8" class="section">' +
+                    escapeHtml(employee.manv || "") +
+                    ' - ' +
+                    escapeHtml(employee.hoten || "") +
+                    ' - ' +
+                    escapeHtml(employee.pb || "") +
+                '</td>' +
+            '</tr>' +
+
+            '<tr>' +
+                '<th>Ngày</th>' +
+                '<th>Công trình</th>' +
+                '<th>Check In</th>' +
+                '<th>Check Out</th>' +
+                '<th>Tổng giờ</th>' +
+                '<th>Công</th>' +
+                '<th>OT</th>' +
+                '<th>Trễ</th>' +
+            '</tr>';
+
+        detailList.forEach(function(row) {
+
+            const late =
+                Number(row.late || 0);
+
+            html +=
+                '<tr>' +
+                    '<td class="center">' + escapeHtml(formatReportExportDate(row.date)) + '</td>' +
+                    '<td>' + escapeHtml(row.site || "") + '</td>' +
+                    '<td class="center">' + escapeHtml(row.checkin || "") + '</td>' +
+                    '<td class="center">' + escapeHtml(row.checkout || "") + '</td>' +
+                    '<td class="right">' + escapeHtml(formatReportExportNumber(row.hours || 0)) + '</td>' +
+                    '<td class="right">' + escapeHtml(formatReportExportNumber(row.daywork || 0)) + '</td>' +
+                    '<td class="right">' + escapeHtml(formatReportExportNumber(row.ot || 0)) + '</td>' +
+                    '<td class="right ' + (late > 0 ? 'late' : '') + '">' +
+                        escapeHtml(late > 0 ? late : "") +
+                    '</td>' +
+                '</tr>';
+
+        });
+
+    });
+
+    html +=
+        '</table>' +
+        '</body>' +
+        '</html>';
+
+    return html;
+
+}
+
+
+function formatReportExportDate(value) {
+
+    if (!value) {
+
+        return "";
+
+    }
+
+    const text =
+        String(value);
+
+    if (/^\d{4}-\d{2}-\d{2}/.test(text)) {
+
+        const parts =
+            text.substring(0, 10).split("-");
+
+        return parts[2] + "/" + parts[1] + "/" + parts[0];
+
+    }
+
+    return text;
+
+}
+
+
+function formatReportExportNumber(value) {
+
+    const numberValue =
+        Number(value || 0);
+
+    if (isNaN(numberValue)) {
+
+        return value || "";
+
+    }
+
+    return numberValue.toFixed(2).replace(".00", "");
+
+}
+
+
+function downloadMonthlyReportExcel(
+    html,
+    fileName
+) {
+
+    const blob =
+        new Blob(
+            [html],
+            {
+                type: "application/vnd.ms-excel;charset=utf-8;"
+            }
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const link =
+        document.createElement("a");
+
+    link.href =
+        url;
+
+    link.download =
+        fileName;
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
 
 }

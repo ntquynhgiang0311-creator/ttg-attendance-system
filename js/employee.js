@@ -109,11 +109,11 @@ function renderNhanVien(list) {
                 '<td>' + escapeHtml(pb) + '</td>' +
                 '<td>' + escapeHtml(status) + '</td>' +
                 '<td>' +
-                    '<div class="action-buttons">' +
-                        '<button type="button" class="edit-btn" onclick="openEmployeeProfile(\'' + manv + '\')">Hồ sơ</button>' +
-                        '<button type="button" class="lock-btn" onclick="toggleEmployee(\'' + manv + '\')">Khóa/Mở</button>' +
-                    '</div>' +
-                '</td>' +
+    '<div class="action-buttons">' +
+        '<button type="button" class="edit-btn" onclick="openEmployeeProfile(\'' + manv + '\')">Hồ sơ</button>' +
+        '<button type="button" class="lock-btn" onclick="toggleEmployee(\'' + manv + '\')">Khóa/Mở</button>' +
+    '</div>' +
+'</td>' +
             '</tr>';
 
     });
@@ -438,94 +438,65 @@ function editEmployee(manv) {
 
 async function toggleEmployee(manv) {
 
-    const nv =
-        nhanVien.find(function(item) {
+    manv =
+        String(manv || "").trim();
 
-            return item.manv === manv;
+    console.log("toggleEmployee nhận manv:", manv);
 
-        });
+    if (!manv) {
 
-    if (!nv) {
-
-        alert(
-            "Không tìm thấy nhân viên."
-        );
+        alert("Thiếu mã nhân viên.");
 
         return;
 
     }
 
-    const isActive =
-        String(nv.status || "")
-            .toLowerCase() === "active";
+    const ok =
+        confirm("Xác nhận khóa/mở nhân viên " + manv + "?");
 
-    const actionText =
-        isActive
-            ? "khóa"
-            : "mở khóa";
-
-    const confirmed =
-        confirm(
-            "Bạn có chắc muốn " +
-            actionText +
-            " nhân viên \"" +
-            nv.hoten +
-            "\"?"
-        );
-
-    if (!confirmed) {
+    if (!ok) {
 
         return;
 
     }
+
+    const currentUser =
+        getCurrentUser() || {};
+
+    const payload = {
+        manv: manv,
+        actorManv: currentUser.manv || ""
+    };
+
+    console.log("payload toggleEmployee:", payload);
 
     try {
-
-        const currentUser =
-            getCurrentUser() || {};
 
         const result =
             await apiPostText(
                 "toggleEmployee",
-                {
-                    manv:
-                        manv,
-
-                    actorManv:
-                        currentUser.manv || ""
-                }
+                payload
             );
+
+        console.log("Kết quả toggleEmployee:", result);
 
         if (result !== "OK") {
 
-            alert(
-                result ||
-                "Không cập nhật được trạng thái nhân viên."
-            );
+            alert(result);
 
             return;
 
         }
 
+        alert("Đã cập nhật trạng thái nhân viên.");
+
         await loadNhanVien();
 
-        if (typeof loadDashboard === "function") {
+    } catch (error) {
 
-            await loadDashboard();
+        console.error("toggleEmployee:", error);
 
-        }
-
-    }
-    catch (error) {
-
-        console.error(
-            "toggleEmployee:",
-            error
-        );
-
-        alert(
-            "Không thể kết nối hệ thống."
-        );
+        alert("Không khóa/mở được nhân viên.");
 
     }
 

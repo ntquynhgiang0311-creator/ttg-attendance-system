@@ -1406,3 +1406,118 @@ function formatMoney(value) {
     );
 
 }
+window.openEmployeeProfile = async function(manv) {
+
+    manv = String(manv || "").trim();
+
+    if (!manv) {
+        alert("Thiếu mã nhân viên.");
+        return;
+    }
+
+    try {
+
+        const panel =
+            document.getElementById("hrProfilePanel");
+
+        if (!panel) {
+            alert("Không tìm thấy khung hồ sơ nhân viên.");
+            return;
+        }
+
+        const employees =
+            await apiGet("employees");
+
+        const list =
+            Array.isArray(employees)
+                ? employees
+                : employees.data || employees.employees || [];
+
+        const employee =
+            list.find(function(item) {
+                return String(item.manv || item.maNV || item.MaNV || "").trim() === manv;
+            });
+
+        if (!employee) {
+            alert("Không tìm thấy nhân viên " + manv);
+            return;
+        }
+
+        setHRValue("hrManv", manv);
+        setHRValue("hrEmployeeName", (employee.hoten || employee.hoTen || employee.HoTen || "") + " - " + manv);
+        setHRValue("hrNgaySinh", formatHRDateInput(employee.ngaySinh || ""));
+        setHRValue("hrGioiTinh", employee.gioiTinh || "");
+        setHRValue("hrCCCD", employee.cccd || "");
+        setHRValue("hrNgayCapCCCD", formatHRDateInput(employee.ngayCapCCCD || ""));
+        setHRValue("hrNoiCapCCCD", employee.noiCapCCCD || "");
+        setHRValue("hrDiaChi", employee.diaChi || "");
+        setHRValue("hrEmail", employee.email || "");
+        setHRValue("hrMaChucVu", employee.maChucVu || "");
+        setHRValue("hrNgayVaoLam", formatHRDateInput(employee.ngayVaoLam || ""));
+        setHRValue("hrTaiKhoanNganHang", employee.taiKhoanNganHang || "");
+        setHRValue("hrTenNganHang", employee.tenNganHang || "");
+        setHRValue("hrTrangThaiNhanSu", employee.trangThaiNhanSu || "");
+        setHRValue("hrAvatarURL", employee.avatarUrl || employee.avatarURL || "");
+        setHRValue("hrGhiChu", employee.ghiChu || "");
+
+        panel.style.display =
+            "block";
+
+        panel.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+        if (typeof loadEmployeeContracts === "function") {
+            await loadEmployeeContracts(manv);
+        }
+
+    } catch (error) {
+
+        console.error("openEmployeeProfile:", error);
+        alert("Không mở được hồ sơ nhân viên.");
+
+    }
+
+};
+
+
+function setHRValue(id, value) {
+
+    const element =
+        document.getElementById(id);
+
+    if (element) {
+        element.value = value || "";
+    }
+
+}
+
+
+function formatHRDateInput(value) {
+
+    if (!value) {
+        return "";
+    }
+
+    const text =
+        String(value);
+
+    if (/^\d{4}-\d{2}-\d{2}/.test(text)) {
+        return text.substring(0, 10);
+    }
+
+    const date =
+        new Date(value);
+
+    if (isNaN(date.getTime())) {
+        return "";
+    }
+
+    return date.getFullYear() +
+        "-" +
+        String(date.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(date.getDate()).padStart(2, "0");
+
+}

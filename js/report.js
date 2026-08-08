@@ -1531,6 +1531,9 @@ async function exportDailyAttendanceReport() {
     const date =
         document.getElementById("dailyAttendanceDate")?.value || "";
 
+    const pb =
+        document.getElementById("dailyAttendancePB")?.value || "all";
+
     if (!date) {
 
         alert("Vui lòng chọn ngày.");
@@ -1539,41 +1542,67 @@ async function exportDailyAttendanceReport() {
 
     }
 
-    if (
-        !window.currentDailyAttendanceRows ||
-        window.currentDailyAttendanceRows.length === 0
-    ) {
+    try {
 
-        await loadDailyAttendanceReport();
+        const data =
+            await apiGet(
+                "dailyAttendanceReport",
+                {
+                    date: date,
+                    pb: pb
+                }
+            );
 
-    }
+        const rows =
+            Array.isArray(data)
+                ? data
+                : [];
 
-    if (
-        !currentDailyAttendanceRows ||
-        currentDailyAttendanceRows.length === 0
-    ) {
+        window.currentDailyAttendanceRows =
+            rows;
 
-        alert("Không có dữ liệu để xuất.");
+        renderDailyAttendanceReport(rows);
+        updateDailyAttendanceSummary(rows);
 
-        return;
+        if (rows.length === 0) {
 
-    }
+            alert(
+                "Không có dữ liệu để xuất cho ngày " +
+                formatDailyAttendanceDate(date) +
+                "."
+            );
 
-    const html =
-        buildDailyAttendanceExcelHtml(
-            window.currentDailyAttendanceRows,
-            date
+            return;
+
+        }
+
+        const html =
+            buildDailyAttendanceExcelHtml(
+                rows,
+                date
+            );
+
+        downloadDailyAttendanceExcel(
+            html,
+            "bang-cong-ngay-" +
+            date +
+            ".xls"
         );
 
-    downloadDailyAttendanceExcel(
-        html,
-        "bang-cong-ngay-" +
-        date +
-        ".xls"
-    );
+    } catch (error) {
+
+        console.error(
+            "exportDailyAttendanceReport:",
+            error
+        );
+
+        alert(
+            "Không xuất được bảng công ngày."
+        );
+
+    }
 
 }
-
 
 function buildDailyAttendanceExcelHtml(
     list,

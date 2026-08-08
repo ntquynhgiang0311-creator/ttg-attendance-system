@@ -1382,17 +1382,17 @@ async function loadDailyAttendanceReport() {
                 }
             );
 
-        currentDailyAttendanceRows =
+        window.currentDailyAttendanceRows =
             Array.isArray(data)
                 ? data
                 : [];
 
         renderDailyAttendanceReport(
-            currentDailyAttendanceRows
+            window.currentDailyAttendanceRows
         );
 
         updateDailyAttendanceSummary(
-            currentDailyAttendanceRows
+            window.currentDailyAttendanceRows
         );
 
     } catch (error) {
@@ -1540,8 +1540,8 @@ async function exportDailyAttendanceReport() {
     }
 
     if (
-        !currentDailyAttendanceRows ||
-        currentDailyAttendanceRows.length === 0
+        !window.currentDailyAttendanceRows ||
+        window.currentDailyAttendanceRows.length === 0
     ) {
 
         await loadDailyAttendanceReport();
@@ -1561,7 +1561,7 @@ async function exportDailyAttendanceReport() {
 
     const html =
         buildDailyAttendanceExcelHtml(
-            currentDailyAttendanceRows,
+            window.currentDailyAttendanceRows,
             date
         );
 
@@ -1817,20 +1817,48 @@ function downloadDailyAttendanceExcel(
     URL.revokeObjectURL(url);
 
 }
+window.currentDailyAttendanceRows =
+    window.currentDailyAttendanceRows || [];
+
 window.loadDailyAttendanceReport =
     loadDailyAttendanceReport;
 
 window.exportDailyAttendanceReport =
     exportDailyAttendanceReport;
 
-window.syncDailyAttendanceDepartmentOptions =
-    syncDailyAttendanceDepartmentOptions;
-
 document.addEventListener("DOMContentLoaded", function() {
 
-    if (typeof initDailyAttendanceReport === "function") {
+    const input =
+        document.getElementById("dailyAttendanceDate");
 
-        initDailyAttendanceReport();
+    if (input && !input.value) {
+
+        const today =
+            new Date();
+
+        input.value =
+            today.getFullYear() +
+            "-" +
+            String(today.getMonth() + 1).padStart(2, "0") +
+            "-" +
+            String(today.getDate()).padStart(2, "0");
+
+    }
+
+    const dailyPB =
+        document.getElementById("dailyAttendancePB");
+
+    const reportPB =
+        document.getElementById("reportPB");
+
+    if (
+        dailyPB &&
+        reportPB &&
+        reportPB.options.length > 0
+    ) {
+
+        dailyPB.innerHTML =
+            reportPB.innerHTML;
 
     }
 

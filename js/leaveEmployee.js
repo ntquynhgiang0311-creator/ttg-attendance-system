@@ -107,29 +107,26 @@ document.addEventListener(
 
 async function initEmployeeLeave() {
 
-    const leaveForm =
-        document.getElementById(
-            "leaveLoaiNghi"
-        );
+    const leaveSection =
+        document.getElementById("employeeLeaveList") ||
+        document.getElementById("leaveType");
 
-
-    if (!leaveForm) {
+    if (!leaveSection) {
 
         return;
 
     }
-
 
     const user =
         getCurrentUser();
 
-
-    if (!user) {
+    if (!user || !user.manv) {
 
         return;
 
     }
 
+    await loadEmployeeLeaveTypeConfigs();
 
     await loadMyLeaveRequests();
 
@@ -714,12 +711,30 @@ function renderEmployeeLeaveStatus(status) {
     return escapeHtml(text);
 
 }
-document.addEventListener("DOMContentLoaded", function() {
+function getEmployeeLeaveTypeText(item) {
 
-    if (document.getElementById("leaveType")) {
+    if (!item) {
 
-        loadEmployeeLeaveTypeConfigs();
+        return "";
 
     }
 
-});
+    const nhomNghi =
+        item.nhomNghi || "";
+
+    const chiTietNghi =
+        item.chiTietNghi || item.loaiNghi || "";
+
+    if (
+        nhomNghi &&
+        chiTietNghi &&
+        nhomNghi !== chiTietNghi
+    ) {
+
+        return nhomNghi + " - " + chiTietNghi;
+
+    }
+
+    return chiTietNghi || nhomNghi || "";
+
+}

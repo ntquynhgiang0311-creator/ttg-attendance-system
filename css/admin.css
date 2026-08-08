@@ -1263,3 +1263,190 @@ transform:translateY(-2px);
 #siteAllowanceExcludeList {
     margin-top: 22px !important;
 }
+/* ================================
+   DAILY ATTENDANCE - SYNC REPORT UI
+================================ */
+
+#reportSection .daily-attendance-card {
+    margin-top: 28px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+#reportSection .daily-attendance-card .section-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: #1f1f1f;
+}
+
+/* Filter giống báo cáo tháng */
+#reportSection .daily-filter-stack {
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+#reportSection .daily-filter-stack label {
+    display: block;
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #117A43;
+}
+
+#reportSection .daily-filter-stack input,
+#reportSection .daily-filter-stack select {
+    width: 100%;
+    height: 52px;
+    padding: 0 18px;
+    font-size: 16px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    background: #ffffff;
+    margin-top: 6px;
+    margin-bottom: 18px;
+    box-sizing: border-box;
+}
+
+#reportSection .daily-filter-stack input:focus,
+#reportSection .daily-filter-stack select:focus {
+    outline: none;
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+}
+
+/* Nút dùng style y chang report */
+#reportSection .daily-action-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+#reportSection .daily-action-row button {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s;
+    min-width: 130px;
+}
+
+/* Summary dùng chung .report-summary + .summary-card */
+#reportSection .daily-report-summary {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+#reportSection .daily-report-summary .summary-card {
+    flex: 1;
+    min-width: 140px;
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    text-align: center;
+}
+
+#reportSection .daily-report-summary .summary-card h2 {
+    margin: 0;
+    font-size: 28px;
+    color: #2563eb;
+}
+
+#reportSection .daily-report-summary .summary-card p {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Table giống table báo cáo tháng */
+#reportSection .daily-table-wrapper {
+    background: #ffffff;
+    border-radius: 18px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,.05);
+    margin-bottom: 30px;
+}
+
+#reportSection .daily-attendance-table {
+    width: 100%;
+    min-width: 1180px;
+    border-collapse: collapse;
+    background: #ffffff;
+    box-shadow: none;
+    border-radius: 0;
+    overflow: visible;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+#reportSection .daily-attendance-table th {
+    background: #117A43;
+    color: #ffffff;
+    padding: 16px;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+}
+
+#reportSection .daily-attendance-table td {
+    padding: 14px;
+    font-size: 15px;
+    color: #333333;
+    border-bottom: 1px solid #eeeeee;
+    vertical-align: middle;
+    background: #ffffff;
+    white-space: nowrap;
+}
+
+#reportSection .daily-attendance-table tbody tr:hover td {
+    background: #f8faf8;
+}
+
+#dailyAttendanceTable td[colspan="12"],
+#dailyAttendanceTable .empty-cell {
+    text-align: center;
+    color: #6b7280;
+    padding: 18px;
+    font-weight: 600;
+}
+
+/* Căn số */
+#dailyAttendanceTable td:nth-child(8),
+#dailyAttendanceTable td:nth-child(9),
+#dailyAttendanceTable td:nth-child(10),
+#dailyAttendanceTable td:nth-child(11) {
+    text-align: right;
+    font-weight: 600;
+}
+
+#dailyAttendanceTable td:nth-child(11) {
+    color: #b91c1c;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    #reportSection .daily-action-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #reportSection .daily-action-row button {
+        width: 100%;
+    }
+
+    #reportSection .daily-report-summary {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+}

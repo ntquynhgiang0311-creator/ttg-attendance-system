@@ -15,149 +15,112 @@ async function loadNhanVien() {
 
     try {
 
-        nhanVien = await apiGet(
-            "employeeList"
-        );
+        const data =
+            await apiGet("employees");
 
-        renderNhanVien();
+        const list =
+            Array.isArray(data)
+                ? data
+                : data.employees || data.data || [];
 
-    }
-    catch (error) {
+        renderNhanVien(list);
 
-        console.error(
-            "loadNhanVien:",
-            error
-        );
+    } catch (error) {
 
-        nhanVien = [];
+        console.error("loadNhanVien:", error);
 
-        renderNhanVien();
+        const tbody =
+            document.getElementById("employeeList") ||
+            document.getElementById("nhanVienList");
 
-        throw error;
+        if (tbody) {
+
+            tbody.innerHTML =
+                '<tr><td colspan="7">Không tải được danh sách nhân viên.</td></tr>';
+
+        }
 
     }
 
 }
-
 
 // ========================================
 // RENDER DANH SÁCH NHÂN VIÊN
 // ========================================
 
-function renderNhanVien() {
+function renderNhanVien(list) {
 
-    const table =
-        document.getElementById(
-            "tableEmployee"
-        );
+    const tbody =
+        document.getElementById("employeeList");
 
-    if (!table) {
-
+    if (!tbody) {
+        console.error("Không tìm thấy tbody #employeeList");
         return;
-
     }
 
-    if (
-        !Array.isArray(nhanVien) ||
-        nhanVien.length === 0
-    ) {
-
-        table.innerHTML = `
-            <tr>
-                <td colspan="7">
-                    Chưa có nhân viên
-                </td>
-            </tr>
-        `;
-
+    if (!Array.isArray(list) || list.length === 0) {
+        tbody.innerHTML =
+            '<tr><td colspan="7">Chưa có nhân viên</td></tr>';
         return;
-
     }
 
-    table.innerHTML =
-        nhanVien.map(function(nv) {
+    let html = "";
 
-            const isActive =
-                String(nv.status || "")
-                    .toLowerCase() === "active";
+    list.forEach(function(item) {
 
-            const toggleButton =
-                isActive
-                    ? `
-                        <button
-                            class="btn btn-sm btn-danger"
-                            onclick="toggleEmployee('${escapeHtml(nv.manv)}')"
-                        >
-                            🔒 Khóa
-                        </button>
-                      `
-                    : `
-                        <button
-                            class="btn btn-sm btn-primary"
-                            onclick="toggleEmployee('${escapeHtml(nv.manv)}')"
-                        >
-                            ✅ Mở
-                        </button>
-                      `;
+        const manv =
+            item.manv ||
+            item.maNV ||
+            item.MaNV ||
+            "";
 
-            return `
-                <tr>
+        const hoten =
+            item.hoten ||
+            item.hoTen ||
+            item.HoTen ||
+            "";
 
-                    <td>
-                        ${escapeHtml(nv.manv)}
-                    </td>
+        const sdt =
+            item.sdt ||
+            item.SDT ||
+            "";
 
-                    <td>
-                        ${escapeHtml(nv.hoten)}
-                    </td>
+        const role =
+            item.role ||
+            item.Role ||
+            "";
 
-                    <td>
-                        ${escapeHtml(nv.sdt)}
-                    </td>
+        const pb =
+            item.pb ||
+            item.PB ||
+            "";
 
-                    <td>
-                        ${escapeHtml(nv.role)}
-                    </td>
+        const status =
+            item.status ||
+            item.Status ||
+            "";
 
-                    <td>
-                        ${escapeHtml(nv.pb || "")}
-                    </td>
+        html +=
+            '<tr>' +
+                '<td>' + escapeHtml(manv) + '</td>' +
+                '<td>' + escapeHtml(hoten) + '</td>' +
+                '<td>' + escapeHtml(sdt) + '</td>' +
+                '<td>' + escapeHtml(role) + '</td>' +
+                '<td>' + escapeHtml(pb) + '</td>' +
+                '<td>' + escapeHtml(status) + '</td>' +
+                '<td>' +
+                    '<div class="action-buttons">' +
+                        '<button type="button" class="edit-btn" onclick="openEmployeeProfile(\'' + manv + '\')">Hồ sơ</button>' +
+                        '<button type="button" class="lock-btn" onclick="toggleEmployee(\'' + manv + '\')">Khóa/Mở</button>' +
+                    '</div>' +
+                '</td>' +
+            '</tr>';
 
-                    <td>
-                        <span class="${isActive ? "active" : "inactive"}">
-                            ${escapeHtml(nv.status)}
-                        </span>
-                    </td>
+    });
 
-                    <td>
-                        <div class="action-buttons">
-
-                            <button
-                                class="btn btn-sm btn-warning"
-                                onclick="editEmployee('${escapeHtml(nv.manv)}')"
-                            >
-                                ✏️ Sửa
-                            </button>
-
-                            <button
-                                class="btn btn-sm btn-info"
-                                onclick="openHREmployeeProfile('${escapeHtml(nv.manv)}')"
-                            >
-                                👤 Hồ sơ
-                            </button>
-
-                            ${toggleButton}
-
-                        </div>
-                    </td>
-
-                </tr>
-            `;
-
-        }).join("");
+    tbody.innerHTML = html;
 
 }
-
 
 // ========================================
 // LẤY DỮ LIỆU FORM

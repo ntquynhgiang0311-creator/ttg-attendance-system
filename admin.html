@@ -76,21 +76,21 @@
       📈 Báo cáo
     </button>
 
-    <button id="btnContract">
-      📄 Hợp đồng
-    </button>
+   <button id="btnContract" onclick="openContractSectionClean()">
+    📄 Hợp đồng
+</button>
 
-    <button id="btnLeave">
-     📝 Nghỉ phép
-    </button>
+<button id="btnLeave" onclick="openLeaveSectionClean()">
+    📝 Nghỉ phép
+</button>
 
-    <button id="btnAdvance">
-      💵 Tạm ứng
-      </button>
+<button id="btnAdvance" onclick="openAdvanceSectionClean()">
+    💵 Tạm ứng
+</button>
 
-    <button id="btnPayroll">
-  💰 Lương
-    </button>
+<button id="btnPayroll" onclick="openPayrollSectionClean()">
+    💰 Lương
+</button>
 <button id="btnSystemLog">
   📜 Nhật ký
 </button>
@@ -223,7 +223,7 @@
           </tr>
         </thead>
 
-        <tbody id="tableEmployee"></tbody>
+        <tbody id="employeeList"></tbody>
       </table>
 
     </div>
@@ -678,61 +678,108 @@
 
     </div>
 
-    <div class="form-card">
+<div class="form-card daily-attendance-card">
 
-      <h3 class="section-title">
-        📄 Bảng công nhân viên
-      </h3>
+    <h3 class="section-title">
+        📅 Bảng công ngày
+    </h3>
 
-      <div class="filter-row">
+    <div class="daily-filter-stack">
 
-        <select id="reportEmployee"></select>
+        <label>Ngày</label>
+        <input type="date" id="dailyAttendanceDate">
 
-        <select id="detailMonth"></select>
-
-        <select id="detailYear"></select>
-
-        <button
-          class="btn-report"
-          onclick="loadReportDetail()"
-        >
-          📊 Xem bảng công
-        </button>
-
-        <button
-          class="btn-export"
-          onclick="exportEmployeeReport()"
-        >
-          📥 Xuất Excel
-        </button>
-
-      </div>
-
-      <div class="table-wrapper">
-
-        <table>
-          <thead>
-            <tr>
-              <th>Ngày</th>
-              <th>Công trình</th>
-              <th>Check In</th>
-              <th>Check Out</th>
-              <th>Tổng giờ</th>
-              <th>Công</th>
-              <th>OT</th>
-              <th>Trễ</th>
-            </tr>
-          </thead>
-
-          <tbody id="tableReportDetail"></tbody>
-        </table>
-
-      </div>
+        <label>Phòng ban</label>
+        <select id="dailyAttendancePB">
+            <option value="all">Tất cả PB</option>
+        </select>
 
     </div>
 
-  </div>
+    <div class="filter-row daily-action-row">
 
+        <button
+            type="button"
+            class="btn-report"
+            onclick="loadDailyAttendanceReport()"
+        >
+            🔍 Xem bảng công ngày
+        </button>
+
+        <button
+            type="button"
+            class="btn-export"
+            onclick="exportDailyAttendanceReport()"
+        >
+            📥 Xuất Excel
+        </button>
+
+    </div>
+
+    <div class="report-summary daily-report-summary">
+
+        <div class="summary-card">
+            <h2 id="dailyAttendanceNV">0</h2>
+            <p>Nhân viên có công</p>
+        </div>
+
+        <div class="summary-card">
+            <h2 id="dailyAttendanceDays">0</h2>
+            <p>Tổng ngày công</p>
+        </div>
+
+        <div class="summary-card">
+            <h2 id="dailyAttendanceHours">0</h2>
+            <p>Tổng giờ</p>
+        </div>
+
+        <div class="summary-card">
+            <h2 id="dailyAttendanceOT">0</h2>
+            <p>OT</p>
+        </div>
+
+        <div class="summary-card">
+            <h2 id="dailyAttendanceLate">0</h2>
+            <p>Trễ phút</p>
+        </div>
+
+    </div>
+
+    <div class="table-wrapper daily-table-wrapper">
+
+        <table class="daily-attendance-table">
+
+            <thead>
+                <tr>
+                    <th>Ngày</th>
+                    <th>Mã NV</th>
+                    <th>Họ tên</th>
+                    <th>PB</th>
+                    <th>Công trình</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                    <th>Tổng giờ</th>
+                    <th>Công</th>
+                    <th>OT</th>
+                    <th>Trễ</th>
+                    <th>Ghi chú</th>
+                </tr>
+            </thead>
+
+            <tbody id="dailyAttendanceTable">
+                <tr>
+                    <td colspan="12" class="empty-cell">
+                        Chọn ngày để xem bảng công.
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+ </div>
   <!-- Quản lý hợp đồng tổng -->
   <div id="contractSection" class="section">
 
@@ -1210,7 +1257,6 @@
     ></p>
 
   </div>
-
 </div>
 <div id="systemLogSection" class="section">
 

@@ -1274,3 +1274,564 @@ function downloadMonthlyReportExcel(
     URL.revokeObjectURL(url);
 
 }
+let currentDailyAttendanceRows = [];
+
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    initDailyAttendanceReport();
+
+});
+
+
+function initDailyAttendanceReport() {
+
+    initDailyAttendanceDate();
+
+    syncDailyAttendanceDepartmentOptions();
+
+}
+
+
+function initDailyAttendanceDate() {
+
+    const input =
+        document.getElementById("dailyAttendanceDate");
+
+    if (!input) {
+
+        return;
+
+    }
+
+    if (input.value) {
+
+        return;
+
+    }
+
+    const today =
+        new Date();
+
+    input.value =
+        today.getFullYear() +
+        "-" +
+        String(today.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(today.getDate()).padStart(2, "0");
+
+}
+
+
+function syncDailyAttendanceDepartmentOptions() {
+
+    const dailySelect =
+        document.getElementById("dailyAttendancePB");
+
+    if (!dailySelect) {
+
+        return;
+
+    }
+
+    const monthlySelect =
+        document.getElementById("reportPB");
+
+    if (
+        monthlySelect &&
+        monthlySelect.options.length > 0
+    ) {
+
+        dailySelect.innerHTML =
+            monthlySelect.innerHTML;
+
+        return;
+
+    }
+
+    dailySelect.innerHTML =
+        '<option value="all">Tất cả PB</option>';
+
+}
+
+
+async function loadDailyAttendanceReport() {
+
+    const date =
+        document.getElementById("dailyAttendanceDate")?.value || "";
+
+    const pb =
+        document.getElementById("dailyAttendancePB")?.value || "all";
+
+    if (!date) {
+
+        alert("Vui lòng chọn ngày.");
+
+        return;
+
+    }
+
+    try {
+
+        const data =
+            await apiGet(
+                "dailyAttendanceReport",
+                {
+                    date: date,
+                    pb: pb
+                }
+            );
+
+        currentDailyAttendanceRows =
+            Array.isArray(data)
+                ? data
+                : [];
+
+        renderDailyAttendanceReport(
+            currentDailyAttendanceRows
+        );
+
+        updateDailyAttendanceSummary(
+            currentDailyAttendanceRows
+        );
+
+    } catch (error) {
+
+        console.error(
+            "loadDailyAttendanceReport:",
+            error
+        );
+
+        alert(
+            "Không tải được bảng công ngày."
+        );
+
+    }
+
+}
+
+
+function renderDailyAttendanceReport(list) {
+
+    const tbody =
+        document.getElementById("dailyAttendanceTable");
+
+    if (!tbody) {
+
+        return;
+
+    }
+
+    if (
+        !Array.isArray(list) ||
+        list.length === 0
+    ) {
+
+        tbody.innerHTML =
+    '<tr><td colspan="12" class="empty-cell">Không có dữ liệu chấm công ngày này.</td></tr>';
+        return;
+
+    }
+
+    let html = "";
+
+    list.forEach(function(row) {
+
+        const late =
+            Number(row.late || 0);
+
+        html +=
+            '<tr>' +
+                '<td>' + escapeHtml(formatDailyAttendanceDate(row.date)) + '</td>' +
+                '<td>' + escapeHtml(row.manv || "") + '</td>' +
+                '<td>' + escapeHtml(row.hoten || "") + '</td>' +
+                '<td>' + escapeHtml(row.pb || "") + '</td>' +
+                '<td>' + escapeHtml(row.site || "") + '</td>' +
+                '<td>' + escapeHtml(row.checkin || "") + '</td>' +
+                '<td>' + escapeHtml(row.checkout || "") + '</td>' +
+                '<td class="text-right">' + escapeHtml(formatDailyAttendanceNumber(row.hours || 0)) + '</td>' +
+                '<td class="text-right">' + escapeHtml(formatDailyAttendanceNumber(row.daywork || 0)) + '</td>' +
+                '<td class="text-right">' + escapeHtml(formatDailyAttendanceNumber(row.ot || 0)) + '</td>' +
+                '<td class="text-right">' + escapeHtml(late > 0 ? late : "") + '</td>' +
+                '<td>' + escapeHtml(row.note || "") + '</td>' +
+            '</tr>';
+
+    });
+
+    tbody.innerHTML =
+        html;
+
+}
+
+
+function updateDailyAttendanceSummary(list) {
+
+    let totalEmployees = 0;
+    let totalDays = 0;
+    let totalHours = 0;
+    let totalOT = 0;
+    let totalLate = 0;
+
+    list.forEach(function(row) {
+
+        if (
+            Number(row.daywork || 0) > 0 ||
+            row.checkin ||
+            row.checkout
+        ) {
+
+            totalEmployees++;
+
+        }
+
+        totalDays +=
+            Number(row.daywork || 0);
+
+        totalHours +=
+            Number(row.hours || 0);
+
+        totalOT +=
+            Number(row.ot || 0);
+
+        totalLate +=
+            Number(row.late || 0);
+
+    });
+
+    setDailyAttendanceText(
+        "dailyAttendanceNV",
+        totalEmployees
+    );
+
+    setDailyAttendanceText(
+        "dailyAttendanceDays",
+        formatDailyAttendanceNumber(totalDays)
+    );
+
+    setDailyAttendanceText(
+        "dailyAttendanceHours",
+        formatDailyAttendanceNumber(totalHours)
+    );
+
+    setDailyAttendanceText(
+        "dailyAttendanceOT",
+        formatDailyAttendanceNumber(totalOT)
+    );
+
+    setDailyAttendanceText(
+        "dailyAttendanceLate",
+        totalLate
+    );
+
+}
+
+
+async function exportDailyAttendanceReport() {
+
+    const date =
+        document.getElementById("dailyAttendanceDate")?.value || "";
+
+    if (!date) {
+
+        alert("Vui lòng chọn ngày.");
+
+        return;
+
+    }
+
+    if (
+        !currentDailyAttendanceRows ||
+        currentDailyAttendanceRows.length === 0
+    ) {
+
+        await loadDailyAttendanceReport();
+
+    }
+
+    if (
+        !currentDailyAttendanceRows ||
+        currentDailyAttendanceRows.length === 0
+    ) {
+
+        alert("Không có dữ liệu để xuất.");
+
+        return;
+
+    }
+
+    const html =
+        buildDailyAttendanceExcelHtml(
+            currentDailyAttendanceRows,
+            date
+        );
+
+    downloadDailyAttendanceExcel(
+        html,
+        "bang-cong-ngay-" +
+        date +
+        ".xls"
+    );
+
+}
+
+
+function buildDailyAttendanceExcelHtml(
+    list,
+    date
+) {
+
+    let totalEmployees = 0;
+    let totalDays = 0;
+    let totalHours = 0;
+    let totalOT = 0;
+    let totalLate = 0;
+
+    list.forEach(function(row) {
+
+        if (
+            Number(row.daywork || 0) > 0 ||
+            row.checkin ||
+            row.checkout
+        ) {
+
+            totalEmployees++;
+
+        }
+
+        totalDays +=
+            Number(row.daywork || 0);
+
+        totalHours +=
+            Number(row.hours || 0);
+
+        totalOT +=
+            Number(row.ot || 0);
+
+        totalLate +=
+            Number(row.late || 0);
+
+    });
+
+    let html =
+        '<html>' +
+            '<head>' +
+                '<meta charset="UTF-8">' +
+                '<style>' +
+                    'body{font-family:Arial,sans-serif;font-size:12px;}' +
+                    'table{border-collapse:collapse;width:100%;}' +
+                    'td,th{border:1px solid #d9ead3;padding:6px;vertical-align:middle;}' +
+                    'th{background:#15803d;color:#ffffff;font-weight:bold;text-align:center;}' +
+                    '.title{font-size:20px;font-weight:bold;color:#14532d;text-align:center;}' +
+                    '.subtitle{text-align:center;font-size:13px;}' +
+                    '.center{text-align:center;}' +
+                    '.right{text-align:right;}' +
+                    '.late{color:#b91c1c;font-weight:bold;}' +
+                '</style>' +
+            '</head>' +
+            '<body>' +
+                '<table>' +
+                    '<tr>' +
+                        '<td colspan="12" class="title">BẢNG CÔNG NGÀY</td>' +
+                    '</tr>' +
+                    '<tr>' +
+                        '<td colspan="12" class="subtitle">' +
+                            formatDailyAttendanceDate(date) +
+                        '</td>' +
+                    '</tr>' +
+                    '<tr><td colspan="12">&nbsp;</td></tr>' +
+
+                    '<tr>' +
+                        '<th>Nhân viên có công</th>' +
+                        '<th>Tổng ngày công</th>' +
+                        '<th>Tổng giờ</th>' +
+                        '<th>Tổng OT</th>' +
+                        '<th>Tổng trễ phút</th>' +
+                        '<th colspan="7"></th>' +
+                    '</tr>' +
+
+                    '<tr>' +
+                        '<td class="center">' + escapeHtml(totalEmployees) + '</td>' +
+                        '<td class="center">' + escapeHtml(formatDailyAttendanceNumber(totalDays)) + '</td>' +
+                        '<td class="center">' + escapeHtml(formatDailyAttendanceNumber(totalHours)) + '</td>' +
+                        '<td class="center">' + escapeHtml(formatDailyAttendanceNumber(totalOT)) + '</td>' +
+                        '<td class="center">' + escapeHtml(totalLate) + '</td>' +
+                        '<td colspan="7"></td>' +
+                    '</tr>' +
+
+                    '<tr><td colspan="12">&nbsp;</td></tr>' +
+
+                    '<tr>' +
+                        '<th>Ngày</th>' +
+                        '<th>Mã NV</th>' +
+                        '<th>Họ tên</th>' +
+                        '<th>PB</th>' +
+                        '<th>Công trình</th>' +
+                        '<th>Check In</th>' +
+                        '<th>Check Out</th>' +
+                        '<th>Tổng giờ</th>' +
+                        '<th>Công</th>' +
+                        '<th>OT</th>' +
+                        '<th>Trễ</th>' +
+                        '<th>Ghi chú</th>' +
+                    '</tr>';
+
+    list.forEach(function(row) {
+
+        const late =
+            Number(row.late || 0);
+
+        html +=
+            '<tr>' +
+                '<td class="center">' + escapeHtml(formatDailyAttendanceDate(row.date)) + '</td>' +
+                '<td>' + escapeHtml(row.manv || "") + '</td>' +
+                '<td>' + escapeHtml(row.hoten || "") + '</td>' +
+                '<td>' + escapeHtml(row.pb || "") + '</td>' +
+                '<td>' + escapeHtml(row.site || "") + '</td>' +
+                '<td class="center">' + escapeHtml(row.checkin || "") + '</td>' +
+                '<td class="center">' + escapeHtml(row.checkout || "") + '</td>' +
+                '<td class="right">' + escapeHtml(formatDailyAttendanceNumber(row.hours || 0)) + '</td>' +
+                '<td class="right">' + escapeHtml(formatDailyAttendanceNumber(row.daywork || 0)) + '</td>' +
+                '<td class="right">' + escapeHtml(formatDailyAttendanceNumber(row.ot || 0)) + '</td>' +
+                '<td class="right ' + (late > 0 ? 'late' : '') + '">' +
+                    escapeHtml(late > 0 ? late : "") +
+                '</td>' +
+                '<td>' + escapeHtml(row.note || "") + '</td>' +
+            '</tr>';
+
+    });
+
+    html +=
+                '</table>' +
+            '</body>' +
+        '</html>';
+
+    return html;
+
+}
+
+
+function formatDailyAttendanceDate(value) {
+
+    if (!value) {
+
+        return "";
+
+    }
+
+    const text =
+        String(value);
+
+    if (
+        /^\d{4}-\d{2}-\d{2}/.test(text)
+    ) {
+
+        const parts =
+            text.substring(0, 10)
+                .split("-");
+
+        return parts[2] +
+            "/" +
+            parts[1] +
+            "/" +
+            parts[0];
+
+    }
+
+    return text;
+
+}
+
+
+function formatDailyAttendanceNumber(value) {
+
+    const numberValue =
+        Number(value || 0);
+
+    if (
+        isNaN(numberValue)
+    ) {
+
+        return value || "";
+
+    }
+
+    return numberValue
+        .toFixed(2)
+        .replace(".00", "");
+
+}
+
+
+function setDailyAttendanceText(
+    id,
+    value
+) {
+
+    const element =
+        document.getElementById(id);
+
+    if (!element) {
+
+        return;
+
+    }
+
+    element.innerHTML =
+        value;
+
+}
+
+
+function downloadDailyAttendanceExcel(
+    html,
+    fileName
+) {
+
+    const blob =
+        new Blob(
+            [html],
+            {
+                type:
+                    "application/vnd.ms-excel;charset=utf-8;"
+            }
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const link =
+        document.createElement("a");
+
+    link.href =
+        url;
+
+    link.download =
+        fileName;
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+
+}
+window.loadDailyAttendanceReport =
+    loadDailyAttendanceReport;
+
+window.exportDailyAttendanceReport =
+    exportDailyAttendanceReport;
+
+window.syncDailyAttendanceDepartmentOptions =
+    syncDailyAttendanceDepartmentOptions;
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    if (typeof initDailyAttendanceReport === "function") {
+
+        initDailyAttendanceReport();
+
+    }
+
+});

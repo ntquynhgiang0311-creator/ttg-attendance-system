@@ -1452,7 +1452,12 @@ window.openEmployeeProfile = async function(manv) {
         setHRValue("hrNoiCapCCCD", employee.noiCapCCCD || "");
         setHRValue("hrDiaChi", employee.diaChi || "");
         setHRValue("hrEmail", employee.email || "");
-        setHRValue("hrMaChucVu", employee.maChucVu || "");
+        await loadHRProfilePositions(
+    employee.maChucVu ||
+    employee.chucVu ||
+    employee.tenChucVu ||
+    ""
+);
         setHRValue("hrNgayVaoLam", formatHRDateInput(employee.ngayVaoLam || ""));
         setHRValue("hrTaiKhoanNganHang", employee.taiKhoanNganHang || "");
         setHRValue("hrTenNganHang", employee.tenNganHang || "");
@@ -1519,5 +1524,115 @@ function formatHRDateInput(value) {
         String(date.getMonth() + 1).padStart(2, "0") +
         "-" +
         String(date.getDate()).padStart(2, "0");
+
+}
+async function loadHRProfilePositions(selectedValue) {
+
+    const select =
+        document.getElementById("hrMaChucVu");
+
+    if (!select) {
+        console.warn("Không tìm thấy #hrMaChucVu");
+        return;
+    }
+
+    selectedValue =
+        String(selectedValue || "").trim();
+
+    let list = [];
+
+    try {
+
+        const data =
+            await apiGet("positions");
+
+        console.log("positions data:", data);
+
+        list =
+            Array.isArray(data)
+                ? data
+                : data.data || data.positions || [];
+
+    } catch (error) {
+
+        console.error("Không tải được danh mục chức vụ:", error);
+
+    }
+
+    let html =
+        '<option value="">-- Chọn chức vụ --</option>';
+
+    list.forEach(function(item) {
+
+        const maChucVu =
+            item.maChucVu ||
+            item.machucvu ||
+            item.maCV ||
+            item.macv ||
+            item.MaChucVu ||
+            item.MaCV ||
+            item.code ||
+            item.id ||
+            "";
+
+        const tenChucVu =
+            item.tenChucVu ||
+            item.tenchucvu ||
+            item.tenCV ||
+            item.tencv ||
+            item.TenChucVu ||
+            item.TenCV ||
+            item.name ||
+            item.ten ||
+            "";
+
+        if (!maChucVu && !tenChucVu) {
+            return;
+        }
+
+        html +=
+            '<option value="' + escapeHtml(maChucVu || tenChucVu) + '">' +
+                escapeHtml(tenChucVu || maChucVu) +
+            '</option>';
+
+    });
+
+    select.innerHTML =
+        html;
+
+    if (selectedValue) {
+
+        select.value =
+            selectedValue;
+
+        if (select.value !== selectedValue) {
+
+            const existed =
+                Array.from(select.options).some(function(option) {
+                    return option.value.trim() === selectedValue ||
+                           option.text.trim() === selectedValue;
+                });
+
+            if (!existed) {
+
+                const option =
+                    document.createElement("option");
+
+                option.value =
+                    selectedValue;
+
+                option.textContent =
+                    selectedValue;
+
+                select.appendChild(option);
+
+            }
+
+            select.value =
+                selectedValue;
+
+        }
+
+    }
 
 }

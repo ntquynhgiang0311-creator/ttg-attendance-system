@@ -925,22 +925,35 @@ async function exportReport() {
                 Number(employee.days || 0) === 0
             ) {
 
-                detailMap[employee.manv] =
-                    [];
+try {
 
-                continue;
-
+    const detailResult =
+        await apiGet(
+            "reportDetail",
+            {
+                manv: employee.manv,
+                month: month,
+                year: year
             }
+        );
 
-            detailMap[employee.manv] =
-                await apiGet(
-                    "reportDetail",
-                    {
-                        manv: employee.manv,
-                        month: month,
-                        year: year
-                    }
-                );
+    detailMap[employee.manv] =
+        Array.isArray(detailResult)
+            ? detailResult
+            : [];
+
+} catch (error) {
+
+    console.error(
+        "Không tải được chi tiết công:",
+        employee.manv,
+        error
+    );
+
+    detailMap[employee.manv] =
+        [];
+
+}
 
         }
 
@@ -1135,12 +1148,24 @@ function buildFullMonthlyReportExcelHtml(
 
     summaryList.forEach(function(employee) {
 
-        const detailList =
-            detailMap[employee.manv] || [];
+let detailList =
+    detailMap[employee.manv] || [];
 
-        if (!detailList || detailList.length === 0) {
-            return;
-        }
+if (!Array.isArray(detailList)) {
+
+    console.error(
+        "Chi tiết bảng công không phải mảng:",
+        detailList
+    );
+
+    detailList =
+        [];
+
+}
+
+if (detailList.length === 0) {
+    return;
+}
 
         html +=
             '<tr><td colspan="8">&nbsp;</td></tr>' +
@@ -1165,7 +1190,6 @@ function buildFullMonthlyReportExcelHtml(
                 '<th>OT</th>' +
                 '<th>Trễ</th>' +
             '</tr>';
-
         detailList.forEach(function(row) {
 
             const late =
@@ -1303,7 +1327,6 @@ function initDailyAttendanceDate() {
         return;
 
     }
-
     if (input.value) {
 
         return;

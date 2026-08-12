@@ -974,7 +974,9 @@ try {
             ".xls"
         );
 
-    } catch (error) {
+    }
+    }
+    catch (error) {
 
         console.error(
             "exportReport:",
@@ -984,10 +986,9 @@ try {
         alert(
             "Không xuất được báo cáo tháng."
         );
-
+    
     }
-
-}
+ }
 function getMonthlyReportTableForExport() {
 
     const selectors = [

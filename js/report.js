@@ -925,35 +925,42 @@ async function exportReport() {
                 Number(employee.days || 0) === 0
             ) {
 
-try {
+                detailMap[employee.manv || ""] =
+                    [];
 
-    const detailResult =
-        await apiGet(
-            "reportDetail",
-            {
-                manv: employee.manv,
-                month: month,
-                year: year
+                continue;
+
             }
-        );
 
-    detailMap[employee.manv] =
-        Array.isArray(detailResult)
-            ? detailResult
-            : [];
+            try {
 
-} catch (error) {
+                const detailResult =
+                    await apiGet(
+                        "reportDetail",
+                        {
+                            manv: employee.manv,
+                            month: month,
+                            year: year
+                        }
+                    );
 
-    console.error(
-        "Không tải được chi tiết công:",
-        employee.manv,
-        error
-    );
+                detailMap[employee.manv] =
+                    Array.isArray(detailResult)
+                        ? detailResult
+                        : [];
 
-    detailMap[employee.manv] =
-        [];
+            } catch (error) {
 
-}
+                console.error(
+                    "Không tải được chi tiết công:",
+                    employee.manv,
+                    error
+                );
+
+                detailMap[employee.manv] =
+                    [];
+
+            }
 
         }
 
@@ -974,9 +981,7 @@ try {
             ".xls"
         );
 
-    }
-    }
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "exportReport:",
@@ -986,9 +991,10 @@ try {
         alert(
             "Không xuất được báo cáo tháng."
         );
-    
+
     }
- }
+
+}
 function getMonthlyReportTableForExport() {
 
     const selectors = [

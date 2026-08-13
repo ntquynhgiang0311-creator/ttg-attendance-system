@@ -909,60 +909,22 @@ async function exportReport() {
 
         }
 
-        const detailMap = {};
+        const detailResult =
+            await apiGet(
+                "reportAllDetails",
+                {
+                    month: month,
+                    year: year,
+                    pb: pb
+                }
+            );
 
-        for (
-            let i = 0;
-            i < summaryList.length;
-            i++
-        ) {
-
-            const employee =
-                summaryList[i];
-
-            if (
-                !employee.manv ||
-                Number(employee.days || 0) === 0
-            ) {
-
-                detailMap[employee.manv || ""] =
-                    [];
-
-                continue;
-
-            }
-
-            try {
-
-                const detailResult =
-                    await apiGet(
-                        "reportDetail",
-                        {
-                            manv: employee.manv,
-                            month: month,
-                            year: year
-                        }
-                    );
-
-                detailMap[employee.manv] =
-                    Array.isArray(detailResult)
-                        ? detailResult
-                        : [];
-
-            } catch (error) {
-
-                console.error(
-                    "Không tải được chi tiết công:",
-                    employee.manv,
-                    error
-                );
-
-                detailMap[employee.manv] =
-                    [];
-
-            }
-
-        }
+        const detailMap =
+            detailResult &&
+            typeof detailResult === "object" &&
+            !Array.isArray(detailResult)
+                ? detailResult
+                : {};
 
         const html =
             buildFullMonthlyReportExcelHtml(
@@ -1155,8 +1117,11 @@ function buildFullMonthlyReportExcelHtml(
 
     summaryList.forEach(function(employee) {
 
+const employeeManv =
+    getReportExportEmployeeCode(employee);
+
 let detailList =
-    detailMap[employee.manv] || [];
+    detailMap[employeeManv] || [];
 
 if (!Array.isArray(detailList)) {
 
@@ -1922,3 +1887,14 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
 });
+function getReportExportEmployeeCode(item) {
+
+    return String(
+        item.manv ||
+        item.maNV ||
+        item.MaNV ||
+        item.MaNv ||
+        ""
+    ).trim();
+
+}

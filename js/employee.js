@@ -18,13 +18,15 @@ async function loadNhanVien() {
         const data =
             await apiGet("employees");
 
-        const list =
-            Array.isArray(data)
-                ? data
-                : data.employees || data.data || [];
+const list =
+    Array.isArray(data)
+        ? data
+        : data.employees || data.data || [];
 
-        renderNhanVien(list);
+nhanVien =
+    list;
 
+renderNhanVien(list);
     } catch (error) {
 
         console.error("loadNhanVien:", error);
@@ -714,62 +716,3 @@ function setEmployeeValue(id, value) {
         value || "";
 
 }
-function syncEmployeeRoleOptions() {
-
-    const roleSelects =
-        document.querySelectorAll(
-            'select[id*="role" i], select[name*="role" i]'
-        );
-
-    roleSelects.forEach(function(select) {
-
-        const currentValue =
-            select.value || "";
-
-        const roles = [
-            {
-                value: "User",
-                label: "User"
-            },
-            {
-                value: "QuanLy",
-                label: "Quản lý"
-            },
-            {
-                value: "Admin",
-                label: "Admin"
-            }
-        ];
-
-        select.innerHTML =
-            "";
-
-        roles.forEach(function(role) {
-
-            const option =
-                document.createElement("option");
-
-            option.value =
-                role.value;
-
-            option.textContent =
-                role.label;
-
-            select.appendChild(option);
-
-        });
-
-        if (currentValue) {
-            select.value = currentValue;
-        }
-
-    });
-
-}
-
-
-document.addEventListener("DOMContentLoaded", function() {
-
-    syncEmployeeRoleOptions();
-
-});

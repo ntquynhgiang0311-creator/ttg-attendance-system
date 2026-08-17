@@ -91,6 +91,9 @@
 <button id="btnPayroll">
   💰 Lương
 </button>
+    <button id="btnWorkAssignment" onclick="openWorkAssignmentSection()">
+      🧭 Phân công
+    </button>
 <button id="btnSystemLog">
   📜 Nhật ký
 </button>
@@ -1259,6 +1262,108 @@
 
   </div>
 </div>
+<div id="workAssignmentSection" class="section">
+
+  <h3 class="section-title">
+    🧭 Phân công công việc / vị trí làm việc
+  </h3>
+
+  <div class="form-card">
+
+    <div class="form-grid">
+
+      <div>
+        <label>Ngày phân công</label>
+        <input
+          id="workAssignmentDate"
+          type="date"
+        >
+      </div>
+
+      <div>
+        <label>Phòng ban</label>
+        <select
+          id="workAssignmentPB"
+          onchange="loadWorkAssignmentAdmin()"
+        >
+          <option value="all">Tất cả PB được quyền</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Nhân viên</label>
+        <select id="workAssignmentEmployee">
+          <option value="">-- Chọn nhân viên --</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Vị trí / Công trình</label>
+        <select id="workAssignmentSite">
+          <option value="">-- Chọn vị trí/công trình --</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="work-assignment-textarea-row">
+
+      <div>
+        <label>Nội dung công việc</label>
+        <textarea
+          id="workAssignmentContent"
+          rows="2"
+          placeholder="VD: Thi công hạng mục A, gia công tại xưởng, đi Bình Định..."
+        ></textarea>
+      </div>
+
+      <div>
+        <label>Ghi chú</label>
+        <textarea
+          id="workAssignmentNote"
+          rows="2"
+        ></textarea>
+      </div>
+
+    </div>
+
+    <div class="hr-profile-actions">
+
+      <button
+        type="button"
+        id="btnSaveWorkAssignment"
+        class="btn btn-primary"
+        onclick="saveWorkAssignmentFromAdmin()"
+      >
+        💾 Lưu phân công
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-secondary"
+        onclick="resetWorkAssignmentForm()"
+      >
+        Làm mới
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-info"
+        onclick="loadWorkAssignments()"
+      >
+        Tải danh sách
+      </button>
+
+    </div>
+
+  </div>
+
+  <div
+    id="workAssignmentList"
+    style="margin-top:16px;"
+  ></div>
+
+</div>
 <div id="systemLogSection" class="section">
 
   <h3 class="section-title">
@@ -1335,6 +1440,7 @@
 <script src="js/reportDetail.js"></script>
 <script src="js/systemLogAdmin.js"></script>
 <script src="js/attendanceAdjustmentAdmin.js"></script>
+<script src="js/workAssignmentAdmin.js"></script>
 <script src="js/allowanceAdmin.js"></script>
 <script src="js/admin.js"></script>
 

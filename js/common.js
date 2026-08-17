@@ -76,8 +76,6 @@ async function apiPostText(
   ).trim();
 
 }
-
-
 // ========================================
 // API POST - JSON RESPONSE
 //

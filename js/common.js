@@ -417,3 +417,63 @@ function downloadHtmlExcelFile(
     URL.revokeObjectURL(url);
 
 }
+function isAdminOrManager(user) {
+
+    if (!user) {
+        return false;
+    }
+
+    const role =
+        String(user.role || "")
+            .trim()
+            .toLowerCase();
+
+    return (
+        role === "admin" ||
+        role === "quanly" ||
+        role === "quản lý"
+    );
+
+}
+
+
+function goAdminPage() {
+
+    const user =
+        getCurrentUser();
+
+    if (!isAdminOrManager(user)) {
+        alert("Bạn không có quyền vào trang quản trị.");
+        return;
+    }
+
+    window.location.href =
+        "admin.html";
+
+}
+
+
+function initAdminEntryButton() {
+
+    const button =
+        document.getElementById("btnAdminEntry");
+
+    if (!button) {
+        return;
+    }
+
+    const user =
+        getCurrentUser();
+
+    button.style.display =
+        isAdminOrManager(user)
+            ? "block"
+            : "none";
+
+}
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    initAdminEntryButton
+);

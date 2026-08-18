@@ -32,7 +32,6 @@ async function initAdmin() {
     const user =
         getCurrentUser();
 
-
     if (!user) {
 
         window.location.href =
@@ -42,17 +41,9 @@ async function initAdmin() {
 
     }
 
+    if (!isAdminOrManager(user)) {
 
-    const userRole = String(
-        user.role || ""
-    ).toLowerCase();
-
-
-    if (userRole !== "admin") {
-
-        alert(
-            "Bạn không có quyền truy cập."
-        );
+        alert("Bạn không có quyền vào trang quản trị.");
 
         window.location.href =
             "index.html";
@@ -61,47 +52,21 @@ async function initAdmin() {
 
     }
 
-
     setupAdminNavigation();
-
 
     showAdminSection(
         "siteSection"
     );
 
+    await loadEmployeeDepartments();
 
-    try {
-
-        await loadEmployeeDepartments();
-
-
-        await Promise.all([
-
-            loadDashboard(),
-
-            loadDanhSachCongTrinh(),
-
-            loadNhanVien()
-
-        ]);
-
-    }
-    catch (error) {
-
-        console.error(
-            "initAdmin:",
-            error
-        );
-
-
-        alert(
-            "Không tải được đầy đủ dữ liệu quản trị."
-        );
-
-    }
+    await Promise.all([
+        loadDashboard(),
+        loadDanhSachCongTrinh(),
+        loadNhanVien()
+    ]);
 
 }
-
 
 // ========================================
 // MENU ADMIN

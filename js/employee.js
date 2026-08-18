@@ -112,6 +112,7 @@ function renderNhanVien(list) {
                 '<td>' + escapeHtml(status) + '</td>' +
                 '<td>' +
     '<div class="action-buttons">' +
+        '<button type="button" class="edit-btn" onclick="editEmployee(\'' + manv + '\')">Sửa</button>' +
         '<button type="button" class="edit-btn" onclick="openEmployeeProfile(\'' + manv + '\')">Hồ sơ</button>' +
         '<button type="button" class="lock-btn" onclick="toggleEmployee(\'' + manv + '\')">Khóa/Mở</button>' +
     '</div>' +

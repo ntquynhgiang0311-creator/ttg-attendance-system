@@ -1645,3 +1645,30 @@ transform:translateY(-2px);
 #workAssignmentList .lock-btn {
     background: #D9534F;
 }
+#employeeList .action-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+#employeeList .edit-btn,
+#employeeList .lock-btn {
+    min-width: 58px;
+    height: 34px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: none;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#employeeList .edit-btn {
+    background: #0D8A4B;
+}
+
+#employeeList .lock-btn {
+    background: #D9534F;
+}

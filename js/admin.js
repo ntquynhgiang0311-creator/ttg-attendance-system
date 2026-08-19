@@ -2,8 +2,6 @@
 // ADMIN STATE
 // ========================================
 
-let adminAttendanceLoaded = false;
-
 let adminReportLoaded = false;
 
 let adminContractLoaded = false;
@@ -53,10 +51,33 @@ async function initAdmin() {
     }
 
     setupAdminNavigation();
+    applyAdminMenuByRole(user);
+setAdminHeaderUser(user);
+    const role =
+    String(user.role || "")
+        .trim()
+        .toLowerCase();
+
+if (
+    role === "quanly" ||
+    role === "quản lý"
+) {
+
+    showAdminSection(
+        "workAssignmentSection"
+    );
+
+    if (typeof loadWorkAssignmentAdmin === "function") {
+        loadWorkAssignmentAdmin();
+    }
+
+} else {
 
     showAdminSection(
         "siteSection"
     );
+
+}
 
     await loadEmployeeDepartments();
 
@@ -84,25 +105,6 @@ function setupAdminNavigation() {
         {
             buttonId: "btnEmployee",
             sectionId: "employeeSection"
-        },
-
-        {
-            buttonId: "btnAttendance",
-            sectionId: "attendanceSection",
-            onOpen: async function() {
-
-                if (
-                    !adminAttendanceLoaded &&
-                    typeof loadAttendance === "function"
-                ) {
-
-                    await loadAttendance();
-
-                    adminAttendanceLoaded = true;
-
-                }
-
-            }
         },
 
         {
@@ -312,48 +314,88 @@ function setupAdminNavigation() {
 
 function showAdminSection(sectionId) {
 
-    const sectionIds = [
+    document
+        .querySelectorAll(".section")
+        .forEach(function(section) {
 
-        "siteSection",
+            section.classList.remove(
+                "active"
+            );
 
-        "employeeSection",
+            section.style.display =
+                "";
 
-        "attendanceSection",
+        });
 
-        "reportSection",
+    const target =
+        document.getElementById(
+            sectionId
+        );
 
-        "contractSection",
+    if (target) {
 
-        "leaveSection",
+        target.classList.add(
+            "active"
+        );
 
-        "advanceSection",
+        target.style.display =
+            "";
 
-        "payrollSection",
+    }
 
-        "attendanceAdjustmentSection",
+}
+function setAdminHeaderUser(user) {
 
-        "systemLogSection"
+    const element =
+        document.getElementById("adminUserInfo");
 
+    if (!element) {
+        return;
+    }
+
+    element.innerHTML =
+        escapeHtml(user.manv || "") +
+        " - " +
+        escapeHtml(user.hoten || "") +
+        " - " +
+        escapeHtml(user.role || "");
+
+}
+function applyAdminMenuByRole(user) {
+
+    const role =
+        String(user.role || "")
+            .trim()
+            .toLowerCase();
+
+    if (
+        role !== "quanly" &&
+        role !== "quản lý"
+    ) {
+        return;
+    }
+
+    const hideButtonIds = [
+        "btnSite",
+        "btnEmployee",
+        "btnAttendance",
+        "btnAttendanceAdjustment",
+        "btnReport",
+        "btnContract",
+        "btnLeave",
+        "btnAdvance",
+        "btnPayroll",
+        "btnSystemLog"
     ];
 
+    hideButtonIds.forEach(function(id) {
 
-    sectionIds.forEach(function(id) {
-
-        const section =
+        const button =
             document.getElementById(id);
 
-
-        if (!section) {
-
-            return;
-
+        if (button) {
+            button.style.display = "none";
         }
-
-
-        section.classList.toggle(
-            "active",
-            id === sectionId
-        );
 
     });
 

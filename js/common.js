@@ -477,3 +477,12 @@ document.addEventListener(
     "DOMContentLoaded",
     initAdminEntryButton
 );
+function goCheckInPage() {
+
+    window.location.href =
+        "index.html";
+
+}
+
+window.goCheckInPage =
+    goCheckInPage;

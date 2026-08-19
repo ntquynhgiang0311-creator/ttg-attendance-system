@@ -1,3 +1,4 @@
+let workAssignmentSaving = false;
 let workAssignmentList = [];
 let workAssignmentEmployees = [];
 let workAssignmentSites = [];
@@ -5,17 +6,43 @@ let editingWorkAssignment = "";
 
 function openWorkAssignmentSection() {
 
-    document
-        .querySelectorAll(".section")
-        .forEach(function(section) {
-            section.style.display = "none";
-        });
+    if (typeof showAdminSection === "function") {
 
-    const section =
-        document.getElementById("workAssignmentSection");
+        showAdminSection(
+            "workAssignmentSection"
+        );
 
-    if (section) {
-        section.style.display = "block";
+    } else {
+
+        document
+            .querySelectorAll(".section")
+            .forEach(function(section) {
+
+                section.style.display =
+                    "";
+
+                section.classList.remove(
+                    "active"
+                );
+
+            });
+
+        const section =
+            document.getElementById(
+                "workAssignmentSection"
+            );
+
+        if (section) {
+
+            section.style.display =
+                "";
+
+            section.classList.add(
+                "active"
+            );
+
+        }
+
     }
 
     loadWorkAssignmentAdmin();
@@ -267,40 +294,57 @@ function renderWorkAssignments() {
 
 async function saveWorkAssignmentFromAdmin() {
 
-    const user =
-        getCurrentUser() || {};
-
-    const date =
-        document.getElementById("workAssignmentDate")?.value || "";
-
-    const manv =
-        document.getElementById("workAssignmentEmployee")?.value || "";
-
-    const maCT =
-        document.getElementById("workAssignmentSite")?.value || "";
-
-    const noiDung =
-        document.getElementById("workAssignmentContent")?.value || "";
-
-    const ghiChu =
-        document.getElementById("workAssignmentNote")?.value || "";
-
-    if (!date) {
-        alert("Vui lòng chọn ngày phân công.");
+    if (workAssignmentSaving) {
         return;
     }
 
-    if (!manv) {
-        alert("Vui lòng chọn nhân viên.");
-        return;
-    }
+    workAssignmentSaving = true;
 
-    if (!maCT) {
-        alert("Vui lòng chọn vị trí/công trình.");
-        return;
+    const button =
+        document.getElementById("btnSaveWorkAssignment");
+
+    const oldButtonText =
+        button ? button.innerHTML : "";
+
+    if (button) {
+        button.disabled = true;
+        button.innerHTML = "⏳ Đang lưu...";
     }
 
     try {
+
+        const user =
+            getCurrentUser() || {};
+
+        const date =
+            document.getElementById("workAssignmentDate")?.value || "";
+
+        const manv =
+            document.getElementById("workAssignmentEmployee")?.value || "";
+
+        const maCT =
+            document.getElementById("workAssignmentSite")?.value || "";
+
+        const noiDung =
+            document.getElementById("workAssignmentContent")?.value || "";
+
+        const ghiChu =
+            document.getElementById("workAssignmentNote")?.value || "";
+
+        if (!date) {
+            alert("Vui lòng chọn ngày phân công.");
+            return;
+        }
+
+        if (!manv) {
+            alert("Vui lòng chọn nhân viên.");
+            return;
+        }
+
+        if (!maCT) {
+            alert("Vui lòng chọn vị trí/công trình.");
+            return;
+        }
 
         const result =
             await apiPostText(
@@ -323,6 +367,8 @@ async function saveWorkAssignmentFromAdmin() {
 
         resetWorkAssignmentForm();
 
+        await loadWorkAssignmentMasters();
+
         await loadWorkAssignments();
 
         alert("Đã lưu phân công.");
@@ -335,6 +381,16 @@ async function saveWorkAssignmentFromAdmin() {
         );
 
         alert("Không lưu được phân công.");
+
+    } finally {
+
+        workAssignmentSaving = false;
+
+        if (button) {
+            button.disabled = false;
+            button.innerHTML =
+                oldButtonText || "💾 Lưu phân công";
+        }
 
     }
 

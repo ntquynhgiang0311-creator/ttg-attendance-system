@@ -22,7 +22,34 @@
 
 <body>
 
-  <h2>🏢 Hệ thống quản trị</h2>
+ <div class="admin-header">
+
+  <div>
+    <h2>🏢 Hệ thống quản trị</h2>
+    <p id="adminUserInfo" class="admin-user-info"></p>
+  </div>
+
+  <div class="admin-header-actions">
+
+    <button
+      type="button"
+      class="admin-back-checkin-btn"
+      onclick="goCheckInPage()"
+    >
+      ← Về chấm công
+    </button>
+
+    <button
+      type="button"
+      class="admin-logout-btn"
+      onclick="logout()"
+    >
+      🚪 Đăng xuất
+    </button>
+
+  </div>
+
+</div>
 
   <!-- Dashboard -->
   <div class="dashboard">
@@ -62,10 +89,6 @@
 
     <button id="btnEmployee">
       👷 Nhân viên
-    </button>
-
-    <button id="btnAttendance">
-      📋 Chấm công
     </button>
 
     <button id="btnAttendanceAdjustment">
@@ -516,32 +539,6 @@
 
   </div>
 
-  <!-- Nhật ký -->
-  <div id="attendanceSection" class="section">
-
-    <h3 class="section-title">
-      📋 Nhật ký chấm công
-    </h3>
-
-    <div class="table-wrapper">
-
-      <table>
-        <thead>
-          <tr>
-            <th>Ngày giờ</th>
-            <th>Nhân viên</th>
-            <th>Địa điểm</th>
-            <th>Loại</th>
-            <th>Khoảng cách</th>
-          </tr>
-        </thead>
-
-        <tbody id="tableAttendance"></tbody>
-      </table>
-
-    </div>
-
-  </div>
 <div id="attendanceAdjustmentSection" class="section">
 
   <h3 class="section-title">
@@ -1435,7 +1432,6 @@
 <script src="js/leaveAdmin.js"></script>
 <script src="js/advanceAdmin.js"></script>
 <script src="js/payrollAdmin.js"></script>
-<script src="js/attendanceAdmin.js"></script>
 <script src="js/report.js"></script>
 <script src="js/reportDetail.js"></script>
 <script src="js/systemLogAdmin.js"></script>

@@ -886,6 +886,11 @@ async function exportReport() {
     const pb =
         document.getElementById("reportPB")?.value || "all";
 
+    if (!month || !year) {
+        alert("Vui lòng chọn tháng/năm.");
+        return;
+    }
+
     try {
 
         const summaryList =
@@ -902,14 +907,11 @@ async function exportReport() {
             !Array.isArray(summaryList) ||
             summaryList.length === 0
         ) {
-
             alert("Không có dữ liệu báo cáo để xuất.");
-
             return;
-
         }
 
-        const detailResult =
+        const detailMap =
             await apiGet(
                 "reportAllDetails",
                 {
@@ -919,28 +921,21 @@ async function exportReport() {
                 }
             );
 
-        const detailMap =
-            detailResult &&
-            typeof detailResult === "object" &&
-            !Array.isArray(detailResult)
-                ? detailResult
-                : {};
-
         const html =
-            buildFullMonthlyReportExcelHtml(
-                summaryList,
-                detailMap,
-                month,
-                year
-            );
+    buildFullMonthlyReportExcelHtml(
+        summaryList,
+        detailMap || {},
+        month,
+        year
+    );
 
         downloadMonthlyReportExcel(
             html,
             "bang-cong-tong-va-chi-tiet-" +
-            month +
-            "-" +
-            year +
-            ".xls"
+                month +
+                "-" +
+                year +
+                ".xls"
         );
 
     } catch (error) {
@@ -950,9 +945,7 @@ async function exportReport() {
             error
         );
 
-        alert(
-            "Không xuất được báo cáo tháng."
-        );
+        alert("Không xuất được báo cáo tháng.");
 
     }
 
@@ -1012,7 +1005,6 @@ function buildFullMonthlyReportExcelHtml(
 
         totalDays += Number(item.days || 0);
         totalHours += Number(item.hours || 0);
-
         totalOT += Number(item.ot || 0);
         totalLate += Number(item.late || 0);
 
@@ -1033,24 +1025,25 @@ function buildFullMonthlyReportExcelHtml(
                 '.center{text-align:center;}' +
                 '.right{text-align:right;}' +
                 '.late{color:#b91c1c;font-weight:bold;}' +
+                '.confirm{color:#b91c1c;font-weight:bold;}' +
             '</style>' +
         '</head>' +
         '<body>' +
         '<table>' +
 
             '<tr>' +
-                '<td colspan="8" class="title">BẢNG CÔNG TỔNG VÀ CHI TIẾT NHÂN VIÊN</td>' +
+                '<td colspan="10" class="title">BẢNG CÔNG TỔNG VÀ CHI TIẾT NHÂN VIÊN</td>' +
             '</tr>' +
 
             '<tr>' +
-                '<td colspan="8" class="subtitle">Tháng ' +
+                '<td colspan="10" class="subtitle">Tháng ' +
                     escapeHtml(month) +
                     '/' +
                     escapeHtml(year) +
                 '</td>' +
             '</tr>' +
 
-            '<tr><td colspan="8">&nbsp;</td></tr>' +
+            '<tr><td colspan="10">&nbsp;</td></tr>' +
 
             '<tr>' +
                 '<th>Nhân viên có công</th>' +
@@ -1058,7 +1051,7 @@ function buildFullMonthlyReportExcelHtml(
                 '<th>Tổng giờ</th>' +
                 '<th>Tổng OT</th>' +
                 '<th>Tổng trễ phút</th>' +
-                '<th colspan="3"></th>' +
+                '<th colspan="5"></th>' +
             '</tr>' +
 
             '<tr>' +
@@ -1067,13 +1060,13 @@ function buildFullMonthlyReportExcelHtml(
                 '<td class="center">' + escapeHtml(formatReportExportNumber(totalHours)) + '</td>' +
                 '<td class="center">' + escapeHtml(formatReportExportNumber(totalOT)) + '</td>' +
                 '<td class="center">' + escapeHtml(totalLate) + '</td>' +
-                '<td colspan="3"></td>' +
+                '<td colspan="5"></td>' +
             '</tr>' +
 
-            '<tr><td colspan="8">&nbsp;</td></tr>' +
+            '<tr><td colspan="10">&nbsp;</td></tr>' +
 
             '<tr>' +
-                '<td colspan="8" class="section">BẢNG TỔNG NHÂN VIÊN</td>' +
+                '<td colspan="10" class="section">BẢNG TỔNG NHÂN VIÊN</td>' +
             '</tr>' +
 
             '<tr>' +
@@ -1084,7 +1077,7 @@ function buildFullMonthlyReportExcelHtml(
                 '<th>Tổng giờ</th>' +
                 '<th>OT</th>' +
                 '<th>Trễ phút</th>' +
-                '<th>Ghi chú</th>' +
+                '<th colspan="3">Ghi chú</th>' +
             '</tr>';
 
     summaryList.forEach(function(item) {
@@ -1104,46 +1097,45 @@ function buildFullMonthlyReportExcelHtml(
                 '<td class="right ' + (Number(item.late || 0) > 0 ? 'late' : '') + '">' +
                     escapeHtml(Number(item.late || 0) > 0 ? item.late : "") +
                 '</td>' +
-                '<td></td>' +
+                '<td colspan="3"></td>' +
             '</tr>';
 
     });
 
     html +=
-        '<tr><td colspan="8">&nbsp;</td></tr>' +
+        '<tr><td colspan="10">&nbsp;</td></tr>' +
         '<tr>' +
-            '<td colspan="8" class="section">CHI TIẾT CHẤM CÔNG TỪNG NHÂN VIÊN</td>' +
+            '<td colspan="10" class="section">CHI TIẾT CHẤM CÔNG TỪNG NHÂN VIÊN</td>' +
         '</tr>';
 
     summaryList.forEach(function(employee) {
 
-const employeeManv =
-    getReportExportEmployeeCode(employee);
+        const employeeManv =
+            getReportExportEmployeeCode(employee);
 
-let detailList =
-    detailMap[employeeManv] || [];
+        let detailList =
+            detailMap[employeeManv] || [];
 
-if (!Array.isArray(detailList)) {
+        if (!Array.isArray(detailList)) {
 
-    console.error(
-        "Chi tiết bảng công không phải mảng:",
-        detailList
-    );
+            console.error(
+                "Chi tiết bảng công không phải mảng:",
+                detailList
+            );
 
-    detailList =
-        [];
+            detailList = [];
 
-}
+        }
 
-if (detailList.length === 0) {
-    return;
-}
+        if (detailList.length === 0) {
+            return;
+        }
 
         html +=
-            '<tr><td colspan="8">&nbsp;</td></tr>' +
+            '<tr><td colspan="10">&nbsp;</td></tr>' +
 
             '<tr>' +
-                '<td colspan="8" class="section">' +
+                '<td colspan="10" class="section">' +
                     escapeHtml(employee.manv || "") +
                     ' - ' +
                     escapeHtml(employee.hoten || "") +
@@ -1154,23 +1146,37 @@ if (detailList.length === 0) {
 
             '<tr>' +
                 '<th>Ngày</th>' +
-                '<th>Công trình</th>' +
+                '<th>Công trình chấm công</th>' +
+                '<th>Phân công</th>' +
                 '<th>Check In</th>' +
                 '<th>Check Out</th>' +
                 '<th>Tổng giờ</th>' +
                 '<th>Công</th>' +
                 '<th>OT</th>' +
                 '<th>Trễ</th>' +
+                '<th>Ghi chú phân công / xác nhận</th>' +
             '</tr>';
+
         detailList.forEach(function(row) {
 
             const late =
                 Number(row.late || 0);
 
+            const note =
+                row.ghiChuPhanCong ||
+                row.note ||
+                "";
+
+            const noteClass =
+                String(note || "").indexOf("CẦN XÁC NHẬN") >= 0
+                    ? "confirm"
+                    : "";
+
             html +=
                 '<tr>' +
                     '<td class="center">' + escapeHtml(formatReportExportDate(row.date)) + '</td>' +
                     '<td>' + escapeHtml(row.site || "") + '</td>' +
+                    '<td>' + escapeHtml(row.phanCong || "") + '</td>' +
                     '<td class="center">' + escapeHtml(row.checkin || "") + '</td>' +
                     '<td class="center">' + escapeHtml(row.checkout || "") + '</td>' +
                     '<td class="right">' + escapeHtml(formatReportExportNumber(row.hours || 0)) + '</td>' +
@@ -1178,6 +1184,9 @@ if (detailList.length === 0) {
                     '<td class="right">' + escapeHtml(formatReportExportNumber(row.ot || 0)) + '</td>' +
                     '<td class="right ' + (late > 0 ? 'late' : '') + '">' +
                         escapeHtml(late > 0 ? late : "") +
+                    '</td>' +
+                    '<td class="' + noteClass + '">' +
+                        escapeHtml(note) +
                     '</td>' +
                 '</tr>';
 
@@ -1896,5 +1905,42 @@ function getReportExportEmployeeCode(item) {
         item.MaNv ||
         ""
     ).trim();
+
+}
+
+
+
+function downloadMonthlyReportExcel(
+    html,
+    filename
+) {
+
+    const blob =
+        new Blob(
+            ["\ufeff" + html],
+            {
+                type: "application/vnd.ms-excel;charset=utf-8;"
+            }
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const link =
+        document.createElement("a");
+
+    link.href =
+        url;
+
+    link.download =
+        filename;
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
 
 }

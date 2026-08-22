@@ -115,31 +115,64 @@ async function loadWorkAssignmentMasters() {
 
 function renderWorkAssignmentEmployeeOptions() {
 
-    const select =
-        document.getElementById("workAssignmentEmployee");
+    const container =
+        document.getElementById("workAssignmentEmployeeList");
 
-    if (!select) {
+    if (!container) {
         return;
     }
 
-    let html =
-        '<option value="">-- Chọn nhân viên --</option>';
+    if (
+        !Array.isArray(workAssignmentEmployees) ||
+        workAssignmentEmployees.length === 0
+    ) {
+
+        container.innerHTML =
+            '<p class="work-assignment-help">Không có nhân viên để phân công.</p>';
+
+        updateSelectedWorkAssignmentEmployeeCount();
+
+        return;
+
+    }
+
+    let html = "";
 
     workAssignmentEmployees.forEach(function(item) {
 
+        const searchText =
+            (
+                item.manv +
+                " " +
+                item.hoten +
+                " " +
+                item.pb
+            ).toLowerCase();
+
         html +=
-            '<option value="' + escapeHtml(item.manv) + '">' +
-                escapeHtml(item.manv) +
-                " - " +
-                escapeHtml(item.hoten) +
-                " - " +
-                escapeHtml(item.pb) +
-            '</option>';
+            '<label class="work-assignment-employee-item" data-search="' +
+                escapeHtml(searchText) +
+            '">' +
+                '<input ' +
+                    'type="checkbox" ' +
+                    'class="work-assignment-employee-checkbox" ' +
+                    'value="' + escapeHtml(item.manv) + '" ' +
+                    'onchange="updateSelectedWorkAssignmentEmployeeCount()"' +
+                '> ' +
+                '<span>' +
+                    '<b>' + escapeHtml(item.manv) + '</b>' +
+                    ' - ' +
+                    escapeHtml(item.hoten) +
+                    '<small>' + escapeHtml(item.pb) + '</small>' +
+                '</span>' +
+            '</label>';
 
     });
 
-    select.innerHTML =
+    container.innerHTML =
         html;
+
+    updateSelectedWorkAssignmentEmployeeCount();
 
 }
 
@@ -415,8 +448,18 @@ function editWorkAssignment(maPhanCong) {
     document.getElementById("workAssignmentDate").value =
         item.ngay || "";
 
-    document.getElementById("workAssignmentEmployee").value =
-        item.manv || "";
+clearSelectedWorkAssignmentEmployees();
+
+document
+    .querySelectorAll(".work-assignment-employee-checkbox")
+    .forEach(function(checkbox) {
+
+        checkbox.checked =
+            checkbox.value === item.manv;
+
+    });
+
+updateSelectedWorkAssignmentEmployeeCount();
 
     document.getElementById("workAssignmentSite").value =
         item.maCTPhanCong || "";
@@ -487,8 +530,16 @@ function resetWorkAssignmentForm() {
     editingWorkAssignment =
         "";
 
-    document.getElementById("workAssignmentEmployee").value =
-        "";
+clearSelectedWorkAssignmentEmployees();
+
+const search =
+    document.getElementById("workAssignmentEmployeeSearch");
+
+if (search) {
+    search.value = "";
+}
+
+filterWorkAssignmentEmployees();
 
     document.getElementById("workAssignmentSite").value =
         "";
@@ -510,23 +561,114 @@ function resetWorkAssignmentForm() {
 }
 
 
-window.openWorkAssignmentSection =
-    openWorkAssignmentSection;
+window.getSelectedWorkAssignmentEmployees =
+    getSelectedWorkAssignmentEmployees;
 
-window.loadWorkAssignmentAdmin =
-    loadWorkAssignmentAdmin;
+window.filterWorkAssignmentEmployees =
+    filterWorkAssignmentEmployees;
 
-window.loadWorkAssignments =
-    loadWorkAssignments;
+window.selectAllVisibleWorkAssignmentEmployees =
+    selectAllVisibleWorkAssignmentEmployees;
 
-window.saveWorkAssignmentFromAdmin =
-    saveWorkAssignmentFromAdmin;
+window.clearSelectedWorkAssignmentEmployees =
+    clearSelectedWorkAssignmentEmployees;
 
-window.editWorkAssignment =
-    editWorkAssignment;
+window.updateSelectedWorkAssignmentEmployeeCount =
+    updateSelectedWorkAssignmentEmployeeCount;
+    function getSelectedWorkAssignmentEmployees() {
 
-window.deleteWorkAssignmentFromAdmin =
-    deleteWorkAssignmentFromAdmin;
+    return Array.from(
+        document.querySelectorAll(
+            ".work-assignment-employee-checkbox:checked"
+        )
+    )
+        .map(function(checkbox) {
+            return checkbox.value;
+        })
+        .filter(function(value) {
+            return String(value || "").trim() !== "";
+        });
 
-window.resetWorkAssignmentForm =
-    resetWorkAssignmentForm;
+}
+
+
+function filterWorkAssignmentEmployees() {
+
+    const keyword =
+        String(
+            document.getElementById("workAssignmentEmployeeSearch")?.value || ""
+        )
+            .trim()
+            .toLowerCase();
+
+    document
+        .querySelectorAll(".work-assignment-employee-item")
+        .forEach(function(item) {
+
+            const searchText =
+                String(item.dataset.search || "")
+                    .toLowerCase();
+
+            item.style.display =
+                !keyword || searchText.indexOf(keyword) >= 0
+                    ? "flex"
+                    : "none";
+
+        });
+
+}
+
+
+function selectAllVisibleWorkAssignmentEmployees() {
+
+    document
+        .querySelectorAll(".work-assignment-employee-item")
+        .forEach(function(item) {
+
+            if (item.style.display === "none") {
+                return;
+            }
+
+            const checkbox =
+                item.querySelector(
+                    ".work-assignment-employee-checkbox"
+                );
+
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+
+        });
+
+    updateSelectedWorkAssignmentEmployeeCount();
+
+}
+
+
+function clearSelectedWorkAssignmentEmployees() {
+
+    document
+        .querySelectorAll(".work-assignment-employee-checkbox")
+        .forEach(function(checkbox) {
+            checkbox.checked = false;
+        });
+
+    updateSelectedWorkAssignmentEmployeeCount();
+
+}
+
+
+function updateSelectedWorkAssignmentEmployeeCount() {
+
+    const count =
+        getSelectedWorkAssignmentEmployees().length;
+
+    const element =
+        document.getElementById("workAssignmentEmployeeCount");
+
+    if (element) {
+        element.innerHTML =
+            "Đã chọn " + count + " nhân viên";
+    }
+
+}

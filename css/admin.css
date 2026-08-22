@@ -1750,3 +1750,104 @@ transform:translateY(-2px);
     opacity: 0.65;
     cursor: not-allowed;
 }
+/* ================================
+   WORK ASSIGNMENT TABLE - FINAL
+================================ */
+
+#workAssignmentList {
+    width: 100%;
+    margin-top: 20px;
+}
+
+#workAssignmentList .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 14px;
+}
+
+#workAssignmentList table {
+    width: 100%;
+    min-width: 1180px;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+#workAssignmentList th,
+#workAssignmentList td {
+    white-space: nowrap;
+    vertical-align: middle;
+    word-break: normal;
+}
+
+/* Ngày */
+#workAssignmentList th:nth-child(1),
+#workAssignmentList td:nth-child(1) {
+    width: 100px;
+}
+
+/* Mã NV */
+#workAssignmentList th:nth-child(2),
+#workAssignmentList td:nth-child(2) {
+    width: 80px;
+}
+
+/* Họ tên */
+#workAssignmentList th:nth-child(3),
+#workAssignmentList td:nth-child(3) {
+    width: 150px;
+}
+
+/* PB */
+#workAssignmentList th:nth-child(4),
+#workAssignmentList td:nth-child(4) {
+    width: 180px;
+}
+
+/* Vị trí phân công */
+#workAssignmentList th:nth-child(5),
+#workAssignmentList td:nth-child(5) {
+    width: 300px;
+}
+
+/* Nội dung */
+#workAssignmentList th:nth-child(6),
+#workAssignmentList td:nth-child(6) {
+    width: 240px;
+    white-space: normal;
+}
+
+/* Ghi chú */
+#workAssignmentList th:nth-child(7),
+#workAssignmentList td:nth-child(7) {
+    width: 180px;
+    white-space: normal;
+}
+
+/* Thao tác */
+#workAssignmentList th:nth-child(8),
+#workAssignmentList td:nth-child(8) {
+    width: 130px;
+    text-align: center;
+}
+
+#workAssignmentList td:nth-child(8) button {
+    display: inline-block;
+    margin: 3px;
+}
+
+/* Điện thoại */
+@media (max-width: 768px) {
+
+    #workAssignmentList table {
+        min-width: 1180px;
+    }
+
+    #workAssignmentList th,
+    #workAssignmentList td {
+        font-size: 14px;
+        padding: 12px;
+    }
+
+}

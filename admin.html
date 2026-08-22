@@ -1289,9 +1289,42 @@
 
       <div>
         <label>Nhân viên</label>
-        <select id="workAssignmentEmployee">
-          <option value="">-- Chọn nhân viên --</option>
-        </select>
+<input
+  id="workAssignmentEmployeeSearch"
+  type="text"
+  placeholder="Tìm mã NV hoặc tên nhân viên..."
+  oninput="filterWorkAssignmentEmployees()"
+>
+
+<div class="work-assignment-employee-actions">
+  <button
+    type="button"
+    class="btn btn-secondary"
+    onclick="selectAllVisibleWorkAssignmentEmployees()"
+  >
+    Chọn tất cả đang lọc
+  </button>
+
+  <button
+    type="button"
+    class="btn btn-secondary"
+    onclick="clearSelectedWorkAssignmentEmployees()"
+  >
+    Bỏ chọn
+  </button>
+</div>
+
+<div
+  id="workAssignmentEmployeeList"
+  class="work-assignment-employee-list"
+></div>
+
+<p
+  id="workAssignmentEmployeeCount"
+  class="work-assignment-help"
+>
+  Đã chọn 0 nhân viên
+</p>
       </div>
 
       <div>

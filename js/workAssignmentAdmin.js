@@ -162,14 +162,14 @@ function renderWorkAssignmentEmployeeOptions() {
                 '>' +
 
                 '<span class="work-assignment-employee-text">' +
-                    '<strong>' +
+                    '<span class="work-assignment-employee-name">' +
                         escapeHtml(item.manv) +
                         ' - ' +
                         escapeHtml(item.hoten) +
-                    '</strong>' +
-                    '<em>' +
+                    '</span>' +
+                    '<span class="work-assignment-employee-pb">' +
                         escapeHtml(item.pb || "") +
-                    '</em>' +
+                    '</span>' +
                 '</span>' +
 
             '</label>';

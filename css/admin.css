@@ -1751,13 +1751,15 @@ transform:translateY(-2px);
     cursor: not-allowed;
 }
 /* ================================
-   WORK ASSIGNMENT EMPLOYEE CHECKBOX - MOBILE FIX
+   WORK ASSIGNMENT EMPLOYEE LIST - CLEAN FINAL
 ================================ */
 
 #workAssignmentSection .work-assignment-employee-list {
     width: 100%;
-    max-height: 320px;
-    overflow-y: auto;
+    max-height: 360px;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
     background: #ffffff;
     border: 1px solid #d1d5db;
     border-radius: 14px;
@@ -1767,69 +1769,97 @@ transform:translateY(-2px);
 }
 
 #workAssignmentSection .work-assignment-employee-item {
-    display: grid !important;
-    grid-template-columns: 24px 1fr;
-    align-items: start !important;
-    gap: 12px;
-    width: 100%;
-    padding: 12px 10px;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+    width: 100% !important;
+    min-height: auto !important;
+    padding: 12px 10px !important;
+    margin: 0 !important;
     border-bottom: 1px solid #eef2f7;
     box-sizing: border-box;
     cursor: pointer;
     color: #111827;
+    background: #ffffff;
 }
 
 #workAssignmentSection .work-assignment-employee-item:last-child {
     border-bottom: none;
 }
 
+#workAssignmentSection .work-assignment-employee-item:hover {
+    background: #f0fdf4;
+    border-radius: 10px;
+}
+
 #workAssignmentSection .work-assignment-employee-checkbox {
-    width: 22px !important;
-    height: 22px !important;
-    min-width: 22px !important;
-    max-width: 22px !important;
-    min-height: 22px !important;
-    max-height: 22px !important;
-    margin: 2px 0 0 0 !important;
+    order: 1 !important;
+    appearance: auto !important;
+    -webkit-appearance: checkbox !important;
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    max-width: 20px !important;
+    min-height: 20px !important;
+    max-height: 20px !important;
     padding: 0 !important;
+    margin: 2px 0 0 0 !important;
     border-radius: 4px !important;
-    flex: none !important;
+    flex: 0 0 20px !important;
     accent-color: #15803d;
 }
 
 #workAssignmentSection .work-assignment-employee-text {
+    order: 2 !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 4px;
-    min-width: 0;
-    line-height: 1.35;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    gap: 4px !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    line-height: 1.35 !important;
 }
 
-/* Ăn cả HTML mới strong/em và HTML cũ b/small */
-#workAssignmentSection .work-assignment-employee-text strong,
-#workAssignmentSection .work-assignment-employee-text b {
+#workAssignmentSection .work-assignment-employee-name {
     display: block !important;
-    font-size: 15px;
-    font-weight: 700;
-    color: #15803d;
-    line-height: 1.35;
-    word-break: break-word;
+    width: 100% !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    color: #15803d !important;
+    line-height: 1.35 !important;
+    word-break: break-word !important;
 }
 
-#workAssignmentSection .work-assignment-employee-text em,
-#workAssignmentSection .work-assignment-employee-text small {
+#workAssignmentSection .work-assignment-employee-pb {
     display: block !important;
-    margin-top: 3px;
-    font-style: normal;
-    font-size: 13px;
-    font-weight: 500;
-    color: #6b7280;
-    line-height: 1.3;
-    word-break: break-word;
+    width: 100% !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #6b7280 !important;
+    line-height: 1.3 !important;
+    word-break: break-word !important;
+}
+
+/* Đè luôn HTML cũ nếu còn b/small */
+#workAssignmentSection .work-assignment-employee-item b,
+#workAssignmentSection .work-assignment-employee-item strong {
+    display: block !important;
+    color: #15803d !important;
+}
+
+#workAssignmentSection .work-assignment-employee-item small,
+#workAssignmentSection .work-assignment-employee-item em {
+    display: block !important;
+    margin-top: 4px !important;
+    color: #6b7280 !important;
+    font-style: normal !important;
 }
 
 #workAssignmentSection .work-assignment-employee-actions {
-    display: flex;
+    display: flex !important;
     gap: 10px;
     margin-bottom: 12px;
     flex-wrap: wrap;
@@ -1845,165 +1875,29 @@ transform:translateY(-2px);
 
     #workAssignmentSection .work-assignment-employee-list {
         max-height: 380px;
-        padding: 8px;
     }
 
     #workAssignmentSection .work-assignment-employee-item {
-        grid-template-columns: 24px 1fr;
-        gap: 12px;
-        padding: 14px 10px;
+        padding: 14px 10px !important;
+        gap: 12px !important;
     }
 
     #workAssignmentSection .work-assignment-employee-checkbox {
         width: 22px !important;
         height: 22px !important;
         min-width: 22px !important;
-        min-height: 22px !important;
         max-width: 22px !important;
+        min-height: 22px !important;
         max-height: 22px !important;
+        flex-basis: 22px !important;
     }
 
-    #workAssignmentSection .work-assignment-employee-text strong,
-    #workAssignmentSection .work-assignment-employee-text b {
-        font-size: 16px;
+    #workAssignmentSection .work-assignment-employee-name {
+        font-size: 16px !important;
     }
 
-    #workAssignmentSection .work-assignment-employee-text em,
-    #workAssignmentSection .work-assignment-employee-text small {
-        font-size: 13px;
-    }
-
-}
-/* ================================
-   WORK ASSIGNMENT SCROLL FINAL FIX
-================================ */
-
-/* Khung chọn nhân viên: kéo dọc */
-#workAssignmentSection .work-assignment-employee-list {
-    width: 100%;
-    max-height: 380px;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-y;
-    background: #ffffff;
-    border: 1px solid #d1d5db;
-    border-radius: 14px;
-    padding: 8px;
-    box-sizing: border-box;
-    margin-bottom: 10px;
-}
-
-/* Item nhân viên */
-#workAssignmentSection .work-assignment-employee-item {
-    display: grid !important;
-    grid-template-columns: 24px minmax(0, 1fr);
-    align-items: start !important;
-    gap: 12px;
-    width: 100%;
-    padding: 14px 10px;
-    border-bottom: 1px solid #eef2f7;
-    box-sizing: border-box;
-    cursor: pointer;
-}
-
-/* Checkbox không bị ăn CSS input */
-#workAssignmentSection .work-assignment-employee-checkbox {
-    width: 22px !important;
-    height: 22px !important;
-    min-width: 22px !important;
-    max-width: 22px !important;
-    min-height: 22px !important;
-    max-height: 22px !important;
-    margin: 2px 0 0 0 !important;
-    padding: 0 !important;
-    flex: none !important;
-    accent-color: #15803d;
-}
-
-/* Tách tên và phòng ban */
-#workAssignmentSection .work-assignment-employee-text {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 4px;
-    min-width: 0;
-}
-
-#workAssignmentSection .work-assignment-employee-text strong,
-#workAssignmentSection .work-assignment-employee-text b {
-    display: block !important;
-    font-size: 15px;
-    font-weight: 700;
-    color: #15803d;
-    line-height: 1.35;
-    word-break: break-word;
-}
-
-#workAssignmentSection .work-assignment-employee-text em,
-#workAssignmentSection .work-assignment-employee-text small {
-    display: block !important;
-    margin-top: 3px;
-    font-style: normal;
-    font-size: 13px;
-    font-weight: 500;
-    color: #6b7280;
-    line-height: 1.3;
-    word-break: break-word;
-}
-
-/* Bảng phân công: kéo ngang */
-#workAssignmentList {
-    width: 100%;
-    margin-top: 20px;
-    overflow: visible !important;
-}
-
-#workAssignmentList .table-wrapper {
-    width: 100%;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-x;
-    border-radius: 14px;
-}
-
-#workAssignmentList table {
-    width: max-content !important;
-    min-width: 1180px !important;
-    table-layout: fixed;
-    border-collapse: collapse;
-}
-
-#workAssignmentList th,
-#workAssignmentList td {
-    white-space: nowrap;
-    vertical-align: middle;
-}
-
-/* Cột nội dung và ghi chú cho xuống dòng */
-#workAssignmentList th:nth-child(6),
-#workAssignmentList td:nth-child(6),
-#workAssignmentList th:nth-child(7),
-#workAssignmentList td:nth-child(7) {
-    white-space: normal;
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-
-    #workAssignmentSection .work-assignment-employee-list {
-        max-height: 360px;
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    #workAssignmentList .table-wrapper {
-        overflow-x: auto !important;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    #workAssignmentList table {
-        min-width: 1180px !important;
+    #workAssignmentSection .work-assignment-employee-pb {
+        font-size: 13px !important;
     }
 
 }

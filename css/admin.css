@@ -1751,103 +1751,128 @@ transform:translateY(-2px);
     cursor: not-allowed;
 }
 /* ================================
-   WORK ASSIGNMENT TABLE - FINAL
+   WORK ASSIGNMENT EMPLOYEE CHECKBOX - FINAL
 ================================ */
 
-#workAssignmentList {
+#workAssignmentEmployeeSearch {
     width: 100%;
-    margin-top: 20px;
+    height: 52px;
+    padding: 0 18px;
+    font-size: 16px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    background: #ffffff;
+    box-sizing: border-box;
+    margin-top: 6px;
+    margin-bottom: 12px;
 }
 
-#workAssignmentList .table-wrapper {
+.work-assignment-employee-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.work-assignment-employee-list {
     width: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
+    max-height: 320px;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
     border-radius: 14px;
+    padding: 8px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
 }
 
-#workAssignmentList table {
+.work-assignment-employee-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px;
     width: 100%;
-    min-width: 1180px;
-    table-layout: fixed;
-    border-collapse: collapse;
+    padding: 12px 10px;
+    border-bottom: 1px solid #eef2f7;
+    box-sizing: border-box;
+    cursor: pointer;
+    color: #111827;
 }
 
-#workAssignmentList th,
-#workAssignmentList td {
-    white-space: nowrap;
-    vertical-align: middle;
-    word-break: normal;
+.work-assignment-employee-item:last-child {
+    border-bottom: none;
 }
 
-/* Ngày */
-#workAssignmentList th:nth-child(1),
-#workAssignmentList td:nth-child(1) {
-    width: 100px;
+.work-assignment-employee-item:hover {
+    background: #f0fdf4;
+    border-radius: 10px;
 }
 
-/* Mã NV */
-#workAssignmentList th:nth-child(2),
-#workAssignmentList td:nth-child(2) {
-    width: 80px;
+#workAssignmentSection .work-assignment-employee-checkbox,
+.work-assignment-employee-checkbox {
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+    max-width: 22px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex: 0 0 22px !important;
+    accent-color: #15803d;
 }
 
-/* Họ tên */
-#workAssignmentList th:nth-child(3),
-#workAssignmentList td:nth-child(3) {
-    width: 150px;
+.work-assignment-employee-text {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
 }
 
-/* PB */
-#workAssignmentList th:nth-child(4),
-#workAssignmentList td:nth-child(4) {
-    width: 180px;
+.work-assignment-employee-text strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 700;
+    color: #15803d;
+    line-height: 1.35;
+    word-break: break-word;
 }
 
-/* Vị trí phân công */
-#workAssignmentList th:nth-child(5),
-#workAssignmentList td:nth-child(5) {
-    width: 300px;
+.work-assignment-employee-text em {
+    display: block;
+    font-style: normal;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+    line-height: 1.3;
 }
 
-/* Nội dung */
-#workAssignmentList th:nth-child(6),
-#workAssignmentList td:nth-child(6) {
-    width: 240px;
-    white-space: normal;
+.work-assignment-help {
+    margin: 6px 0 18px;
+    font-size: 13px;
+    color: #6b7280;
 }
 
-/* Ghi chú */
-#workAssignmentList th:nth-child(7),
-#workAssignmentList td:nth-child(7) {
-    width: 180px;
-    white-space: normal;
-}
-
-/* Thao tác */
-#workAssignmentList th:nth-child(8),
-#workAssignmentList td:nth-child(8) {
-    width: 130px;
-    text-align: center;
-}
-
-#workAssignmentList td:nth-child(8) button {
-    display: inline-block;
-    margin: 3px;
-}
-
-/* Điện thoại */
 @media (max-width: 768px) {
 
-    #workAssignmentList table {
-        min-width: 1180px;
+    .work-assignment-employee-list {
+        max-height: 360px;
     }
 
-    #workAssignmentList th,
-    #workAssignmentList td {
-        font-size: 14px;
-        padding: 12px;
+    .work-assignment-employee-item {
+        padding: 14px 10px;
+        align-items: flex-start !important;
+    }
+
+    #workAssignmentSection .work-assignment-employee-checkbox,
+    .work-assignment-employee-checkbox {
+        margin-top: 3px !important;
+    }
+
+    .work-assignment-employee-text strong {
+        font-size: 16px;
+    }
+
+    .work-assignment-employee-text em {
+        font-size: 13px;
     }
 
 }

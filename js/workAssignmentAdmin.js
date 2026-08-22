@@ -153,18 +153,25 @@ function renderWorkAssignmentEmployeeOptions() {
             '<label class="work-assignment-employee-item" data-search="' +
                 escapeHtml(searchText) +
             '">' +
+
                 '<input ' +
                     'type="checkbox" ' +
                     'class="work-assignment-employee-checkbox" ' +
                     'value="' + escapeHtml(item.manv) + '" ' +
                     'onchange="updateSelectedWorkAssignmentEmployeeCount()"' +
-                '> ' +
-                '<span>' +
-                    '<b>' + escapeHtml(item.manv) + '</b>' +
-                    ' - ' +
-                    escapeHtml(item.hoten) +
-                    '<small>' + escapeHtml(item.pb) + '</small>' +
+                '>' +
+
+                '<span class="work-assignment-employee-text">' +
+                    '<strong>' +
+                        escapeHtml(item.manv) +
+                        ' - ' +
+                        escapeHtml(item.hoten) +
+                    '</strong>' +
+                    '<em>' +
+                        escapeHtml(item.pb || "") +
+                    '</em>' +
                 '</span>' +
+
             '</label>';
 
     });

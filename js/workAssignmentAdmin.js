@@ -359,8 +359,8 @@ async function saveWorkAssignmentFromAdmin() {
         const date =
             document.getElementById("workAssignmentDate")?.value || "";
 
-        const manv =
-            document.getElementById("workAssignmentEmployee")?.value || "";
+        const selectedEmployees =
+            getSelectedWorkAssignmentEmployees();
 
         const maCT =
             document.getElementById("workAssignmentSite")?.value || "";
@@ -376,8 +376,8 @@ async function saveWorkAssignmentFromAdmin() {
             return;
         }
 
-        if (!manv) {
-            alert("Vui lòng chọn nhân viên.");
+        if (selectedEmployees.length === 0) {
+            alert("Vui lòng chọn ít nhất 1 nhân viên.");
             return;
         }
 
@@ -386,23 +386,66 @@ async function saveWorkAssignmentFromAdmin() {
             return;
         }
 
-        const result =
-            await apiPostText(
-                "saveWorkAssignment",
-                {
-                    maPhanCong: editingWorkAssignment,
-                    ngay: date,
-                    manv: manv,
-                    maCTPhanCong: maCT,
-                    noiDungCongViec: noiDung,
-                    ghiChu: ghiChu,
-                    actorManv: user.manv || ""
-                }
-            );
-
-        if (result !== "OK") {
-            alert(result);
+        if (
+            editingWorkAssignment &&
+            selectedEmployees.length > 1
+        ) {
+            alert("Đang sửa 1 phân công, chỉ được chọn 1 nhân viên. Bấm Làm mới nếu muốn thêm nhiều nhân viên.");
             return;
+        }
+
+        let successCount = 0;
+        const failMessages = [];
+
+        for (let i = 0; i < selectedEmployees.length; i++) {
+
+            const manv =
+                selectedEmployees[i];
+
+            if (button) {
+                button.innerHTML =
+                    "⏳ Đang lưu " +
+                    (i + 1) +
+                    "/" +
+                    selectedEmployees.length +
+                    "...";
+            }
+
+            const result =
+                await apiPostText(
+                    "saveWorkAssignment",
+                    {
+                        maPhanCong:
+                            editingWorkAssignment || "",
+
+                        ngay:
+                            date,
+
+                        manv:
+                            manv,
+
+                        maCTPhanCong:
+                            maCT,
+
+                        noiDungCongViec:
+                            noiDung,
+
+                        ghiChu:
+                            ghiChu,
+
+                        actorManv:
+                            user.manv || ""
+                    }
+                );
+
+            if (result === "OK") {
+                successCount++;
+            } else {
+                failMessages.push(
+                    manv + ": " + result
+                );
+            }
+
         }
 
         resetWorkAssignmentForm();
@@ -411,7 +454,24 @@ async function saveWorkAssignmentFromAdmin() {
 
         await loadWorkAssignments();
 
-        alert("Đã lưu phân công.");
+        if (failMessages.length > 0) {
+
+            alert(
+                "Đã lưu " +
+                successCount +
+                " phân công.\n\nLỗi:\n" +
+                failMessages.join("\n")
+            );
+
+            return;
+
+        }
+
+        alert(
+            "Đã lưu " +
+            successCount +
+            " phân công."
+        );
 
     } catch (error) {
 
@@ -436,6 +496,8 @@ async function saveWorkAssignmentFromAdmin() {
 
 }
 
+window.saveWorkAssignmentFromAdmin =
+    saveWorkAssignmentFromAdmin;
 
 function editWorkAssignment(maPhanCong) {
 
@@ -679,3 +741,21 @@ function updateSelectedWorkAssignmentEmployeeCount() {
     }
 
 }
+function getSelectedWorkAssignmentEmployees() {
+
+    return Array.from(
+        document.querySelectorAll(
+            ".work-assignment-employee-checkbox:checked"
+        )
+    )
+        .map(function(checkbox) {
+            return checkbox.value;
+        })
+        .filter(function(value) {
+            return String(value || "").trim() !== "";
+        });
+
+}
+
+window.getSelectedWorkAssignmentEmployees =
+    getSelectedWorkAssignmentEmployees;

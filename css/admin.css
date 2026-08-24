@@ -1901,3 +1901,123 @@ transform:translateY(-2px);
     }
 
 }
+/* ================================
+   WORK ASSIGNMENT TABLE SCROLL - HARD FIX
+================================ */
+
+#workAssignmentList {
+    width: 100%;
+    max-width: 100%;
+    margin-top: 20px;
+}
+
+#workAssignmentList .work-assignment-table-scroll {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x !important;
+    background: #ffffff;
+    border-radius: 16px;
+    display: block;
+}
+
+#workAssignmentList .work-assignment-table {
+    width: 1200px !important;
+    min-width: 1200px !important;
+    max-width: none !important;
+    table-layout: fixed !important;
+    border-collapse: collapse;
+}
+
+#workAssignmentList .work-assignment-table th,
+#workAssignmentList .work-assignment-table td {
+    white-space: nowrap !important;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+
+#workAssignmentList .work-assignment-table th:nth-child(1),
+#workAssignmentList .work-assignment-table td:nth-child(1) {
+    width: 110px;
+}
+
+#workAssignmentList .work-assignment-table th:nth-child(2),
+#workAssignmentList .work-assignment-table td:nth-child(2) {
+    width: 90px;
+}
+
+#workAssignmentList .work-assignment-table th:nth-child(3),
+#workAssignmentList .work-assignment-table td:nth-child(3) {
+    width: 180px;
+}
+
+#workAssignmentList .work-assignment-table th:nth-child(4),
+#workAssignmentList .work-assignment-table td:nth-child(4) {
+    width: 200px;
+}
+
+#workAssignmentList .work-assignment-table th:nth-child(5),
+#workAssignmentList .work-assignment-table td:nth-child(5) {
+    width: 330px;
+}
+
+#workAssignmentList .work-assignment-table th:nth-child(6),
+#workAssignmentList .work-assignment-table td:nth-child(6) {
+    width: 190px;
+    white-space: normal !important;
+}
+
+#workAssignmentList .work-assignment-table th:nth-child(7),
+#workAssignmentList .work-assignment-table td:nth-child(7) {
+    width: 160px;
+    white-space: normal !important;
+}
+
+#workAssignmentList .work-assignment-table th:nth-child(8),
+#workAssignmentList .work-assignment-table td:nth-child(8) {
+    width: 140px;
+    text-align: center;
+}
+
+#workAssignmentList .work-assignment-table td:nth-child(8) button {
+    display: inline-block;
+    margin: 3px;
+}
+
+/* Desktop thì cho bảng nhìn full đẹp hơn */
+@media (min-width: 769px) {
+
+    #workAssignmentList .work-assignment-table-scroll {
+        overflow-x: auto !important;
+    }
+
+    #workAssignmentList .work-assignment-table {
+        width: 100% !important;
+        min-width: 1180px !important;
+    }
+
+}
+
+/* Mobile bắt buộc kéo ngang */
+@media (max-width: 768px) {
+
+    #workAssignmentList .work-assignment-table-scroll {
+        overflow-x: scroll !important;
+        overflow-y: hidden !important;
+        padding-bottom: 8px;
+    }
+
+    #workAssignmentList .work-assignment-table {
+        width: 1200px !important;
+        min-width: 1200px !important;
+    }
+
+    #workAssignmentList .work-assignment-table th,
+    #workAssignmentList .work-assignment-table td {
+        font-size: 14px;
+        padding: 12px;
+    }
+
+}

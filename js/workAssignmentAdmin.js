@@ -277,9 +277,9 @@ function renderWorkAssignments() {
 
     }
 
-    let html =
-        '<div class="table-wrapper">' +
-        '<table>' +
+let html =
+    '<div class="work-assignment-table-scroll">' +
+    '<table class="work-assignment-table">' +
         '<thead>' +
         '<tr>' +
         '<th>Ngày</th>' +

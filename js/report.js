@@ -8,6 +8,36 @@ let currentReportRows = [];
 
 
 // ========================================
+// CẤU HÌNH XUẤT DATA ĐỔ LƯƠNG
+// ========================================
+// Khu vực lấy trực tiếp từ cột CongTrinh.KhuVucLuong:
+// - HCM  = công trình trong TP.HCM  -> xt / CNt
+// - TINH = công trình ngoài TP.HCM -> xtt / CNtt
+// - VĂN PHÒNG / XƯỞNG luôn là công thường -> x / CN
+const PAYROLL_EXPORT_RULES = {
+
+    normalSiteKeywords: [
+        "VĂN PHÒNG",
+        "VAN PHONG",
+        "XƯỞNG",
+        "XUONG"
+    ],
+
+    workCodes: {
+        normal: { full: "x", half: "x/2" },
+        site: { full: "xt", half: "xt/2" },
+        stay: { full: "xtt", half: "xtt/2" },
+        sundayNormal: { full: "CN", half: "CN/2" },
+        sundaySite: { full: "CNt", half: "CNt/2" },
+        sundayStay: { full: "CNtt", half: "CNtt/2" },
+        leave: "0",
+        holiday: "L"
+    }
+
+};
+
+
+// ========================================
 // INIT REPORT
 // ========================================
 
@@ -893,41 +923,66 @@ async function exportReport() {
 
     try {
 
-        const summaryList =
-            await apiGet(
-                "report",
-                {
-                    month: month,
-                    year: year,
-                    pb: pb
-                }
-            );
+        const results =
+            await Promise.all([
 
-        if (
-            !Array.isArray(summaryList) ||
-            summaryList.length === 0
-        ) {
+                apiGet(
+                    "report",
+                    {
+                        month: month,
+                        year: year,
+                        pb: pb
+                    }
+                ),
+
+                apiGet(
+                    "reportAllDetails",
+                    {
+                        month: month,
+                        year: year,
+                        pb: pb
+                    }
+                ),
+
+                apiGet(
+                    "leaveRequests",
+                    {
+                        status: "Đã duyệt",
+                        keyword: ""
+                    }
+                )
+
+            ]);
+
+        const summaryList =
+            Array.isArray(results[0])
+                ? results[0]
+                : [];
+
+        const detailMap =
+            results[1] &&
+            typeof results[1] === "object"
+                ? results[1]
+                : {};
+
+        const approvedLeaves =
+            Array.isArray(results[2])
+                ? results[2]
+                : [];
+
+        if (summaryList.length === 0) {
             alert("Không có dữ liệu báo cáo để xuất.");
             return;
         }
 
-        const detailMap =
-            await apiGet(
-                "reportAllDetails",
-                {
-                    month: month,
-                    year: year,
-                    pb: pb
-                }
-            );
-
         const html =
-    buildFullMonthlyReportExcelHtml(
-        summaryList,
-        detailMap || {},
-        month,
-        year
-    );
+            buildFullMonthlyReportExcelHtml(
+                summaryList,
+                detailMap,
+                month,
+                year,
+                approvedLeaves
+            );
 
         downloadMonthlyReportExcel(
             html,
@@ -950,6 +1005,7 @@ async function exportReport() {
     }
 
 }
+
 function getMonthlyReportTableForExport() {
 
     const selectors = [
@@ -988,7 +1044,8 @@ function buildFullMonthlyReportExcelHtml(
     summaryList,
     detailMap,
     month,
-    year
+    year,
+    approvedLeaves
 ) {
 
     let totalEmployees = 0;
@@ -1026,9 +1083,23 @@ function buildFullMonthlyReportExcelHtml(
                 '.right{text-align:right;}' +
                 '.late{color:#b91c1c;font-weight:bold;}' +
                 '.confirm{color:#b91c1c;font-weight:bold;}' +
+                '.payroll-title{font-size:18px;font-weight:bold;color:#14532d;text-align:center;background:#dcfce7;}' +
+                '.payroll-note{font-size:11px;color:#374151;background:#f8fafc;}' +
+                '.payroll-code{text-align:center;font-weight:bold;}' +
+                '.payroll-ot{text-align:right;}' +
             '</style>' +
         '</head>' +
         '<body>' +
+
+        buildPayrollImportTableHtml(
+            summaryList,
+            detailMap,
+            month,
+            year,
+            approvedLeaves
+        ) +
+
+        '<br><br>' +
         '<table>' +
 
             '<tr>' +
@@ -1200,6 +1271,641 @@ function buildFullMonthlyReportExcelHtml(
         '</html>';
 
     return html;
+
+}
+
+
+
+// ========================================
+// DATA ĐỔ LƯƠNG - 31 NGÀY x (CÔNG + TC)
+// ========================================
+
+function buildPayrollImportTableHtml(
+    summaryList,
+    detailMap,
+    month,
+    year,
+    approvedLeaves
+) {
+
+    const monthNumber =
+        Number(month);
+
+    const yearNumber =
+        Number(year);
+
+    const leaveDayMap =
+        buildPayrollLeaveDayMap(
+            approvedLeaves,
+            monthNumber,
+            yearNumber
+        );
+
+    const employees =
+        (Array.isArray(summaryList)
+            ? summaryList.slice()
+            : []);
+
+    employees.sort(function(a, b) {
+        return getReportExportEmployeeCode(a)
+            .localeCompare(
+                getReportExportEmployeeCode(b)
+            );
+    });
+
+    const totalColumns =
+        2 + (31 * 2);
+
+    let html =
+        '<table>' +
+            '<tr>' +
+                '<td colspan="' + totalColumns + '" class="payroll-title">DATA ĐỔ LƯƠNG</td>' +
+            '</tr>' +
+            '<tr>' +
+                '<td colspan="' + totalColumns + '" class="payroll-note">' +
+                    'Dùng Mã NV làm khóa dò sang sheet CHẤM CÔNG. ' +
+                    'Quy ước: x/x/2 = công thường; xt/xt/2 = công trình phụ cấp 30k; ' +
+                    'xtt/xtt/2 = công trình ở lại phụ cấp 80k; ' +
+                    'CN/CNt/CNtt = Chủ nhật; 0 = nghỉ; L = lễ.' +
+                '</td>' +
+            '</tr>' +
+            '<tr>' +
+                '<th>Mã NV</th>' +
+                '<th>Họ tên</th>';
+
+    for (let day = 1; day <= 31; day++) {
+
+        html +=
+            '<th>' + day + ' Công</th>' +
+            '<th>' + day + ' TC</th>';
+
+    }
+
+    html +=
+            '</tr>';
+
+    employees.forEach(function(employee) {
+
+        const manv =
+            getReportExportEmployeeCode(employee);
+
+        if (!manv) {
+            return;
+        }
+
+        const detailList =
+            Array.isArray(detailMap[manv])
+                ? detailMap[manv]
+                : [];
+
+        const detailDayMap =
+            buildPayrollDetailDayMap(
+                detailList
+            );
+
+        html +=
+            '<tr>' +
+                '<td>' + escapeHtml(manv) + '</td>' +
+                '<td>' + escapeHtml(employee.hoten || employee.hoTen || "") + '</td>';
+
+        for (let day = 1; day <= 31; day++) {
+
+            const validDate =
+                isValidPayrollMonthDay(
+                    yearNumber,
+                    monthNumber,
+                    day
+                );
+
+            if (!validDate) {
+
+                html +=
+                    '<td></td><td></td>';
+
+                continue;
+
+            }
+
+            const dateKey =
+                buildPayrollDateKey(
+                    yearNumber,
+                    monthNumber,
+                    day
+                );
+
+            const detail =
+                detailDayMap[dateKey] || null;
+
+            const leave =
+                leaveDayMap[
+                    manv + "|" + dateKey
+                ] || null;
+
+            const workCode =
+                buildPayrollWorkCode(
+                    detail,
+                    dateKey,
+                    leave
+                );
+
+            const overtime =
+                detail
+                    ? Number(detail.ot || 0)
+                    : 0;
+
+            html +=
+                '<td class="payroll-code">' +
+                    escapeHtml(workCode) +
+                '</td>' +
+                '<td class="payroll-ot">' +
+                    escapeHtml(
+                        overtime > 0
+                            ? formatReportExportNumber(overtime)
+                            : ""
+                    ) +
+                '</td>';
+
+        }
+
+        html +=
+            '</tr>';
+
+    });
+
+    html +=
+        '</table>';
+
+    return html;
+
+}
+
+
+function buildPayrollDetailDayMap(detailList) {
+
+    const map = {};
+
+    if (!Array.isArray(detailList)) {
+        return map;
+    }
+
+    detailList.forEach(function(row) {
+
+        const dateKey =
+            normalizePayrollDateKey(
+                row && row.date
+            );
+
+        if (!dateKey) {
+            return;
+        }
+
+        map[dateKey] =
+            row;
+
+    });
+
+    return map;
+
+}
+
+
+function buildPayrollLeaveDayMap(
+    leaves,
+    month,
+    year
+) {
+
+    const map = {};
+
+    if (!Array.isArray(leaves)) {
+        return map;
+    }
+
+    leaves.forEach(function(item) {
+
+        if (
+            String(item.trangThai || "") !== "Đã duyệt"
+        ) {
+            return;
+        }
+
+        const manv =
+            String(
+                item.manv ||
+                item.maNV ||
+                item.MaNV ||
+                ""
+            ).trim();
+
+        if (!manv) {
+            return;
+        }
+
+        const startDate =
+            parseReportDate(
+                item.tuNgay ||
+                item.ngayBatDau ||
+                item.fromDate
+            );
+
+        const endDate =
+            parseReportDate(
+                item.denNgay ||
+                item.ngayKetThuc ||
+                item.toDate
+            );
+
+        if (!startDate || !endDate) {
+            return;
+        }
+
+        const current =
+            new Date(
+                startDate.getFullYear(),
+                startDate.getMonth(),
+                startDate.getDate()
+            );
+
+        const end =
+            new Date(
+                endDate.getFullYear(),
+                endDate.getMonth(),
+                endDate.getDate()
+            );
+
+        while (
+            current.getTime() <= end.getTime()
+        ) {
+
+            if (
+                current.getMonth() + 1 === month &&
+                current.getFullYear() === year
+            ) {
+
+                const dateKey =
+                    buildPayrollDateKey(
+                        current.getFullYear(),
+                        current.getMonth() + 1,
+                        current.getDate()
+                    );
+
+                map[
+                    manv + "|" + dateKey
+                ] = item;
+
+            }
+
+            current.setDate(
+                current.getDate() + 1
+            );
+
+        }
+
+    });
+
+    return map;
+
+}
+
+
+function buildPayrollWorkCode(
+    detail,
+    dateKey,
+    leave
+) {
+
+    const codes =
+        PAYROLL_EXPORT_RULES.workCodes;
+
+    const dayWork =
+        detail
+            ? Number(detail.daywork || 0)
+            : 0;
+
+    // Có công thực tế thì ưu tiên dữ liệu chấm công.
+    if (dayWork > 0) {
+
+        const isHalfDay =
+            dayWork < 1;
+
+        const locationType =
+            classifyPayrollLocation(
+                detail
+            );
+
+        const date =
+            parsePayrollDateKey(
+                dateKey
+            );
+
+        const isSunday =
+            date &&
+            date.getDay() === 0;
+
+        let codeGroup =
+            codes.normal;
+
+        if (isSunday) {
+
+            if (locationType === "stay") {
+                codeGroup = codes.sundayStay;
+            }
+            else if (locationType === "site") {
+                codeGroup = codes.sundaySite;
+            }
+            else {
+                codeGroup = codes.sundayNormal;
+            }
+
+        }
+        else {
+
+            if (locationType === "stay") {
+                codeGroup = codes.stay;
+            }
+            else if (locationType === "site") {
+                codeGroup = codes.site;
+            }
+            else {
+                codeGroup = codes.normal;
+            }
+
+        }
+
+        return isHalfDay
+            ? codeGroup.half
+            : codeGroup.full;
+
+    }
+
+    // Nếu có dấu vết chấm công nhưng chưa đủ điều kiện ra công
+    // thì để trống để HR kiểm tra ở phần chi tiết, không tự ghi đè bằng nghỉ.
+    if (
+        detail &&
+        (detail.checkin || detail.checkout)
+    ) {
+        return "";
+    }
+
+    // Chỉ đưa nghỉ đã duyệt vào bảng đổ lương.
+    if (leave) {
+
+        const leaveText =
+            normalizePayrollText(
+                leave.loaiNghi ||
+                leave.tenLoaiNghi ||
+                leave.nhomNghi ||
+                leave.lyDo ||
+                ""
+            );
+
+        if (
+            leaveText.indexOf("LE") >= 0 &&
+            leaveText.indexOf("NGHI") >= 0
+        ) {
+            return codes.holiday;
+        }
+
+        return codes.leave;
+
+    }
+
+    return "";
+
+}
+
+
+function classifyPayrollLocation(row) {
+
+    row = row || {};
+
+    const locations = [
+        {
+            code: row.maCTIn || row.maCT || "",
+            name: row.siteIn || row.site || "",
+            region: row.khuVucLuongIn || row.khuVucLuong || ""
+        },
+        {
+            code: row.maCTOut || row.maCT || "",
+            name: row.siteOut || row.site || "",
+            region: row.khuVucLuongOut || row.khuVucLuong || ""
+        }
+    ];
+
+    let result =
+        "normal";
+
+    locations.forEach(function(location) {
+
+        const type =
+            classifyPayrollLocationPart(
+                location.code,
+                location.name,
+                location.region
+            );
+
+        // Chỉ cần một lượt IN/OUT thuộc công trình tỉnh
+        // thì cả ngày được xếp nhóm xtt/CNtt.
+        if (type === "stay") {
+            result = "stay";
+            return;
+        }
+
+        if (
+            type === "site" &&
+            result !== "stay"
+        ) {
+            result = "site";
+        }
+
+    });
+
+    return result;
+
+}
+
+
+function classifyPayrollLocationPart(
+    maCT,
+    siteName,
+    khuVucLuong
+) {
+
+    const code =
+        String(maCT || "")
+            .trim()
+            .toUpperCase();
+
+    const text =
+        normalizePayrollText(
+            siteName
+        );
+
+    // Văn phòng / Xưởng luôn là công thường,
+    // không phụ thuộc KhuVucLuong.
+    if (
+        PAYROLL_EXPORT_RULES.normalSiteKeywords
+            .some(function(keyword) {
+                return text.indexOf(
+                    normalizePayrollText(keyword)
+                ) >= 0;
+            })
+    ) {
+        return "normal";
+    }
+
+    const region =
+        normalizePayrollRegion(
+            khuVucLuong
+        );
+
+    if (region === "TINH") {
+        return "stay";
+    }
+
+    if (region === "HCM") {
+        return "site";
+    }
+
+    if (!code && !text) {
+        return "normal";
+    }
+
+    // Công trình chưa khai KhuVucLuong:
+    // mặc định HCM để không tự phát sinh phụ cấp tỉnh.
+    return "site";
+
+}
+
+
+function normalizePayrollRegion(value) {
+
+    const text =
+        normalizePayrollText(value)
+            .replace(/\./g, "")
+            .replace(/\s+/g, " ")
+            .trim();
+
+    if (!text) {
+        return "";
+    }
+
+    if (
+        text === "HCM" ||
+        text === "TPHCM" ||
+        text === "TP HCM" ||
+        text === "HO CHI MINH" ||
+        text === "TP HO CHI MINH"
+    ) {
+        return "HCM";
+    }
+
+    if (
+        text === "TINH" ||
+        text === "NGOAI HCM" ||
+        text === "NGOAI TPHCM" ||
+        text === "NGOAI TP HCM"
+    ) {
+        return "TINH";
+    }
+
+    return text;
+
+}
+
+
+function normalizePayrollText(value) {
+
+    return String(value || "")
+        .trim()
+        .toUpperCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/Đ/g, "D");
+
+}
+
+
+function normalizePayrollDateKey(value) {
+
+    if (!value) {
+        return "";
+    }
+
+    const text =
+        String(value).trim();
+
+    if (/^\d{4}-\d{2}-\d{2}/.test(text)) {
+        return text.substring(0, 10);
+    }
+
+    const date =
+        parseReportDate(value);
+
+    if (!date) {
+        return "";
+    }
+
+    return buildPayrollDateKey(
+        date.getFullYear(),
+        date.getMonth() + 1,
+        date.getDate()
+    );
+
+}
+
+
+function buildPayrollDateKey(
+    year,
+    month,
+    day
+) {
+
+    return String(year) +
+        "-" +
+        String(month).padStart(2, "0") +
+        "-" +
+        String(day).padStart(2, "0");
+
+}
+
+
+function parsePayrollDateKey(value) {
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value || ""))) {
+        return null;
+    }
+
+    const parts =
+        String(value).split("-");
+
+    return new Date(
+        Number(parts[0]),
+        Number(parts[1]) - 1,
+        Number(parts[2])
+    );
+
+}
+
+
+function isValidPayrollMonthDay(
+    year,
+    month,
+    day
+) {
+
+    const date =
+        new Date(
+            year,
+            month - 1,
+            day
+        );
+
+    return (
+        date.getFullYear() === year &&
+        date.getMonth() + 1 === month &&
+        date.getDate() === day
+    );
 
 }
 
